@@ -1,5 +1,5 @@
-idna
-====
+Internationalized Domain Names in Applications (IDNA)
+=====================================================
 
 A library to support the Internationalised Domain Names in Applications
 (IDNA) protocol as specified in RFC 5891. This new methodology,
