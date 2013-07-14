@@ -5,7 +5,7 @@ import xml.etree.ElementTree as etree
 
 SCRIPTS_URL = "http://www.unicode.org/Public/UNIDATA/Scripts.txt"
 JOININGTYPES_URL = "http://www.unicode.org/Public/UNIDATA/ArabicShaping.txt"
-IDNATABLES_URL = "http://www.iana.org/assignments/idna-tables/idna-tables.xml"
+IDNATABLES_URL = "http://www.iana.org/assignments/idna-tables-6.0.0/idna-tables-6.0.0.xml"
 IDNATABLES_NS = "http://www.iana.org/assignments"
 
 
