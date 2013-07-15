@@ -62,13 +62,13 @@ def check_bidi(label):
 
     valid_ending = False
     number_type = False
-    for cp in label:
+    for (idx, cp) in enumerate(label):
         direction = unicodedata.bidirectional(cp)
 
         if rtl:
             # Bidi rule 2
             if not direction in ['R', 'AL', 'AN', 'EN', 'ES', 'CS', 'ET', 'ON', 'BN', 'NSM']:
-                raise IDNABidiError('Invalid direction for codepoint in a right-to-left label')
+                raise IDNABidiError('Invalid direction for codepoint at position {} in a right-to-left label'.format(idx+1))
             # Bidi rule 3
             if direction in ['R', 'AL', 'EN', 'AN']:
                 valid_ending = True
@@ -84,7 +84,7 @@ def check_bidi(label):
         else:
             # Bidi rule 5
             if not direction in ['L', 'EN', 'ES', 'CS', 'ET', 'ON', 'BN', 'NSM']:
-                raise IDNABidiError('Invalid direction for codepoint in a left-to-right label')
+                raise IDNABidiError('Invalid direction for codepoint at position {} in a left-to-right label'.format(idx+1))
             # Bidi rule 6
             if direction in ['L', 'EN']:
                 valid_ending = True
