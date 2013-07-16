@@ -116,9 +116,9 @@ class IDNATests(unittest.TestCase):
     def test_valid_contextj(self):
 
         # RFC 5892 Appendix A.1 (Zero Width Non-Joiner)
-        self.assertFalse(idna.valid_contextj([0x200c], 0))
-        self.assertFalse(idna.valid_contextj([0x0061, 0x200c], 1)) # No preceding Virama
-        self.assertTrue(idna.valid_contextj([0x094d, 0x200d], 1)) # Preceding Virama
+        self.assertFalse(idna.valid_contextj(u'\u200c', 0))
+        self.assertFalse(idna.valid_contextj(u'\u0061\u200c', 1)) # No preceding Virama
+        self.assertTrue(idna.valid_contextj(u'\u094d\u200d', 1)) # Preceding Virama
         # TODO: Needs more tests
 
         # RFC 5892 Appendix A.2 (Zero Width Joiner)
@@ -127,11 +127,11 @@ class IDNATests(unittest.TestCase):
     def test_valid_contexto(self):
 
         # RFC 5892 Rule A.3 (Middle Dot)
-        self.assertTrue(idna.valid_contexto([0x006c, 0x00b7, 0x006c], 1))
-        self.assertFalse(idna.valid_contexto([0x006c, 0x00b7], 1))
-        self.assertFalse(idna.valid_contexto([0x00b7, 0x006c], 0))
-        self.assertFalse(idna.valid_contexto([0x00b7], 0))
-        self.assertFalse(idna.valid_contexto([0x006c, 0x00b7, 0x0061], 1))
+        self.assertTrue(idna.valid_contexto(u'\u006c\u00b7\u006c', 1))
+        self.assertFalse(idna.valid_contexto(u'\u006c\u00b7', 1))
+        self.assertFalse(idna.valid_contexto(u'\u00b7\u006c', 0))
+        self.assertFalse(idna.valid_contexto(u'\u00b7', 0))
+        self.assertFalse(idna.valid_contexto(u'\u006c\u00b7\u0061', 1))
 
         # RFC 5892 Rule A.4 (Greek Lower Numeral Sign)
         # TODO: Needs tests
