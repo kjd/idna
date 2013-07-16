@@ -21,7 +21,7 @@ def main():
 
     arguments = {
         'name': 'idna',
-        'packages': ['idna', 'idna.compat'],
+        'packages': ['idna'],
         'version': version,
         'description': 'Internationalized Domain Names in Applications (IDNA)',
         'long_description': open("README.rst").read(),
