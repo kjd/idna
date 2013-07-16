@@ -126,6 +126,9 @@ def check_hyphen_ok(label):
         raise IDNAError('Label must not start or end with a hyphen')
     return True
 
+def check_nfc(label):
+    if unicodedata.normalize('NFC', label) != label:
+        raise IDNAError('Label must be in Normalization Form C')
 
 def valid_contextj(label, pos):
 
@@ -215,8 +218,9 @@ def check_label(label):
     if isinstance(label, str):
         label = unicode(label)
     if len(label) == 0:
-        return
+        raise IDNAError("Empty Label")
 
+    check_nfc(label)
     check_hyphen_ok(label)
     check_initial_combiner(label)
 
@@ -240,6 +244,7 @@ def alabel(label):
 
     try:
         label = label.encode("ascii")
+        check_label(label)
         return label
     except UnicodeError:
         pass
@@ -279,22 +284,38 @@ def ulabel(label):
 
 def encode(s, strict=False):
 
+    trailing_dot = False
     result = []
     if strict:
         labels = '.'.split(s)
     else:
         labels = re.compile(u'[\u002e\u3002\uff0e\uff61]').split(s)
+    if labels[-1] == '':
+        labels = labels[0:-1]
+        trailing_dot = True
+    if not labels:
+        raise IDNAError("Empty domain")
     for label in labels:
         result.append(alabel(label))
+    if trailing_dot:
+        result.append('')
     return '.'.join(result)
 
 def decode(s, strict=False):
 
+    trailing_dot = False
     result = []
     if strict:
         labels = '.'.split(s)
     else:
         labels = re.compile(u'[\u002e\u3002\uff0e\uff61]').split(s)
+    if labels[-1] == '':
+        labels = labels[0:-1]
+        trailing_dot = True
+    if not labels:
+        raise IDNAError("Empty domain")
     for label in labels:
         result.append(ulabel(label))
+    if trailing_dot:
+        result.append('')
     return u'.'.join(result)

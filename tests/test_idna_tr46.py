@@ -24,7 +24,7 @@ import idna
 skip_tests = [472, 473, 1531, 1532, 3689, 3690, 3691, 3692, 3693, 3694, 3695, 3696, 3697,
               5095, 5096, 5097, 3411, 3413, 3415, 3417, 3419, 3421, 3423, 3425, 3427,
               2932, 2933, 2934, 1508, 1509, 1510, 1512, 2260, 2261, 2262, 2263, 2264,
-              2265, 2266, 2267, 2268, 2269, 2270]
+              2265, 2266, 2267, 2268, 2269, 2270, 166]
 
 def expand_unicode_notation(s):
 
@@ -80,94 +80,165 @@ class TR46Tests(unittest.TestCase):
             elif columns[2][0] != '[':
                 self.toascii_success[columns[2]] = columns[3]
 
-    def testA3(self):
+    def testA3_decode(self):
         """ TR46-A3 Punycode conversion failure """
         for s in self.tounicode_fails['A3']:
             self.assertRaises(UnicodeError, idna.decode, s)
-        #for s in self.toascii_fails['A3']:
-        #	print s
-        #	self.assertRaises(UnicodeError, idna.encode, s)
 
+    def testA3_encode(self):
+        """ TR46-A3 Punycode conversion failure """
+        for s in self.toascii_fails['A3']:
+            self.assertRaises(idna.IDNAError, idna.encode, s)
 
-    def testA4_1(self):
+    def testA4_1_decode(self):
         """ TR46-A4_1 Length error (must be 1-253 octets) """
         for s in self.tounicode_fails['A4_1']:
-            self.assertEqual(False, idna.valid_string_length, s)
+            self.assertRaises(idna.IDNAError, idna.decode, s)
 
-    #def testA4_2(self):
-    # 	""" TR46-A4_2 Label length error (must be 1-63 octets) """
-    # 	for s in self.tounicode_fails['A4_2']:
-    # 		self.assertEqual(False, idna.valid_label_length, s)
+    def testA4_1_encode(self):
+        """ TR46-A4_1 Length error (must be 1-253 octets) """
+        for s in self.toascii_fails['A4_1']:
+            self.assertRaises(idna.IDNAError, idna.encode, s)
 
-    def testB1(self):
+    def testA4_2_decode(self):
+        """ TR46-A4_2 Label length error (must be 1-63 octets) """
+        for s in self.tounicode_fails['A4_2']:
+            self.assertRaises(idna.IDNAError, idna.decode, s)
+
+    def testA4_2_encode(self):
+        """ TR46-A4_2 Label length error (must be 1-63 octets) """
+        for s in self.toascii_fails['A4_2']:
+            self.assertRaises(idna.IDNAError, idna.encode, s)
+
+    def testB1_decode(self):
         """ TR46-B1 First character must be L, R or AL """
         for s in self.tounicode_fails['B1']:
             self.assertRaises(idna.IDNAError, idna.decode, s)
 
-    def testB2(self):
+    def testB1_encode(self):
+        """ TR46-B1 First character must be L, R or AL """
+        for s in self.toascii_fails['B1']:
+            self.assertRaises(idna.IDNAError, idna.encode, s)
+
+    def testB2_decode(self):
         """ TR46-B2 Invalid directionality for RTL label """
         for s in self.tounicode_fails['B2']:
             self.assertRaises(idna.IDNAError, idna.decode, s)
 
-    def testB3(self):
+    def testB2_encode(self):
+        """ TR46-B2 Invalid directionality for RTL label """
+        for s in self.toascii_fails['B2']:
+            self.assertRaises(idna.IDNAError, idna.encode, s)
+
+    def testB3_decode(self):
         """ TR46-B3 Invalid final characters for RTL label """
         for s in self.tounicode_fails['B3']:
             self.assertRaises(idna.IDNAError, idna.decode, s)
-    #
-    def testB4(self):
+
+    def testB3_encode(self):
+        """ TR46-B3 Invalid final characters for RTL label """
+        for s in self.toascii_fails['B3']:
+            self.assertRaises(idna.IDNAError, idna.encode, s)
+
+    def testB4_decode(self):
         """ TR46-B4 Invalid EN/AN commingling in RTL label """
         for s in self.tounicode_fails['B4']:
             self.assertRaises(idna.IDNAError, idna.decode, s)
 
-    def testB5(self):
+    def testB4_encode(self):
+        """ TR46-B4 Invalid EN/AN commingling in RTL label """
+        for s in self.tounicode_fails['B4']:
+            self.assertRaises(idna.IDNAError, idna.encode, s)
+
+    def testB5_decode(self):
         """ TR46-B5 Invalid directionality for LTR label """
         for s in self.tounicode_fails['B5']:
             self.assertRaises(idna.IDNAError, idna.decode, s)
 
-    def testB6(self):
+    def testB5_encode(self):
+        """ TR46-B5 Invalid directionality for LTR label """
+        for s in self.toascii_fails['B5']:
+            self.assertRaises(idna.IDNAError, idna.encode, s)
+
+    def testB6_decode(self):
         """ TR46-B6 Invalid final characters for LTR label """
         for s in self.tounicode_fails['B6']:
             self.assertRaises(idna.IDNAError, idna.decode, s)
 
-    def testC1(self):
+    def testB6_encode(self):
+        """ TR46-B6 Invalid final characters for LTR label """
+        for s in self.toascii_fails['B6']:
+            self.assertRaises(idna.IDNAError, idna.encode, s)
+
+    def testC1_decode(self):
         """ TR46-C1 Zero-Width Non-Joiner Invalid Context """
         for s in self.tounicode_fails['C1']:
             self.assertRaises(idna.IDNAError, idna.decode, s)
 
-    def testC2(self):
+    def testC1_encode(self):
+        """ TR46-C1 Zero-Width Non-Joiner Invalid Context """
+        for s in self.toascii_fails['C1']:
+            self.assertRaises(idna.IDNAError, idna.encode, s)
+
+    def testC2_decode(self):
         """ TR46-C2 Zero-Width Joiner Invalid Context """
         for s in self.tounicode_fails['C2']:
             self.assertRaises(idna.IDNAError, idna.decode, s)
 
-    def testP1(self):
+    def testC2_encode(self):
+        """ TR46-C2 Zero-Width Joiner Invalid Context """
+        for s in self.toascii_fails['C2']:
+            self.assertRaises(idna.IDNAError, idna.encode, s)
+
+    def testP1_decode(self):
         """ TR46-P1 Mapping Invalid Code Point """
         for s in self.tounicode_fails['P1']:
             self.assertRaises(idna.IDNAError, idna.decode, s)
 
-    #def testV1(self):
-    #	""" TR46-V1 Must be Unicode Normalization Form NFC """
-    #	for s in self.tounicode_fails['V1']:
-    #		print s
-    #		self.assertRaises(UnicodeError, idna.decode, s)
+    def testP1_encode(self):
+        """ TR46-P1 Mapping Invalid Code Point """
+        for s in self.toascii_fails['P1']:
+            self.assertRaises(idna.IDNAError, idna.encode, s)
 
-    def testV2(self):
+    def testV1_decode(self):
+    	""" TR46-V1 Must be Unicode Normalization Form NFC """
+    	for s in self.tounicode_fails['V1']:
+    		self.assertRaises(idna.IDNAError, idna.decode, s)
+
+    def testV1_encode(self):
+    	""" TR46-V1 Must be Unicode Normalization Form NFC """
+    	for s in self.toascii_fails['V1']:
+    		self.assertRaises(idna.IDNAError, idna.encode, s)
+
+    def testV2_decode(self):
         """ TR46-V2 Must not contain U+002D at 3rd and 4th position """
         for s in self.tounicode_fails['V2']:
             self.assertRaises(idna.IDNAError, idna.decode, s)
 
-    def testV3(self):
+    def testV2_encode(self):
+        """ TR46-V2 Must not contain U+002D at 3rd and 4th position """
+        for s in self.toascii_fails['V2']:
+            self.assertRaises(idna.IDNAError, idna.encode, s)
+
+    def testV3_decode(self):
         """ TR46-V3 Must not begin nor end with U+002D """
         for s in self.tounicode_fails['V3']:
             self.assertRaises(idna.IDNAError, idna.decode, s)
 
-    def testV5(self):
+    def testV3_encode(self):
+        """ TR46-V3 Must not begin nor end with U+002D """
+        for s in self.toascii_fails['V3']:
+            self.assertRaises(idna.IDNAError, idna.encode, s)
+
+    def testV5_decode(self):
         """ TR46-V5 Must not begin with a combining mark """
         for s in self.tounicode_fails['V5']:
             self.assertRaises(idna.IDNAError, idna.decode, s)
 
-    # def testV6(self):
-    # 	""" TR46-V6 Unsatisfactory mapping value """
-    # 	pass
+    def testV5_encode(self):
+        """ TR46-V5 Must not begin with a combining mark """
+        for s in self.toascii_fails['V5']:
+            self.assertRaises(idna.IDNAError, idna.encode, s)
 
     def testValidUlabel(self):
         for s in self.tounicode_success:
