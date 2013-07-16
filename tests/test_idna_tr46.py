@@ -201,14 +201,14 @@ class TR46Tests(unittest.TestCase):
             self.assertRaises(idna.IDNAError, idna.encode, s)
 
     def testV1_decode(self):
-    	""" TR46-V1 Must be Unicode Normalization Form NFC """
-    	for s in self.tounicode_fails['V1']:
-    		self.assertRaises(idna.IDNAError, idna.decode, s)
+        """ TR46-V1 Must be Unicode Normalization Form NFC """
+        for s in self.tounicode_fails['V1']:
+            self.assertRaises(idna.IDNAError, idna.decode, s)
 
     def testV1_encode(self):
-    	""" TR46-V1 Must be Unicode Normalization Form NFC """
-    	for s in self.toascii_fails['V1']:
-    		self.assertRaises(idna.IDNAError, idna.encode, s)
+        """ TR46-V1 Must be Unicode Normalization Form NFC """
+        for s in self.toascii_fails['V1']:
+            self.assertRaises(idna.IDNAError, idna.encode, s)
 
     def testV2_decode(self):
         """ TR46-V2 Must not contain U+002D at 3rd and 4th position """

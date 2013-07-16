@@ -250,7 +250,10 @@ def alabel(label):
 
     try:
         label = label.encode('ascii')
-        check_label(label)
+        try:
+            ulabel(label)
+        except:
+            raise IDNAError('The label {} is not a valid A-label'.format(label))
         return label
     except UnicodeError:
         pass
