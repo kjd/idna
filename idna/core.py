@@ -3,7 +3,7 @@ import unicodedata
 import re
 
 _virama_combining_class = 9
-_alabel_prefix = "xn--"
+_alabel_prefix = 'xn--'
 
 
 class IDNAError(UnicodeError):
@@ -29,10 +29,8 @@ class InvalidCodepointContext(IDNAError):
 def _combining_class(cp):
     return unicodedata.combining(unichr(cp))
 
-
 def _is_script(cp, script):
     return ord(cp) in idnadata.scripts[script]
-
 
 def _punycode(s):
     return s.encode('punycode')
@@ -40,13 +38,16 @@ def _punycode(s):
 def _unot(s):
     return 'U+{0:04X}'.format(s)
 
+
 def valid_label_length(label):
+
     if len(label) > 63:
         return False
     return True
 
 
 def valid_string_length(label):
+
     if len(label) > 254:
         return False
     return True
@@ -114,21 +115,26 @@ def check_bidi(label):
 
 
 def check_initial_combiner(label):
+
     if unicodedata.category(label[0])[0] == 'M':
         raise IDNAError('Label begins with an illegal combining character')
     return True
 
 
 def check_hyphen_ok(label):
+
     if label[2:4] == '--':
         raise IDNAError('Label has disallowed hyphens in 3rd and 4th position')
     if label[0] == '-' or label[-1] == '-':
         raise IDNAError('Label must not start or end with a hyphen')
     return True
 
+
 def check_nfc(label):
+
     if unicodedata.normalize('NFC', label) != label:
         raise IDNAError('Label must be in Normalization Form C')
+
 
 def valid_contextj(label, pos):
 
@@ -196,7 +202,7 @@ def valid_contexto(label, pos, exception=False):
 
     elif cp_value == 0x30fb:
         for cp in label:
-            if not _is_script(cp, "Hiragana") and not _is_script(cp, "Katakana") and not _is_script(cp, "Han"):
+            if not _is_script(cp, 'Hiragana') and not _is_script(cp, 'Katakana') and not _is_script(cp, 'Han'):
                 return False
         return True
 
@@ -218,7 +224,7 @@ def check_label(label):
     if isinstance(label, str):
         label = unicode(label)
     if len(label) == 0:
-        raise IDNAError("Empty Label")
+        raise IDNAError('Empty Label')
 
     check_nfc(label)
     check_hyphen_ok(label)
@@ -243,14 +249,14 @@ def check_label(label):
 def alabel(label):
 
     try:
-        label = label.encode("ascii")
+        label = label.encode('ascii')
         check_label(label)
         return label
     except UnicodeError:
         pass
 
     if not label:
-        raise IDNAError("No Input")
+        raise IDNAError('No Input')
 
     label = unicode(label)
     check_label(label)
@@ -258,7 +264,7 @@ def alabel(label):
     label = _alabel_prefix + label
 
     if not valid_label_length(label):
-        raise IDNAError("Label too long")
+        raise IDNAError('Label too long')
 
     return label
 
@@ -266,7 +272,7 @@ def alabel(label):
 def ulabel(label):
 
     try:
-        label = label.encode("ascii")
+        label = label.encode('ascii')
     except UnicodeError:
         check_label(label)
         return label
@@ -278,9 +284,10 @@ def ulabel(label):
         check_label(label)
         return label
 
-    label = label.decode("punycode")
+    label = label.decode('punycode')
     check_label(label)
     return label
+
 
 def encode(s, strict=False):
 
@@ -294,12 +301,13 @@ def encode(s, strict=False):
         labels = labels[0:-1]
         trailing_dot = True
     if not labels:
-        raise IDNAError("Empty domain")
+        raise IDNAError('Empty domain')
     for label in labels:
         result.append(alabel(label))
     if trailing_dot:
         result.append('')
     return '.'.join(result)
+
 
 def decode(s, strict=False):
 
@@ -313,7 +321,7 @@ def decode(s, strict=False):
         labels = labels[0:-1]
         trailing_dot = True
     if not labels:
-        raise IDNAError("Empty domain")
+        raise IDNAError('Empty domain')
     for label in labels:
         result.append(ulabel(label))
     if trailing_dot:
