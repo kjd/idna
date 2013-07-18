@@ -16,6 +16,9 @@ import sys
 sys.path.append('..')
 import idna
 
+if sys.version_info[0] == 3:
+    unichr = chr
+
 #    We skip some tests for IdnaTest.txt because either (a) they only apply
 #    for Unicode versions higher than 6.0.0, but IDNA property tables haven't
 #    been published for the higher version; or (b) they use UCS-4 Unicode

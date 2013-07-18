@@ -9,15 +9,13 @@ the "encodings.idna" module.
 import sys
 from setuptools import setup, find_packages
 
-version = "0.2"
+version = "0.3"
 
 def main():
 
     python_version = sys.version_info[:2]
     if python_version < (2,6):
         raise SystemExit("Sorry, Python 2.6 or newer required")
-    if python_version[0] == 3:
-        raise SystemExit("Sorry, Python 3 not yet supported")
 
     arguments = {
         'name': 'idna',

@@ -1,10 +1,14 @@
 from . import idnadata
 import unicodedata
 import re
+import sys
 
 _virama_combining_class = 9
-_alabel_prefix = 'xn--'
+_alabel_prefix = b'xn--'
 
+if sys.version_info[0] == 3:
+    unicode = str
+    unichr = chr
 
 class IDNAError(UnicodeError):
     """ Base exception for all IDNA-encoding related problems """
@@ -221,8 +225,8 @@ def valid_contexto(label, pos, exception=False):
 
 def check_label(label):
 
-    if isinstance(label, str):
-        label = unicode(label)
+    if isinstance(label, bytes):
+        label = label.decode('utf-8')
     if len(label) == 0:
         raise IDNAError('Empty Label')
 
@@ -249,7 +253,7 @@ def check_label(label):
 def alabel(label):
 
     try:
-        label = label.encode('ascii')
+        label.encode('ascii')
         try:
             ulabel(label)
         except:
@@ -269,23 +273,26 @@ def alabel(label):
     if not valid_label_length(label):
         raise IDNAError('Label too long')
 
+    if not isinstance(label, str):
+        label = label.decode('ascii')
     return label
 
 
 def ulabel(label):
 
-    try:
-        label = label.encode('ascii')
-    except UnicodeError:
-        check_label(label)
-        return label
+    if not isinstance(label, bytes):
+        try:
+            label = label.encode('ascii')
+        except UnicodeError:
+            check_label(label)
+            return label
 
     label = label.lower()
     if label.startswith(_alabel_prefix):
         label = label[len(_alabel_prefix):]
     else:
         check_label(label)
-        return label
+        return label.decode('ascii')
 
     label = label.decode('punycode')
     check_label(label)
