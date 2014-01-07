@@ -3,6 +3,11 @@
 History
 -------
 
+0.4 (2014-01-07)
+++++++++++++++++
+
+- Fix trove classifier for Python 3. (Thanks, Hynek Schlawack)
+
 0.3 (2013-07-18)
 ++++++++++++++++
 
