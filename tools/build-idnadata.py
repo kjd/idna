@@ -91,7 +91,7 @@ def build_idnadata(version):
     idntables_data = urlopen(IDNATABLES_URL.format(version=version)).read()
     root = etree.fromstring(idntables_data)
 
-    for record in root.findall('{0}registry[@id="idna-tables-{1}-properties"]/{0}record'.format(namespace, version)):
+    for record in root.findall('{0}registry[@id="idna-tables-properties"]/{0}record'.format(namespace)):
         codepoint = record.find("{0}codepoint".format(namespace)).text
         prop = record.find("{0}property".format(namespace)).text
         if prop == 'UNASSIGNED':
@@ -112,5 +112,5 @@ def build_idnadata(version):
     print("}")
 
 
-build_idnadata('6.0.0')
+build_idnadata('6.3.0')
 

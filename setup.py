@@ -9,7 +9,7 @@ the "encodings.idna" module.
 import sys
 from setuptools import setup, find_packages
 
-version = "0.4"
+version = "0.5"
 
 def main():
 
@@ -28,7 +28,7 @@ def main():
         'license': 'BSD-like',
         'url': 'https://github.com/kjd/idna',
         'classifiers': [
-            'Development Status :: 3 - Alpha',
+            'Development Status :: 4 - Beta',
             'Intended Audience :: Developers',
             'Intended Audience :: System Administrators',
             'License :: OSI Approved :: BSD License',
