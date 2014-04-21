@@ -5,6 +5,7 @@ import sys
 
 _virama_combining_class = 9
 _alabel_prefix = b'xn--'
+_unicode_dots_re = re.compile(u'[\u002e\u3002\uff0e\uff61]')
 
 if sys.version_info[0] == 3:
     unicode = str
@@ -304,7 +305,7 @@ def encode(s, strict=False):
     if strict:
         labels = s.split('.')
     else:
-        labels = re.compile(u'[\u002e\u3002\uff0e\uff61]').split(s)
+        labels = _unicode_dots_re.split(s)
     if labels[-1] == '':
         labels = labels[0:-1]
         trailing_dot = True
@@ -321,11 +322,14 @@ def decode(s, strict=False):
 
     trailing_dot = False
     result = []
-    if not isinstance(s, (bytes, bytearray)) and not strict:
-        labels = re.compile(u'[\u002e\u3002\uff0e\uff61]').split(s)
-    else:
+    if isinstance(s, (bytes, bytearray)):
         labels = s.split(b'.')
-    if labels[-1] == '':
+    else:
+        if not strict:
+            labels = _unicode_dots_re.split(s)
+        else:
+            labels = s.split(u'.')
+    if not labels[-1]:
         labels = labels[0:-1]
         trailing_dot = True
     if not labels:
