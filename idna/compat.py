@@ -8,7 +8,7 @@
 # Some functions are derived from the Python standard library.
 #
 
-from core import *
+from idna.core import *
 import codecs
 import re
 

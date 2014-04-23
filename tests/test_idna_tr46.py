@@ -8,6 +8,7 @@
 #   can break text editors.
 #
 
+import os
 from collections import defaultdict
 import gzip
 import unittest
@@ -15,6 +16,9 @@ import re
 import sys
 sys.path.append('..')
 import idna
+
+test_path = os.path.abspath(os.path.dirname(__file__))
+
 
 if sys.version_info[0] == 3:
     unichr = chr
@@ -50,7 +54,7 @@ class TR46Tests(unittest.TestCase):
         self.tounicode_success = {}
         self.toascii_success = {}
 
-        for (lineno, line) in enumerate(gzip.open("IdnaTest.txt.gz").readlines(), 1):
+        for (lineno, line) in enumerate(gzip.open(os.path.join(test_path,"IdnaTest.txt.gz")).readlines(), 1):
             if lineno in skip_tests:
                 continue
             line = line.decode('utf-8')
@@ -81,7 +85,7 @@ class TR46Tests(unittest.TestCase):
                 for failure_type in columns[3][1:-1].split(' '):
                     self.toascii_fails[failure_type].append(columns[1])
             elif columns[2][0] != '[':
-                self.toascii_success[columns[2]] = columns[3]
+                self.toascii_success[columns[2]] = columns[3].encode('ascii')
 
     def testA3_decode(self):
         """ TR46-A3 Punycode conversion failure """

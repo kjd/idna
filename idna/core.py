@@ -5,6 +5,7 @@ import sys
 
 _virama_combining_class = 9
 _alabel_prefix = b'xn--'
+_unicode_dots_re = re.compile(u'[\u002e\u3002\uff0e\uff61]')
 
 if sys.version_info[0] == 3:
     unicode = str
@@ -225,7 +226,7 @@ def valid_contexto(label, pos, exception=False):
 
 def check_label(label):
 
-    if isinstance(label, bytes):
+    if isinstance(label, (bytes, bytearray)):
         label = label.decode('utf-8')
     if len(label) == 0:
         raise IDNAError('Empty Label')
@@ -253,7 +254,7 @@ def check_label(label):
 def alabel(label):
 
     try:
-        label.encode('ascii')
+        label = label.encode('ascii')
         try:
             ulabel(label)
         except:
@@ -273,14 +274,12 @@ def alabel(label):
     if not valid_label_length(label):
         raise IDNAError('Label too long')
 
-    if not isinstance(label, str):
-        label = label.decode('ascii')
     return label
 
 
 def ulabel(label):
 
-    if not isinstance(label, bytes):
+    if not isinstance(label, (bytes, bytearray)):
         try:
             label = label.encode('ascii')
         except UnicodeError:
@@ -304,9 +303,9 @@ def encode(s, strict=False):
     trailing_dot = False
     result = []
     if strict:
-        labels = '.'.split(s)
+        labels = s.split('.')
     else:
-        labels = re.compile(u'[\u002e\u3002\uff0e\uff61]').split(s)
+        labels = _unicode_dots_re.split(s)
     if labels[-1] == '':
         labels = labels[0:-1]
         trailing_dot = True
@@ -315,19 +314,22 @@ def encode(s, strict=False):
     for label in labels:
         result.append(alabel(label))
     if trailing_dot:
-        result.append('')
-    return '.'.join(result)
+        result.append(b'')
+    return b'.'.join(result)
 
 
 def decode(s, strict=False):
 
     trailing_dot = False
     result = []
-    if strict:
-        labels = '.'.split(s)
+    if isinstance(s, (bytes, bytearray)):
+        labels = s.split(b'.')
     else:
-        labels = re.compile(u'[\u002e\u3002\uff0e\uff61]').split(s)
-    if labels[-1] == '':
+        if not strict:
+            labels = _unicode_dots_re.split(s)
+        else:
+            labels = s.split(u'.')
+    if not labels[-1]:
         labels = labels[0:-1]
         trailing_dot = True
     if not labels:
@@ -335,5 +337,5 @@ def decode(s, strict=False):
     for label in labels:
         result.append(ulabel(label))
     if trailing_dot:
-        result.append('')
+        result.append(u'')
     return u'.'.join(result)
