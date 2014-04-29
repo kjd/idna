@@ -3,6 +3,11 @@
 History
 -------
 
+0.6 (2014-04-29)
+++++++++++++++++
+
+- Minor improvements to Python 3 support, tests (Thanks, Derek Wilson)
+
 0.5 (2014-02-05)
 ++++++++++++++++
 
