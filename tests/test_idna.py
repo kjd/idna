@@ -135,24 +135,32 @@ class IDNATests(unittest.TestCase):
         self.assertFalse(idna.valid_contexto(u'\u006c\u00b7\u0061', 1))
 
         # RFC 5892 Rule A.4 (Greek Lower Numeral Sign)
-        # TODO: Needs tests
+        self.assertTrue(idna.valid_contexto(u'\u0375\u03b1', 0))
+        self.assertFalse(idna.valid_contexto(u'\u0375\u0061', 0))
 
         # RFC 5892 Rule A.5 (Hebrew Punctuation Geresh)
-        # TODO: Needs tests
+        self.assertTrue(idna.valid_contexto(u'\u05d0\u05f3', 1))
+        self.assertFalse(idna.valid_contexto(u'\u0061\u05f3', 1))
 
         # RFC 5892 Rule A.6 (Hebrew Punctuation Gershayim)
-        # TODO: Needs tests
+        self.assertTrue(idna.valid_contexto(u'\u05d0\u05f4', 1))
+        self.assertFalse(idna.valid_contexto(u'\u0061\u05f4', 1))
 
         # RFC 5892 Rule A.7 (Katakana Middle Dot)
-        # TODO: Needs tests
+        self.assertTrue(idna.valid_contexto(u'\u3053\u30fb\u3053', 1))
+        self.assertTrue(idna.valid_contexto(u'\u3053\u30fb\u30a2', 1))
+        self.assertTrue(idna.valid_contexto(u'\u30a2\u30fb\u30a2', 1))
+        self.assertTrue(idna.valid_contexto(u'\u6f22\u30fb\u5b57', 1))
+        self.assertFalse(idna.valid_contexto(u'\u0061\u30fb\u0061', 1))
 
         # RFC 5892 Rule A.8 (Arabic-Indic Digits)
-        # TODO: Needs tests
+        self.assertTrue(idna.valid_contexto(u'\u0660\u0661', 0))
+        self.assertFalse(idna.valid_contexto(u'\u0660\u06f0', 0))
 
         # RFC 5892 Rule A.9 (Extended Arabic-Indic Digits)
-        # TODO: Needs tests
+        self.assertTrue(idna.valid_contexto(u'\u06f0\u06f1', 0))
+        self.assertFalse(idna.valid_contexto(u'\u06f0\u0660', 0))
 
-        pass
 
     def test_check_label(self):
         # TODO: Needs tests
