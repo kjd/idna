@@ -196,7 +196,7 @@ def valid_contexto(label, pos, exception=False):
         return False
 
     elif cp_value == 0x0375:
-        if pos < len(label) and len(label) > 2:
+        if pos < len(label)-1 and len(label) > 1:
             return _is_script(label[pos + 1], 'Greek')
         return False
 
