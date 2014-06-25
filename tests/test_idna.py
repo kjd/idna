@@ -161,10 +161,9 @@ class IDNATests(unittest.TestCase):
         self.assertTrue(idna.valid_contexto(u'\u06f0\u06f1', 0))
         self.assertFalse(idna.valid_contexto(u'\u06f0\u0660', 0))
 
-
     def test_check_label(self):
-        # TODO: Needs tests
-        pass
+        self.assertTrue(idna.check_label('xn--zckzah'))
+        self.assertRaises(idna.IDNAError, idna.check_label, '')
 
     def test_encode(self):
         self.assertEqual(idna.encode('xn--zckzah.xn--zckzah'), b'xn--zckzah.xn--zckzah')
