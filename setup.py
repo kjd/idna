@@ -9,7 +9,7 @@ the "encodings.idna" module.
 import sys
 from setuptools import setup, find_packages
 
-version = "0.6"
+version = "0.7"
 
 def main():
 
@@ -42,6 +42,7 @@ def main():
             'Topic :: Software Development :: Libraries :: Python Modules',
             'Topic :: Utilities',
         ],
+        'test_suite': 'tests',
     }
 
     setup(**arguments)

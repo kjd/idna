@@ -3,6 +3,13 @@
 History
 -------
 
+0.7 (2014-XX-XX)
+++++++++++++++++
+
+- Filled out missing tests for various functions.
+- Fix bug in CONTEXTO validation for Greek lower numeral sign (U+0375)
+- Fix bug in CONTEXTO validation for Japanese middle dot (U+30FB)
+
 0.6 (2014-04-29)
 ++++++++++++++++
 
