@@ -76,38 +76,87 @@ class IDNATests(unittest.TestCase):
         for (ulabel, alabel) in self.tld_strings:
             self.assertEqual(ulabel, idna.ulabel(alabel))
 
-
     def test_valid_label_length(self):
-        # TODO: Needs tests
-        pass
+
+        self.assertTrue(idna.valid_label_length('a' * 63))
+        self.assertFalse(idna.valid_label_length('a' * 64))
 
     def test_check_bidi(self):
+
+        l = u'\u0061'
+        r = u'\u05d0'
+        al = u'\u0627'
+        an = u'\u0660'
+        en = u'\u0030'
+        es = u'\u002d'
+        cs = u'\u002c'
+        et = u'\u0024'
+        on = u'\u0021'
+        bn = u'\u200c'
+        nsm = u'\u0610'
+        ws = u'\u0020'
+
         # RFC 5893 Rule 1
-        # TODO: Needs tests
+        self.assertTrue(idna.check_bidi(l))
+        self.assertTrue(idna.check_bidi(r))
+        self.assertTrue(idna.check_bidi(al))
+        self.assertRaises(idna.IDNABidiError, idna.check_bidi, an)
 
         # RFC 5893 Rule 2
-        # TODO: Needs tests
+        self.assertTrue(idna.check_bidi(r + al))
+        self.assertTrue(idna.check_bidi(r + al))
+        self.assertTrue(idna.check_bidi(r + an))
+        self.assertTrue(idna.check_bidi(r + en))
+        self.assertTrue(idna.check_bidi(r + es + al))
+        self.assertTrue(idna.check_bidi(r + cs + al))
+        self.assertTrue(idna.check_bidi(r + et + al))
+        self.assertTrue(idna.check_bidi(r + on + al))
+        self.assertTrue(idna.check_bidi(r + bn + al))
+        self.assertTrue(idna.check_bidi(r + nsm))
+        self.assertRaises(idna.IDNABidiError, idna.check_bidi, r + l)
+        self.assertRaises(idna.IDNABidiError, idna.check_bidi, r + ws)
 
         # RFC 5893 Rule 3
-        # TODO: Needs tests
+        self.assertTrue(idna.check_bidi(r + al))
+        self.assertTrue(idna.check_bidi(r + en))
+        self.assertTrue(idna.check_bidi(r + an))
+        self.assertTrue(idna.check_bidi(r + nsm))
+        self.assertTrue(idna.check_bidi(r + nsm + nsm))
+        self.assertRaises(idna.IDNABidiError, idna.check_bidi, r + on)
 
         # RFC 5893 Rule 4
-        # TODO: Needs tests
+        self.assertTrue(idna.check_bidi(r + en))
+        self.assertTrue(idna.check_bidi(r + an))
+        self.assertRaises(idna.IDNABidiError, idna.check_bidi, r + en + an)
+        self.assertRaises(idna.IDNABidiError, idna.check_bidi, r + an + en)
 
         # RFC 5893 Rule 5
-        # TODO: Needs tests
+        self.assertTrue(idna.check_bidi(l + en, check_ltr=True))
+        self.assertTrue(idna.check_bidi(l + es + l, check_ltr=True))
+        self.assertTrue(idna.check_bidi(l + cs + l, check_ltr=True))
+        self.assertTrue(idna.check_bidi(l + et + l, check_ltr=True))
+        self.assertTrue(idna.check_bidi(l + on + l, check_ltr=True))
+        self.assertTrue(idna.check_bidi(l + bn + l, check_ltr=True))
+        self.assertTrue(idna.check_bidi(l + nsm, check_ltr=True))
 
         # RFC 5893 Rule 6
-        # TODO: Needs tests
-
-        pass
+        self.assertTrue(idna.check_bidi(l + l, check_ltr=True))
+        self.assertTrue(idna.check_bidi(l + en, check_ltr=True))
+        self.assertTrue(idna.check_bidi(l + en + nsm, check_ltr=True))
+        self.assertTrue(idna.check_bidi(l + en + nsm + nsm, check_ltr=True))
+        self.assertRaises(idna.IDNABidiError, idna.check_bidi, l + cs, check_ltr=True)
 
     def test_check_initial_combiner(self):
-        # TODO: Needs tests
 
-        pass
+        m = u'\u0300'
+        a = u'\u0061'
+
+        self.assertTrue(idna.check_initial_combiner(a))
+        self.assertTrue(idna.check_initial_combiner(a + m))
+        self.assertRaises(idna.IDNAError, idna.check_initial_combiner, m + a)
 
     def test_check_hyphen_ok(self):
+
         self.assertTrue(idna.check_hyphen_ok('abc'))
         self.assertTrue(idna.check_hyphen_ok('a--b'))
         self.assertRaises(idna.IDNAError, idna.check_hyphen_ok, 'aa--')
@@ -125,14 +174,11 @@ class IDNATests(unittest.TestCase):
         self.assertFalse(idna.valid_contextj(zwnj, 0))
         self.assertFalse(idna.valid_contextj(latin + zwnj, 1)) # No preceding Virama
         self.assertTrue(idna.valid_contextj(virama + zwnj, 1)) # Preceding Virama
-        # TODO: Needs more tests
 
         # RFC 5892 Appendix A.2 (Zero Width Joiner)
         self.assertFalse(idna.valid_contextj(zwj, 0))
         self.assertFalse(idna.valid_contextj(latin + zwj, 1)) # No preceding Virama
         self.assertTrue(idna.valid_contextj(virama + zwj, 1)) # Preceding Virama
-
-        # TODO: Needs tests
 
     def test_valid_contexto(self):
 
@@ -188,6 +234,7 @@ class IDNATests(unittest.TestCase):
         self.assertFalse(idna.valid_contexto(ext_arabic_digit + arabic_digit, 0))
 
     def test_encode(self):
+
         self.assertEqual(idna.encode('xn--zckzah.xn--zckzah'), b'xn--zckzah.xn--zckzah')
         self.assertEqual(idna.encode(u'\u30c6\u30b9\u30c8.xn--zckzah'), b'xn--zckzah.xn--zckzah')
         self.assertEqual(idna.encode(u'\u30c6\u30b9\u30c8.\u30c6\u30b9\u30c8'), b'xn--zckzah.xn--zckzah')
@@ -196,6 +243,7 @@ class IDNATests(unittest.TestCase):
         self.assertEqual(idna.encode(u'\u30c6\u30b9\u30c8.abc'), b'xn--zckzah.abc')
 
     def test_decode(self):
+
         self.assertEqual(idna.decode('xn--zckzah.xn--zckzah'), u'\u30c6\u30b9\u30c8.\u30c6\u30b9\u30c8')
         self.assertEqual(idna.decode(u'\u30c6\u30b9\u30c8.xn--zckzah'), u'\u30c6\u30b9\u30c8.\u30c6\u30b9\u30c8')
         self.assertEqual(idna.decode(u'\u30c6\u30b9\u30c8.\u30c6\u30b9\u30c8'),

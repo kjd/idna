@@ -58,19 +58,19 @@ def valid_string_length(label):
     return True
 
 
-def check_bidi(label):
+def check_bidi(label, check_ltr=False):
 
-    # Bidi rules should only be applied if string contails RTL characters
-    bidi_applies = False
+    # Bidi rules should only be applied if string contains RTL characters
+    bidi_label = False
     for (idx, cp) in enumerate(label, 1):
         direction = unicodedata.bidirectional(cp)
         if direction == '':
             # String likely comes from a newer version of Unicode
             raise IDNABidiError('Unknown directionality in label {} at position {}'.format(repr(label), idx))
         if direction in ['R', 'AL', 'AN']:
-            bidi_applies = True
+            bidi_label = True
             break
-    if not bidi_applies:
+    if not bidi_label and not check_ltr:
         return True
 
     # Bidi rule 1
