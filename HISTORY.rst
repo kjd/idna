@@ -2,6 +2,10 @@
 
 History
 -------
+0.8 (2014-07-09)
+++++++++++++++++
+
+- Added MANIFEST.in for correct source distribution compilation.
 
 0.7 (2014-07-09)
 ++++++++++++++++
