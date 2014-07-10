@@ -1,13 +1,3 @@
-#
-# This is a compatibility module for the IDNA 2003 support in Python's standard library.
-# Replace
-#     import encodings.idna
-# with
-#     import idna.compat as encodings.idna
-# in order to easily use IDNA 2008 instead of IDNA 2003.
-# Some functions are derived from the Python standard library.
-#
-
 from idna.core import *
 import codecs
 import re
