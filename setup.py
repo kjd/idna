@@ -7,7 +7,7 @@ the "encodings.idna" module.
 """
 
 import sys
-from setuptools import setup, find_packages
+from setuptools import setup
 import io
 
 version = "0.8"
