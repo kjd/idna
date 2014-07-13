@@ -8,6 +8,7 @@ the "encodings.idna" module.
 
 import sys
 from setuptools import setup, find_packages
+import io
 
 version = "0.8"
 
@@ -22,7 +23,7 @@ def main():
         'packages': ['idna'],
         'version': version,
         'description': 'Internationalized Domain Names in Applications (IDNA)',
-        'long_description': open("README.rst").read(),
+        'long_description': io.open("README.rst", encoding="UTF-8").read(),
         'author': 'Kim Davies',
         'author_email': 'kim@cynosure.com.au',
         'license': 'BSD-like',
