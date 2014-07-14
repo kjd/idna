@@ -8,7 +8,7 @@ produce different results from the earlier standard from 2003.
 
 The library is also intended to act as a suitable drop-in replacement for
 the “encodings.idna” module that comes with the Python standard library
-but currently only supports the 2003 specification.
+but currently only supports the older 2003 specification.
 
 Its basic functions are simply executed:
 
@@ -61,12 +61,12 @@ name argument and perform a conversion to an A-label or U-label respectively.
     >>> print idna.decode('xn--eckwd4c7c.xn--zckzah')
     ドメイン.テスト
 
-You may use the stream encoding and decoding methods using the
-``encodings.idna`` compatibility module.
+You may use the codec encoding and decoding methods using the
+``idna.codec`` module.
 
 .. code-block:: pycon
 
-    >>> import idna.compat
+    >>> import idna.codec
     >>> print u'домена.испытание'.encode('idna')
     xn--80ahd1agd.xn--80akhbyknj4f
     >>> print 'xn--80ahd1agd.xn--80akhbyknj4f'.decode('idna')
@@ -79,6 +79,11 @@ functions if necessary:
 
     >>> idna.alabel(u'测试')
     'xn--0zwm56d'
+
+Function calls from the Python built-in ``encodings.idna`` module are
+mapping to their IDNA 2008 equivalents using the ``idna.compat`` module.
+Simply substitute the ``import`` clause in your code to refer to the
+new module name.
 
 Exceptions
 ----------
