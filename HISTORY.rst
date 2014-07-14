@@ -2,6 +2,13 @@
 
 History
 -------
+
+0.9 (2014-XX-XX)
+++++++++++++++++
+
+- Fix issue with non-UTF-8 environments reading the README file
+  now that it contains non-ASCII. (Thanks, Tom Prince)
+
 0.8 (2014-07-09)
 ++++++++++++++++
 
