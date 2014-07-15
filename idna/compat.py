@@ -1,8 +1,6 @@
 from idna.core import *
 from idna.codec import *
 
-dots = re.compile(u"[\u002E\u3002\uFF0E\uFF61]")
-
 def ToASCII(label):
     return encode(label)
 

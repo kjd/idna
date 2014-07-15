@@ -1,6 +1,8 @@
-from idna.core import encode, decode, IDNAError
+from idna.core import encode, decode, alabel, ulabel, IDNAError
 import codecs
 import re
+
+_unicode_dots_re = re.compile(u'[\u002e\u3002\uff0e\uff61]')
 
 class Codec(codecs.Codec):
 
@@ -32,7 +34,7 @@ class IncrementalEncoder(codecs.BufferedIncrementalEncoder):
         if not data:
             return ("", 0)
 
-        labels = dots.split(data)
+        labels = _unicode_dots_re.split(data)
         trailing_dot = u''
         if labels:
             if not labels[-1]:
@@ -47,7 +49,7 @@ class IncrementalEncoder(codecs.BufferedIncrementalEncoder):
         result = []
         size = 0
         for label in labels:
-            result.append(ToASCII(label))
+            result.append(alabel(label))
             if size:
                 size += 1
             size += len(label)
@@ -67,7 +69,7 @@ class IncrementalDecoder(codecs.BufferedIncrementalDecoder):
 
         # IDNA allows decoding to operate on Unicode strings, too.
         if isinstance(data, unicode):
-            labels = dots.split(data)
+            labels = _unicode_dots_re.split(data)
         else:
             # Must be ASCII string
             data = str(data)
@@ -88,7 +90,7 @@ class IncrementalDecoder(codecs.BufferedIncrementalDecoder):
         result = []
         size = 0
         for label in labels:
-            result.append(ToUnicode(label))
+            result.append(ulabel(label))
             if size:
                 size += 1
             size += len(label)
