@@ -13,7 +13,6 @@ class IDNACompatTests(unittest.TestCase):
 
     def testToUnicode(self):
         self.assertEqual(idna.compat.ToUnicode(b'xn--zckzah.xn--zckzah'), u'\u30c6\u30b9\u30c8.\u30c6\u30b9\u30c8')
-        pass
 
     def test_nameprep(self):
         self.assertRaises(NotImplementedError, idna.compat.nameprep, "a")

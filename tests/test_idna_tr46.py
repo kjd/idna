@@ -20,7 +20,7 @@ import idna
 test_path = os.path.abspath(os.path.dirname(__file__))
 
 
-if sys.version_info[0] == 3:
+if sys.version_info.major == 3:
     unichr = chr
 
 #    We skip some tests for IdnaTest.txt because either (a) they only apply
