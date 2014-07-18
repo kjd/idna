@@ -3,13 +3,14 @@
 History
 -------
 
-0.9 (2014-XX-XX)
+0.9 (2014-07-18)
 ++++++++++++++++
 
 - Fix issue with non-UTF-8 environments reading the README file
   now that it contains non-ASCII. (Thanks, Tom Prince)
 - Codec functions are useful, so they are separated into their own
   module, rather than just existing for compatibility reasons.
+- Add LICENSE file.
 
 0.8 (2014-07-09)
 ++++++++++++++++

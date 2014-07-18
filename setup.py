@@ -10,7 +10,7 @@ import sys
 from setuptools import setup
 import io
 
-version = "0.8"
+version = "0.9"
 
 def main():
 
