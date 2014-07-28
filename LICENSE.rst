@@ -33,7 +33,7 @@ modification, are permitted provided that the following conditions are met:
 
 Portions of the codec implementation and unit tests are derived from the
 Python standard library, which carries the `Python Software Foundation
-License<https://docs.python.org/2/license.html>`_:
+License <https://docs.python.org/2/license.html>`_:
 
    Copyright (c) 2001-2014 Python Software Foundation; All Rights Reserved
 
