@@ -10,7 +10,7 @@ import sys
 from setuptools import setup
 import io
 
-version = "0.9"
+version = "1.0"
 
 def main():
 
@@ -39,6 +39,7 @@ def main():
             'Programming Language :: Python :: 2.7',
             'Programming Language :: Python :: 3',
             'Programming Language :: Python :: 3.3',
+            'Programming Language :: Python :: 3.4',
             'Topic :: Internet :: Name Service (DNS)',
             'Topic :: Software Development :: Libraries :: Python Modules',
             'Topic :: Utilities',
