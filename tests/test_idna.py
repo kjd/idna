@@ -245,6 +245,8 @@ class IDNATests(unittest.TestCase):
                                      b'xn---------90gglbagaar.aa')
         self.assertRaises(idna.IDNAError, idna.encode,
                           u'\u0521\u0524\u0523-\u0523\u0523-----\u0521\u0523\u0523\u0523.aa')
+        self.assertEqual(idna.encode('a'*63), b'a'*63)
+        self.assertRaises(idna.IDNAError, idna.encode, 'a'*64)
 
     def test_decode(self):
 

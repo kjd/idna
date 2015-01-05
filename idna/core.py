@@ -261,6 +261,8 @@ def alabel(label):
             ulabel(label)
         except:
             raise IDNAError('The label {} is not a valid A-label'.format(label))
+        if not valid_label_length(label):
+            raise IDNAError('Label too long')
         return label
     except UnicodeError:
         pass
