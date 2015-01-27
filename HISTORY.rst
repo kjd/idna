@@ -3,6 +3,15 @@
 History
 -------
 
+1.1 (2015-01-27)
+++++++++++++++++
+
+- Use IDNA properties from Unicode 6.3.0. Internet Architecture Board (IAB)
+  issued statement recommending against the use of Unicode 7.0.0 until
+  issues relating to U+08A1 codepoint are resolved. See http://goo.gl/Ed1n0K
+- Identify some cases when label would be too longer to be a legal DNS name
+  and raise an exception. (Thanks, Ed Lewis)
+
 1.0 (2014-10-12)
 ++++++++++++++++
 
