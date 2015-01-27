@@ -112,5 +112,5 @@ def build_idnadata(version):
     print("}")
 
 
-build_idnadata('7.0.0')
+build_idnadata('6.3.0')
 
