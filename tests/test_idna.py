@@ -69,12 +69,12 @@ class IDNATests(unittest.TestCase):
     def testIDNTLDALabels(self):
 
         for (ulabel, alabel) in self.tld_strings:
-            self.assertEqual(alabel, idna.alabel(ulabel))
+            self.assertEqual(alabel, idna.alabel(ulabel, transitional=True))
 
     def testIDNTLDULabels(self):
 
         for (ulabel, alabel) in self.tld_strings:
-            self.assertEqual(ulabel, idna.ulabel(alabel))
+            self.assertEqual(ulabel, idna.ulabel(alabel, transitional=True))
 
     def test_valid_label_length(self):
 
@@ -244,7 +244,7 @@ class IDNATests(unittest.TestCase):
         self.assertEqual(idna.encode(u'\u0521\u0525\u0523-\u0523\u0523-----\u0521\u0523\u0523\u0523.aa'),
                                      b'xn---------90gglbagaar.aa')
         self.assertRaises(idna.IDNAError, idna.encode,
-                          u'\u0521\u0524\u0523-\u0523\u0523-----\u0521\u0523\u0523\u0523.aa')
+                          u'\u0521\u0524\u0523-\u0523\u0523-----\u0521\u0523\u0523\u0523.aa', uts46=False)
         self.assertEqual(idna.encode('a'*63), b'a'*63)
         self.assertRaises(idna.IDNAError, idna.encode, 'a'*64)
 
