@@ -246,7 +246,7 @@ def check_label(label):
                 raise InvalidCodepointContext('Joiner {} not allowed at position {} in {}'.format(_unot(cp_value), pos+1, repr(label)))
         elif cp_value in idnadata.codepoint_classes['CONTEXTO']:
             if not valid_contexto(label, pos):
-                raise InvalidCodepointContext('Codepoint {} not allowed at position {}'.format(_unot(cp_value), pos+1, repr(label)))
+                raise InvalidCodepointContext('Codepoint {} not allowed at position {} in {}'.format(_unot(cp_value), pos+1, repr(label)))
         else:
             raise InvalidCodepoint('Codepoint {} at position {} of {} not allowed'.format(_unot(cp_value), pos+1, repr(label)))
 
