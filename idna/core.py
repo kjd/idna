@@ -1,4 +1,5 @@
 from . import idnadata
+import bisect
 import unicodedata
 import re
 import sys
@@ -226,7 +227,7 @@ def valid_contexto(label, pos, exception=False):
         return True
 
 
-def check_label(label):
+def check_label(label, transitional):
 
     if isinstance(label, (bytes, bytearray)):
         label = label.decode('utf-8')
@@ -247,18 +248,20 @@ def check_label(label):
         elif cp_value in idnadata.codepoint_classes['CONTEXTO']:
             if not valid_contexto(label, pos):
                 raise InvalidCodepointContext('Codepoint {} not allowed at position {} in {}'.format(_unot(cp_value), pos+1, repr(label)))
+        elif cp_value in (0x00df, 0x03c2, 0x200c, 0x200d) and not transitional:
+            continue
         else:
             raise InvalidCodepoint('Codepoint {} at position {} of {} not allowed'.format(_unot(cp_value), pos+1, repr(label)))
 
     check_bidi(label)
 
 
-def alabel(label):
+def alabel(label, transitional):
 
     try:
         label = label.encode('ascii')
         try:
-            ulabel(label)
+            ulabel(label, transitional)
         except:
             raise IDNAError('The label {} is not a valid A-label'.format(label))
         if not valid_label_length(label):
@@ -271,7 +274,7 @@ def alabel(label):
         raise IDNAError('No Input')
 
     label = unicode(label)
-    check_label(label)
+    check_label(label, transitional)
     label = _punycode(label)
     label = _alabel_prefix + label
 
@@ -281,29 +284,61 @@ def alabel(label):
     return label
 
 
-def ulabel(label):
+def ulabel(label, transitional):
 
     if not isinstance(label, (bytes, bytearray)):
         try:
             label = label.encode('ascii')
         except UnicodeError:
-            check_label(label)
+            check_label(label, transitional)
             return label
 
     label = label.lower()
     if label.startswith(_alabel_prefix):
         label = label[len(_alabel_prefix):]
     else:
-        check_label(label)
+        check_label(label, transitional)
         return label.decode('ascii')
 
     label = label.decode('punycode')
-    check_label(label)
+    check_label(label, transitional)
     return label
 
 
-def encode(s, strict=False):
+def uts46_remap(domain, std3_rules=True, transitional=False):
+    """Re-map the characters in the string according to UTS46 processing."""
+    from .uts46data import uts46data
+    output = ""
+    try:
+        for pos, char in enumerate(domain):
+            code_point = ord(char)
+            uts46row = uts46data[
+                bisect.bisect_left(uts46data, (code_point, "Z")) - 1]
+            status = uts46row[1]
+            replacement = uts46row[2] if len(uts46row) == 3 else None
+            if (status == "V" or
+                    (status == "D" and not transitional) or
+                    (status == "3" and std3_rules and replacement is None)):
+                output += char
+            elif replacement is not None and (status == "M" or
+                    (status == "3" and std3_rules) or
+                    (status == "D" and transitional)):
+                output += replacement
+            elif status != "I":
+                raise IndexError()
+        return unicodedata.normalize("NFC", output)
+    except IndexError:
+        raise InvalidCodepoint(
+            "Codepoint {} not allowed at position {} in {}".format(
+            _unot(code_point), pos + 1, repr(domain)))
 
+
+def encode(s, strict=False, uts46=True, std3_rules=True, transitional=False):
+
+    if isinstance(s, (bytes, bytearray)):
+        s = s.decode("ascii")
+    if uts46:
+        s = uts46_remap(s, std3_rules, transitional)
     trailing_dot = False
     result = []
     if strict:
@@ -316,30 +351,31 @@ def encode(s, strict=False):
     if not labels:
         raise IDNAError('Empty domain')
     for label in labels:
-        result.append(alabel(label))
+        result.append(alabel(label, transitional))
     if trailing_dot:
         result.append(b'')
     return b'.'.join(result)
 
 
-def decode(s, strict=False):
+def decode(s, strict=False, uts46=True, std3_rules=True):
 
+    if isinstance(s, (bytes, bytearray)):
+        s = s.decode("ascii")
+    if uts46:
+        s = uts46_remap(s, std3_rules, False)
     trailing_dot = False
     result = []
-    if isinstance(s, (bytes, bytearray)):
-        labels = s.split(b'.')
+    if not strict:
+        labels = _unicode_dots_re.split(s)
     else:
-        if not strict:
-            labels = _unicode_dots_re.split(s)
-        else:
-            labels = s.split(u'.')
+        labels = s.split(u'.')
     if not labels[-1]:
         labels = labels[0:-1]
         trailing_dot = True
     if not labels:
         raise IDNAError('Empty domain')
     for label in labels:
-        result.append(ulabel(label))
+        result.append(ulabel(label, False))
     if trailing_dot:
         result.append(u'')
     return u'.'.join(result)
