@@ -52,9 +52,9 @@ def valid_label_length(label):
     return True
 
 
-def valid_string_length(label):
+def valid_string_length(label, trailing_dot):
 
-    if len(label) > 254:
+    if len(label) > (254 if trailing_dot else 253):
         return False
     return True
 
@@ -354,7 +354,10 @@ def encode(s, strict=False, uts46=True, std3_rules=True, transitional=False):
         result.append(alabel(label, transitional))
     if trailing_dot:
         result.append(b'')
-    return b'.'.join(result)
+    s = b'.'.join(result)
+    if not valid_string_length(s, trailing_dot):
+        raise IDNAError('Domain too long')
+    return s
 
 
 def decode(s, strict=False, uts46=True, std3_rules=True):
