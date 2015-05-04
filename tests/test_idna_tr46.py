@@ -53,6 +53,7 @@ class TestUTS46(unittest.TestCase):
             os.path.join(os.path.dirname(__file__), "IdnaTest.txt.gz"), "rb"))
 
     @unittest.skipIf(narrow_unicode, "Can't test unless using 4-byte Unicode")
+    @unittest.skipUnless(getattr(unittest.TestCase, 'subTest', False), "Can't test without unittest.subTest support")
     def test_process(self):
         """Test idna.decode() and idna.decode() against IdnaTest.txt."""
         for test in self.tests:
