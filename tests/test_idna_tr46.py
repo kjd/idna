@@ -3,10 +3,19 @@
 import gzip
 import os.path
 import re
+import sys
 import unittest
 
 import idna
 
+narrow_unicode = False
+if sys.version_info[0] == 2:
+    try:
+        a = unichr(0x10000)
+    except ValueError:
+        narrow_unicode = True
+else:
+    unichr = chr
 
 _RE_UNICODE = re.compile(r"\\u([0-9a-fA-F]{4})")
 _RE_SURROGATE = re.compile(r"[\uD800-\uDBFF][\uDC00-\uDFFF]")
@@ -14,10 +23,10 @@ _RE_SURROGATE = re.compile(r"[\uD800-\uDBFF][\uDC00-\uDFFF]")
 
 def unicode_fixup(string):
     """Replace backslash-u-XXXX with appropriate unicode characters."""
-    return _RE_SURROGATE.sub(lambda match: chr(
+    return _RE_SURROGATE.sub(lambda match: unichr(
         (ord(match.group(0)[0]) - 0xd800) * 0x400 +
         ord(match.group(0)[1]) - 0xdc00 + 0x10000),
-        _RE_UNICODE.sub(lambda match: chr(int(match.group(1), 16)), string))
+        _RE_UNICODE.sub(lambda match: unichr(int(match.group(1), 16)), string))
 
 
 def parse_idna_test_table(inputstream):
@@ -43,6 +52,7 @@ class TestUTS46(unittest.TestCase):
         self.tests = parse_idna_test_table(gzip.open(
             os.path.join(os.path.dirname(__file__), "IdnaTest.txt.gz"), "rb"))
 
+    @unittest.skipIf(narrow_unicode, "Can't test unless using 4-byte Unicode")
     def test_process(self):
         """Test idna.decode() and idna.decode() against IdnaTest.txt."""
         for test in self.tests:
