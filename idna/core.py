@@ -312,7 +312,7 @@ def uts46_remap(domain, std3_rules=True, transitional=False):
     try:
         for pos, char in enumerate(domain):
             code_point = ord(char)
-            uts46row = uts46data[
+            uts46row = uts46data[code_point if code_point < 256 else
                 bisect.bisect_left(uts46data, (code_point, "Z")) - 1]
             status = uts46row[1]
             replacement = uts46row[2] if len(uts46row) == 3 else None

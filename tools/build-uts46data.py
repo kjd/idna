@@ -53,13 +53,20 @@ def parse_idna_mapping_table(inputstream):
             last_code = start
         status, mapping = STATUSES[fields[1]]
         if mapping:
-            replacement = (u"".join(unichr(int(codepoint, 16))
+            mapping = (u"".join(unichr(int(codepoint, 16))
                 for codepoint in fields[2].split()).
                 replace("\\", "\\\\").replace("'", "\\'"))
-            ranges.append(u"(0x{:X}, '{}', u'{}')".format(
-                start, status, replacement))
         else:
-            ranges.append(u"(0x{:X}, '{}')".format(start, status))
+            mapping = None
+        first = True
+        while first or (start < 256 and start <= last_code):
+            if mapping is not None:
+                ranges.append(u"(0x{:X}, '{}', u'{}')".format(
+                    start, status, mapping))
+            else:
+                ranges.append(u"(0x{:X}, '{}')".format(start, status))
+            first = False
+            start += 1
     return ranges
 
 
