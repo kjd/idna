@@ -1,4 +1,4 @@
-"""Tests for UTS46 code."""
+"""Tests for TR46 code."""
 
 import gzip
 import os.path
@@ -8,17 +8,12 @@ import unittest
 
 import idna
 
-narrow_unicode = False
-if sys.version_info[0] == 2:
-    try:
-        a = unichr(0x10000)
-    except ValueError:
-        narrow_unicode = True
-else:
+if sys.version_info[0] == 3:
     unichr = chr
+    unicode = str
 
-_RE_UNICODE = re.compile(r"\\u([0-9a-fA-F]{4})")
-_RE_SURROGATE = re.compile(r"[\uD800-\uDBFF][\uDC00-\uDFFF]")
+_RE_UNICODE = re.compile(u"\\\\u([0-9a-fA-F]{4})")
+_RE_SURROGATE = re.compile(u"[\uD800-\uDBFF][\uDC00-\uDFFF]")
 
 
 def unicode_fixup(string):
@@ -38,55 +33,75 @@ def parse_idna_test_table(inputstream):
             line = line.split("#", 1)[0]
         if not line:
             continue
-        #if line.find("\\u200C") > 0 or line.find("\\u200D") > 0:
-        #    continue
-        fields = (lineno + 1,) + tuple(unicode_fixup(field.strip())
-            for field in line.split(";"))
-        tests.append(fields)
+        tests.append((lineno + 1, tuple(field.strip()
+            for field in line.split(u";"))))
     return tests
 
 
-class TestUTS46(unittest.TestCase):
-    """Tests for UTS46 code."""
-    def setUp(self):
-        self.tests = parse_idna_test_table(gzip.open(
-            os.path.join(os.path.dirname(__file__), "IdnaTest.txt.gz"), "rb"))
+class TestIdnaTest(unittest.TestCase):
+    """Run one of the IdnaTest.txt test lines."""
+    def __init__(self, lineno=None, fields=None):
+        super(TestIdnaTest, self).__init__()
+        self.lineno = lineno
+        self.fields = fields
 
-    @unittest.skipIf(narrow_unicode, "Can't test unless using 4-byte Unicode")
-    @unittest.skipUnless(getattr(unittest.TestCase, 'subTest', False), "Can't test without unittest.subTest support")
-    def test_process(self):
-        """Test idna.decode() and idna.decode() against IdnaTest.txt."""
-        for test in self.tests:
-            lineno, types, value, to_unicode, to_ascii = test[:5]
-            nv8 = test[5] if len(test) > 5 else None
-            if not to_unicode:
-                to_unicode = value
-            if not to_ascii:
-                to_ascii = to_unicode
-            with self.subTest("decode", lineno=lineno, value=value,
-                    expected=to_unicode):
-                try:
-                    output = idna.decode(value, strict=True)
-                    if to_unicode[0] == "[":
-                        self.fail("Expected error from decode")
-                    self.assertEqual(output, to_unicode)
-                except (UnicodeError, ValueError) as exc:
-                    if to_unicode[0] != "[" and not nv8:
-                        self.fail("decode failed with {!r}".format(exc))
-            for transitional in {
-                    "B": (True, False),
-                    "T": (True,),
-                    "N": (False,),
-                    }[types]:
-                with self.subTest("encode", lineno=lineno,
-                        transitional=transitional, value=value,
-                        expected=to_ascii):
-                    try:
-                        output = idna.encode(value, strict=True,
-                            transitional=transitional).decode("ascii")
-                        if to_ascii[0] == "[":
-                            self.fail("Expected error from encode")
-                        self.assertEqual(output, to_ascii)
-                    except (UnicodeError, ValueError) as exc:
-                        if to_ascii[0] != "[" and not nv8:
-                            self.fail("encode failed with {!r}".format(exc))
+    def id(self):
+        return "%s.%d" % (super(TestIdnaTest, self).id(), self.lineno)
+
+    def shortDescription(self):
+        return "IdnaTest.txt line %d: %r" % (self.lineno,
+            u"; ".join(self.fields))
+
+    def runTest(self):
+        if not self.fields:
+            return
+        try:
+            types, source, to_unicode, to_ascii = (unicode_fixup(field)
+                for field in self.fields[:4])
+        except ValueError:
+            raise unittest.SkipTest(
+                "Test requires Python wide Unicode support")
+        if not to_unicode:
+            to_unicode = source
+        if not to_ascii:
+            to_ascii = to_unicode
+        nv8 = self.fields[4] if len(self.fields) > 4 else None
+        try:
+            output = idna.decode(source, strict=True)
+            if to_unicode[0] == u"[":
+                self.fail("decode() did not emit required error")
+            self.assertEqual(output, to_unicode, "unexpected decode() output")
+        except (UnicodeError, ValueError) as exc:
+            if unicode(exc).startswith(u"Unknown directionality"):
+                raise unittest.SkipTest("Test requires support for a newer"
+                    " version of Unicode than this Python supports")
+            if to_unicode[0] != u"[" and not nv8:
+                raise
+        for transitional in {
+                u"B": (True, False),
+                u"T": (True,),
+                u"N": (False,),
+                }[types]:
+            try:
+                output = idna.encode(source, strict=True,
+                    transitional=transitional).decode("ascii")
+                if to_ascii[0] == u"[":
+                    self.fail(
+                        "encode(transitional={}) did not emit required error".
+                        format(transitional))
+                self.assertEqual(output, to_ascii,
+                    "unexpected encode(transitional={}) output".
+                    format(transitional))
+            except (UnicodeError, ValueError):
+                if to_ascii[0] != u"[" and not nv8:
+                    raise
+
+
+def load_tests(loader, tests, pattern):
+    """Create a suite of all the individual tests."""
+    suite = unittest.TestSuite()
+    with gzip.open(os.path.join(os.path.dirname(__file__),
+            "IdnaTest.txt.gz"), "rb") as tests_file:
+        suite.addTests(TestIdnaTest(lineno, fields)
+            for lineno, fields in parse_idna_test_table(tests_file))
+    return suite
