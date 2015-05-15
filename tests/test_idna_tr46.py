@@ -14,6 +14,8 @@ if sys.version_info[0] == 3:
 
 _RE_UNICODE = re.compile(u"\\\\u([0-9a-fA-F]{4})")
 _RE_SURROGATE = re.compile(u"[\uD800-\uDBFF][\uDC00-\uDFFF]")
+_MISSING_NV8 = frozenset((525, 527, 529, 531, 1022, 2083, 2914, 2919, 3482,
+    3484, 4783, 4785))
 
 
 def unicode_fixup(string):
@@ -65,7 +67,8 @@ class TestIdnaTest(unittest.TestCase):
             to_unicode = source
         if not to_ascii:
             to_ascii = to_unicode
-        nv8 = self.fields[4] if len(self.fields) > 4 else None
+        nv8 = (len(self.fields) > 4 and self.fields[4] or
+            self.lineno in _MISSING_NV8)
         try:
             output = idna.decode(source, strict=True)
             if to_unicode[0] == u"[":
