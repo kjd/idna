@@ -32,6 +32,7 @@ def parse_idna_mapping_table(inputstream):
     """Parse IdnaMappingTable.txt and return a list of tuples."""
     ranges = []
     last_code = -1
+    last = (None, None)
     for line in inputstream:
         line = line.strip()
         if b"#" in line:
@@ -58,15 +59,18 @@ def parse_idna_mapping_table(inputstream):
                 replace("\\", "\\\\").replace("'", "\\'"))
         else:
             mapping = None
-        first = True
-        while first or (start < 256 and start <= last_code):
+        if start > 255 and (status, mapping) == last:
+            continue
+        last = (status, mapping)
+        while True:
             if mapping is not None:
                 ranges.append(u"(0x{:X}, '{}', u'{}')".format(
                     start, status, mapping))
             else:
                 ranges.append(u"(0x{:X}, '{}')".format(start, status))
-            first = False
             start += 1
+            if start > 255 or start > last_code:
+                break
     return ranges
 
 
