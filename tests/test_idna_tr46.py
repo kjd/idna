@@ -60,6 +60,10 @@ class TestIdnaTest(unittest.TestCase):
         try:
             types, source, to_unicode, to_ascii = (unicode_fixup(field)
                 for field in self.fields[:4])
+            if (unicode_fixup(u"\\uD804\\uDC39") in source and
+                    sys.version_info[0] < 3):
+                raise unittest.SkipTest(
+                    "Python 2's Unicode support is too old for this test")
         except ValueError:
             raise unittest.SkipTest(
                 "Test requires Python wide Unicode support")
