@@ -69,12 +69,12 @@ class IDNATests(unittest.TestCase):
     def testIDNTLDALabels(self):
 
         for (ulabel, alabel) in self.tld_strings:
-            self.assertEqual(alabel, idna.alabel(ulabel, transitional=True))
+            self.assertEqual(alabel, idna.alabel(ulabel))
 
     def testIDNTLDULabels(self):
 
         for (ulabel, alabel) in self.tld_strings:
-            self.assertEqual(ulabel, idna.ulabel(alabel, transitional=True))
+            self.assertEqual(ulabel, idna.ulabel(alabel))
 
     def test_valid_label_length(self):
 

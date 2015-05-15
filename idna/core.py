@@ -227,7 +227,7 @@ def valid_contexto(label, pos, exception=False):
         return True
 
 
-def check_label(label, transitional):
+def check_label(label):
 
     if isinstance(label, (bytes, bytearray)):
         label = label.decode('utf-8')
@@ -248,20 +248,18 @@ def check_label(label, transitional):
         elif cp_value in idnadata.codepoint_classes['CONTEXTO']:
             if not valid_contexto(label, pos):
                 raise InvalidCodepointContext('Codepoint {} not allowed at position {} in {}'.format(_unot(cp_value), pos+1, repr(label)))
-        elif cp_value in (0x00df, 0x03c2, 0x200c, 0x200d) and not transitional:
-            continue
         else:
             raise InvalidCodepoint('Codepoint {} at position {} of {} not allowed'.format(_unot(cp_value), pos+1, repr(label)))
 
     check_bidi(label)
 
 
-def alabel(label, transitional):
+def alabel(label):
 
     try:
         label = label.encode('ascii')
         try:
-            ulabel(label, transitional)
+            ulabel(label)
         except:
             raise IDNAError('The label {} is not a valid A-label'.format(label))
         if not valid_label_length(label):
@@ -274,7 +272,7 @@ def alabel(label, transitional):
         raise IDNAError('No Input')
 
     label = unicode(label)
-    check_label(label, transitional)
+    check_label(label)
     label = _punycode(label)
     label = _alabel_prefix + label
 
@@ -284,24 +282,24 @@ def alabel(label, transitional):
     return label
 
 
-def ulabel(label, transitional):
+def ulabel(label):
 
     if not isinstance(label, (bytes, bytearray)):
         try:
             label = label.encode('ascii')
         except UnicodeError:
-            check_label(label, transitional)
+            check_label(label)
             return label
 
     label = label.lower()
     if label.startswith(_alabel_prefix):
         label = label[len(_alabel_prefix):]
     else:
-        check_label(label, transitional)
+        check_label(label)
         return label.decode('ascii')
 
     label = label.decode('punycode')
-    check_label(label, transitional)
+    check_label(label)
     return label
 
 
@@ -345,13 +343,15 @@ def encode(s, strict=False, uts46=True, std3_rules=True, transitional=False):
         labels = s.split('.')
     else:
         labels = _unicode_dots_re.split(s)
-    if labels[-1] == '':
-        labels = labels[0:-1]
-        trailing_dot = True
+    while labels and not labels[0]:
+        del labels[0]
     if not labels:
         raise IDNAError('Empty domain')
+    if labels[-1] == '':
+        del labels[-1]
+        trailing_dot = True
     for label in labels:
-        result.append(alabel(label, transitional))
+        result.append(alabel(label))
     if trailing_dot:
         result.append(b'')
     s = b'.'.join(result)
@@ -372,13 +372,15 @@ def decode(s, strict=False, uts46=True, std3_rules=True):
         labels = _unicode_dots_re.split(s)
     else:
         labels = s.split(u'.')
-    if not labels[-1]:
-        labels = labels[0:-1]
-        trailing_dot = True
+    while labels and not labels[0]:
+        del labels[0]
     if not labels:
         raise IDNAError('Empty domain')
+    if not labels[-1]:
+        del labels[-1]
+        trailing_dot = True
     for label in labels:
-        result.append(ulabel(label, False))
+        result.append(ulabel(label))
     if trailing_dot:
         result.append(u'')
     return u'.'.join(result)
