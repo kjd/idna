@@ -90,10 +90,10 @@ class TestIdnaTest(unittest.TestCase):
                     transitional=transitional).decode("ascii")
                 if to_ascii[0] == u"[":
                     self.fail(
-                        "encode(transitional={}) did not emit required error".
+                        "encode(transitional={0}) did not emit required error".
                         format(transitional))
                 self.assertEqual(output, to_ascii,
-                    "unexpected encode(transitional={}) output".
+                    "unexpected encode(transitional={0}) output".
                     format(transitional))
             except (UnicodeError, ValueError):
                 if to_ascii[0] != u"[" and not nv8:

@@ -25,9 +25,9 @@ def print_optimised_list(d):
                 continue
         codepoint_range = codepoint_list[last_write+1:i+1]
         if len(codepoint_range) == 1:
-            set_elements.append("[{}]".format(hex(codepoint_range[0])))
+            set_elements.append("[{0}]".format(hex(codepoint_range[0])))
         else:
-            set_elements.append("list(range({},{}))".format(hex(codepoint_range[0]), hex(codepoint_range[-1]+1)))
+            set_elements.append("list(range({0},{1}))".format(hex(codepoint_range[0]), hex(codepoint_range[-1]+1)))
         last_write = i
 
     print("frozenset(")
@@ -62,7 +62,7 @@ def build_idnadata(version):
             scripts[scriptname].add(int(codepoints, 16))
 
     for script in sorted(scripts):
-        print("\t'{}':".format(script), end=' ')
+        print("\t'{0}':".format(script), end=' ')
         print_optimised_list(scripts[script])
 
     print("}")
@@ -78,7 +78,7 @@ def build_idnadata(version):
         if not line or line[0] == '#':
             continue
         (codepoint, name, joiningtype, group) = [x.strip() for x in line.split(';')]
-        print("\t{}: '{}',".format(hex(int(codepoint, 16)), joiningtype))
+        print("\t{0}: '{1}',".format(hex(int(codepoint, 16)), joiningtype))
     print("}")
 
     #
@@ -106,7 +106,7 @@ def build_idnadata(version):
             classes[prop].add(int(codepoint, 16))
 
     for prop in classes:
-        print("\t'{}':".format(prop), end=' ')
+        print("\t'{0}':".format(prop), end=' ')
         print_optimised_list(classes[prop])
 
     print("}")

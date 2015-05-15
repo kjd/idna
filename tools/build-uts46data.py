@@ -64,10 +64,10 @@ def parse_idna_mapping_table(inputstream):
         last = (status, mapping)
         while True:
             if mapping is not None:
-                ranges.append(u"(0x{:X}, '{}', u'{}')".format(
+                ranges.append(u"(0x{0:X}, '{1}', u'{2}')".format(
                     start, status, mapping))
             else:
-                ranges.append(u"(0x{:X}, '{}')".format(start, status))
+                ranges.append(u"(0x{0:X}, '{1}')".format(start, status))
             start += 1
             if start > 255 or start > last_code:
                 break
@@ -87,7 +87,7 @@ def main():
 uts46data = (
 ''')
         for row in ranges:
-            outputstream.write(u"    {},\n".format(row).encode("utf8"))
+            outputstream.write(u"    {0},\n".format(row).encode("utf8"))
         outputstream.write(b")\n")
 
 

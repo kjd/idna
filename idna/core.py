@@ -67,7 +67,7 @@ def check_bidi(label, check_ltr=False):
         direction = unicodedata.bidirectional(cp)
         if direction == '':
             # String likely comes from a newer version of Unicode
-            raise IDNABidiError('Unknown directionality in label {} at position {}'.format(repr(label), idx))
+            raise IDNABidiError('Unknown directionality in label {0} at position {1}'.format(repr(label), idx))
         if direction in ['R', 'AL', 'AN']:
             bidi_label = True
             break
@@ -81,7 +81,7 @@ def check_bidi(label, check_ltr=False):
     elif direction == 'L':
         rtl = False
     else:
-        raise IDNABidiError('First codepoint in label {} must be directionality L, R or AL'.format(repr(label)))
+        raise IDNABidiError('First codepoint in label {0} must be directionality L, R or AL'.format(repr(label)))
 
     valid_ending = False
     number_type = False
@@ -91,7 +91,7 @@ def check_bidi(label, check_ltr=False):
         if rtl:
             # Bidi rule 2
             if not direction in ['R', 'AL', 'AN', 'EN', 'ES', 'CS', 'ET', 'ON', 'BN', 'NSM']:
-                raise IDNABidiError('Invalid direction for codepoint at position {} in a right-to-left label'.format(idx))
+                raise IDNABidiError('Invalid direction for codepoint at position {0} in a right-to-left label'.format(idx))
             # Bidi rule 3
             if direction in ['R', 'AL', 'EN', 'AN']:
                 valid_ending = True
@@ -107,7 +107,7 @@ def check_bidi(label, check_ltr=False):
         else:
             # Bidi rule 5
             if not direction in ['L', 'EN', 'ES', 'CS', 'ET', 'ON', 'BN', 'NSM']:
-                raise IDNABidiError('Invalid direction for codepoint at position {} in a left-to-right label'.format(idx))
+                raise IDNABidiError('Invalid direction for codepoint at position {0} in a left-to-right label'.format(idx))
             # Bidi rule 6
             if direction in ['L', 'EN']:
                 valid_ending = True
@@ -244,12 +244,12 @@ def check_label(label):
             continue
         elif cp_value in idnadata.codepoint_classes['CONTEXTJ']:
             if not valid_contextj(label, pos):
-                raise InvalidCodepointContext('Joiner {} not allowed at position {} in {}'.format(_unot(cp_value), pos+1, repr(label)))
+                raise InvalidCodepointContext('Joiner {0} not allowed at position {1} in {2}'.format(_unot(cp_value), pos+1, repr(label)))
         elif cp_value in idnadata.codepoint_classes['CONTEXTO']:
             if not valid_contexto(label, pos):
-                raise InvalidCodepointContext('Codepoint {} not allowed at position {} in {}'.format(_unot(cp_value), pos+1, repr(label)))
+                raise InvalidCodepointContext('Codepoint {0} not allowed at position {1} in {2}'.format(_unot(cp_value), pos+1, repr(label)))
         else:
-            raise InvalidCodepoint('Codepoint {} at position {} of {} not allowed'.format(_unot(cp_value), pos+1, repr(label)))
+            raise InvalidCodepoint('Codepoint {0} at position {1} of {2} not allowed'.format(_unot(cp_value), pos+1, repr(label)))
 
     check_bidi(label)
 
@@ -261,7 +261,7 @@ def alabel(label):
         try:
             ulabel(label)
         except:
-            raise IDNAError('The label {} is not a valid A-label'.format(label))
+            raise IDNAError('The label {0} is not a valid A-label'.format(label))
         if not valid_label_length(label):
             raise IDNAError('Label too long')
         return label
@@ -327,7 +327,7 @@ def uts46_remap(domain, std3_rules=True, transitional=False):
         return unicodedata.normalize("NFC", output)
     except IndexError:
         raise InvalidCodepoint(
-            "Codepoint {} not allowed at position {} in {}".format(
+            "Codepoint {0} not allowed at position {1} in {2}".format(
             _unot(code_point), pos + 1, repr(domain)))
 
 
