@@ -3,6 +3,14 @@
 History
 -------
 
+2.0 (2015-05-xx)
+++++++++++++++++
+
+- Added support for Unicode IDNA Compatibility Processing (aka Unicode
+  Technical Standard #46). Big thanks to Jon Ribbens who contributed this
+  functionality.
+
+
 1.1 (2015-01-27)
 ++++++++++++++++
 
