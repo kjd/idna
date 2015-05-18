@@ -74,7 +74,7 @@ class TestIdnaTest(unittest.TestCase):
         nv8 = (len(self.fields) > 4 and self.fields[4] or
             self.lineno in _MISSING_NV8)
         try:
-            output = idna.decode(source, strict=True)
+            output = idna.decode(source, uts46=True, strict=True)
             if to_unicode[0] == u"[":
                 self.fail("decode() did not emit required error")
             self.assertEqual(output, to_unicode, "unexpected decode() output")
@@ -90,7 +90,7 @@ class TestIdnaTest(unittest.TestCase):
                 u"N": (False,),
                 }[types]:
             try:
-                output = idna.encode(source, strict=True,
+                output = idna.encode(source, uts46=True, strict=True,
                     transitional=transitional).decode("ascii")
                 if to_ascii[0] == u"[":
                     self.fail(
