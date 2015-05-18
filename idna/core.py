@@ -331,7 +331,7 @@ def uts46_remap(domain, std3_rules=True, transitional=False):
             _unot(code_point), pos + 1, repr(domain)))
 
 
-def encode(s, strict=False, uts46=True, std3_rules=True, transitional=False):
+def encode(s, strict=False, uts46=False, std3_rules=False, transitional=False):
 
     if isinstance(s, (bytes, bytearray)):
         s = s.decode("ascii")
@@ -360,7 +360,7 @@ def encode(s, strict=False, uts46=True, std3_rules=True, transitional=False):
     return s
 
 
-def decode(s, strict=False, uts46=True, std3_rules=True):
+def decode(s, strict=False, uts46=False, std3_rules=False):
 
     if isinstance(s, (bytes, bytearray)):
         s = s.decode("ascii")
