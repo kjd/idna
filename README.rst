@@ -80,6 +80,34 @@ functions if necessary:
     >>> idna.alabel(u'测试')
     'xn--0zwm56d'
 
+### Compatibility Mapping (UTS #46)
+
+As described in RFC 5895, the IDNA specification no longer including mappings
+from different forms of input that a user may enter, to the form that is provided
+to the IDNA functions. This functionality is now a local user-interface issue
+distinct from the IDNA functionality.
+
+The Unicode Consortium has developed one such user-level mapping, known as
+`Unicode IDNA Compatibility Processing <http://unicode.org/reports/tr46/>`_.
+It provides for both transitional mapping and non-transitional mapping described
+in this document.
+
+.. code-block:: pycon
+
+    >>> import idna
+    >>> idna.encode(u'Königsgäßchen')
+    ...
+    idna.core.InvalidCodepoint: Codepoint U+004B at position 1 of u'K\xf6nigsg\xe4\xdfchen' not allowed
+    >>> idna.encode(u'Königsgäßchen', uts46=True)
+    'xn--knigsgchen-b4a3dun'
+    >>> idna.encode(u'Königsgäßchen', uts46=True, transitional=True)
+    'xn--knigsgsschen-lcb0w'
+
+Note that implementors should use transitional processing with caution as the outputs
+of the functions may differ from what is expected, as noted in the example.
+
+### ``encodings.idna`` Compatibility
+
 Function calls from the Python built-in ``encodings.idna`` module are
 mapping to their IDNA 2008 equivalents using the ``idna.compat`` module.
 Simply substitute the ``import`` clause in your code to refer to the
@@ -102,10 +130,8 @@ Testing
 -------
 
 The library has a test suite based on each rule of the IDNA specification, as
-well as a subset of tests that are defined in Unicode Technical Standard 46,
+well as test that are provided as part of the Unicode Technical Standard 46,
 `Unicode IDNA Compatibility Processing <http://unicode.org/reports/tr46/>`_.
-Note that not all tests defined there are used, as TR46 defines tests for a 
-normalisation approach beyond merely implementing IDNA2008.
 
 The tests are run automatically on each commit to the master branch of the
 idna git repository at Travis CI:
