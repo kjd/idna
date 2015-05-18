@@ -31,8 +31,8 @@ def print_optimised_list(d):
         last_write = i
 
     print("frozenset(")
-    print("\t\t" + " +\n\t\t".join(set_elements))
-    print("\t),")
+    print("        " + " +\n        ".join(set_elements))
+    print("    ),")
 
 
 def build_idnadata(version):
@@ -62,7 +62,7 @@ def build_idnadata(version):
             scripts[scriptname].add(int(codepoints, 16))
 
     for script in sorted(scripts):
-        print("\t'{0}':".format(script), end=' ')
+        print("    '{0}':".format(script), end=' ')
         print_optimised_list(scripts[script])
 
     print("}")
@@ -78,7 +78,7 @@ def build_idnadata(version):
         if not line or line[0] == '#':
             continue
         (codepoint, name, joiningtype, group) = [x.strip() for x in line.split(';')]
-        print("\t{0}: '{1}',".format(hex(int(codepoint, 16)), joiningtype))
+        print("    {0}: '{1}',".format(hex(int(codepoint, 16)), joiningtype))
     print("}")
 
     #
@@ -106,7 +106,7 @@ def build_idnadata(version):
             classes[prop].add(int(codepoint, 16))
 
     for prop in classes:
-        print("\t'{0}':".format(prop), end=' ')
+        print("    '{0}':".format(prop), end=' ')
         print_optimised_list(classes[prop])
 
     print("}")
