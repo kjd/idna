@@ -80,7 +80,8 @@ functions if necessary:
     >>> idna.alabel(u'测试')
     'xn--0zwm56d'
 
-### Compatibility Mapping (UTS #46)
+Compatibility Mapping (UTS #46)
++++++++++++++++++++++++++++++++
 
 As described in RFC 5895, the IDNA specification no longer including mappings
 from different forms of input that a user may enter, to the form that is provided
@@ -106,7 +107,8 @@ in this document.
 Note that implementors should use transitional processing with caution as the outputs
 of the functions may differ from what is expected, as noted in the example.
 
-### ``encodings.idna`` Compatibility
+``encodings.idna`` Compatibility
+++++++++++++++++++++++++++++++++
 
 Function calls from the Python built-in ``encodings.idna`` module are
 mapping to their IDNA 2008 equivalents using the ``idna.compat`` module.
