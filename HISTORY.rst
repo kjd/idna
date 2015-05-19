@@ -3,7 +3,7 @@
 History
 -------
 
-2.0 (2015-05-xx)
+2.0 (2015-05-18)
 ++++++++++++++++
 
 - Added support for Unicode IDNA Compatibility Processing (aka Unicode
