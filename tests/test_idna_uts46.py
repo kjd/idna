@@ -51,6 +51,8 @@ class TestIdnaTest(unittest.TestCase):
         return "%s.%d" % (super(TestIdnaTest, self).id(), self.lineno)
 
     def shortDescription(self):
+        if not self.fields:
+            return ""
         return "IdnaTest.txt line %d: %r" % (self.lineno,
             u"; ".join(self.fields))
 
