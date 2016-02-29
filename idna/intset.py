@@ -29,15 +29,22 @@ def pack_int_list(ints):
 
 class _PackedIntList(object):
 
-    def __init__(self, packed_data):
+    def __init__(self, packed_data, start=None, end=None):
         self.packed_data = packed_data
-        length = len(packed_data)
+        if start is None:
+            length = len(packed_data)
+            start = 0
+        else:
+            # support reading from the middle of a mmap without copying;
+            # ideally we'd use memoryview, but http://bugs.python.org/issue9229
+            length = end - start
         if length % 4 != 0:
             raise ValueError
+        self.start = start
         self.length = length // 4
 
     def __getitem__(self, index):
-        internal_index = index * 4
+        internal_index = self.start + index * 4
         return self.packed_data[internal_index:internal_index+4]
 
     def __len__(self):
@@ -46,8 +53,8 @@ class _PackedIntList(object):
 
 class PackedIntSet(object):
 
-    def __init__(self, packed_data):
-        self._list = _PackedIntList(packed_data)
+    def __init__(self, packed_data, start=None, end=None):
+        self._list = _PackedIntList(packed_data, start, end)
 
     def __len__(self):
         return len(self._list)
