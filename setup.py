@@ -28,6 +28,7 @@ def main():
         'author_email': 'kim@cynosure.com.au',
         'license': 'BSD-like',
         'url': 'https://github.com/kjd/idna',
+        'package_data': {'idna': ['idnadata.dat']},
         'classifiers': [
             'Development Status :: 5 - Production/Stable',
             'Intended Audience :: Developers',
