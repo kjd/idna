@@ -8,6 +8,8 @@ except ImportError:
     from urllib2 import urlopen
 import xml.etree.ElementTree as etree
 
+from idna.intranges import intranges_from_list
+
 SCRIPTS_URL = "http://www.unicode.org/Public/UNIDATA/Scripts.txt"
 JOININGTYPES_URL = "http://www.unicode.org/Public/UNIDATA/ArabicShaping.txt"
 IDNATABLES_URL = "http://www.iana.org/assignments/idna-tables-{version}/idna-tables-{version}.xml"
@@ -17,24 +19,7 @@ SCRIPT_WHITELIST = sorted(['Greek', 'Han', 'Hebrew', 'Hiragana', 'Katakana'])
 
 
 def print_optimised_list(d):
-
-    codepoint_list = sorted(d)
-    set_elements = []
-    last_write = -1
-    for i in range(0, len(codepoint_list)):
-        if i+1 < len(codepoint_list):
-            if codepoint_list[i] == codepoint_list[i+1]-1:
-                continue
-        codepoint_range = codepoint_list[last_write+1:i+1]
-        if len(codepoint_range) == 1:
-            set_elements.append("[{0}]".format(hex(codepoint_range[0])))
-        else:
-            set_elements.append("list(range({0},{1}))".format(hex(codepoint_range[0]), hex(codepoint_range[-1]+1)))
-        last_write = i
-
-    print("frozenset(")
-    print("        " + " +\n        ".join(set_elements))
-    print("    ),")
+    print(repr(intranges_from_list(d)), end=",\n")
 
 
 def build_idnadata(version):
