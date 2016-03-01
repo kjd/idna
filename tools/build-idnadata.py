@@ -92,7 +92,7 @@ def build_idnadata(version):
     for record in root.findall('{0}registry[@id="idna-tables-properties"]/{0}record'.format(namespace)):
         codepoint = record.find("{0}codepoint".format(namespace)).text
         prop = record.find("{0}property".format(namespace)).text
-        if prop == 'UNASSIGNED':
+        if prop in ('UNASSIGNED', 'DISALLOWED'):
             continue
         if not prop in classes:
             classes[prop] = set()
