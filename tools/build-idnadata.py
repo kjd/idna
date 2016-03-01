@@ -18,6 +18,9 @@ IDNATABLES_URL = "http://www.iana.org/assignments/idna-tables-{version}/idna-tab
 IDNATABLES_NS = "http://www.iana.org/assignments"
 
 
+SCRIPT_WHITELIST = sorted(['Greek', 'Han', 'Hebrew', 'Hiragana', 'Katakana'])
+
+
 def print_optimised_list(list_, datafile):
     start = datafile.tell()
     datafile.write(pack_int_list(list_))
@@ -59,7 +62,7 @@ def build_idnadata(version):
         else:
             scripts[scriptname].add(int(codepoints, 16))
 
-    for script in sorted(scripts):
+    for script in SCRIPT_WHITELIST:
         print("    '{0}':".format(script), end=' ')
         print_optimised_list(scripts[script], datafile)
 
