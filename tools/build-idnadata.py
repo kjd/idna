@@ -8,31 +8,18 @@ except ImportError:
     from urllib2 import urlopen
 import xml.etree.ElementTree as etree
 
+from idna.intranges import intranges_from_list
+
 SCRIPTS_URL = "http://www.unicode.org/Public/UNIDATA/Scripts.txt"
 JOININGTYPES_URL = "http://www.unicode.org/Public/UNIDATA/ArabicShaping.txt"
 IDNATABLES_URL = "http://www.iana.org/assignments/idna-tables-{version}/idna-tables-{version}.xml"
 IDNATABLES_NS = "http://www.iana.org/assignments"
 
+SCRIPT_WHITELIST = sorted(['Greek', 'Han', 'Hebrew', 'Hiragana', 'Katakana'])
+
 
 def print_optimised_list(d):
-
-    codepoint_list = sorted(d)
-    set_elements = []
-    last_write = -1
-    for i in range(0, len(codepoint_list)):
-        if i+1 < len(codepoint_list):
-            if codepoint_list[i] == codepoint_list[i+1]-1:
-                continue
-        codepoint_range = codepoint_list[last_write+1:i+1]
-        if len(codepoint_range) == 1:
-            set_elements.append("[{0}]".format(hex(codepoint_range[0])))
-        else:
-            set_elements.append("list(range({0},{1}))".format(hex(codepoint_range[0]), hex(codepoint_range[-1]+1)))
-        last_write = i
-
-    print("frozenset(")
-    print("        " + " +\n        ".join(set_elements))
-    print("    ),")
+    print(repr(intranges_from_list(d)), end=",\n")
 
 
 def build_idnadata(version):
@@ -61,7 +48,7 @@ def build_idnadata(version):
         else:
             scripts[scriptname].add(int(codepoints, 16))
 
-    for script in sorted(scripts):
+    for script in SCRIPT_WHITELIST:
         print("    '{0}':".format(script), end=' ')
         print_optimised_list(scripts[script])
 
@@ -94,7 +81,7 @@ def build_idnadata(version):
     for record in root.findall('{0}registry[@id="idna-tables-properties"]/{0}record'.format(namespace)):
         codepoint = record.find("{0}codepoint".format(namespace)).text
         prop = record.find("{0}property".format(namespace)).text
-        if prop == 'UNASSIGNED':
+        if prop in ('UNASSIGNED', 'DISALLOWED'):
             continue
         if not prop in classes:
             classes[prop] = set()
