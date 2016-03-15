@@ -3,6 +3,7 @@ import bisect
 import unicodedata
 import re
 import sys
+from .intranges import intranges_contain
 
 _virama_combining_class = 9
 _alabel_prefix = b'xn--'
@@ -36,7 +37,7 @@ def _combining_class(cp):
     return unicodedata.combining(unichr(cp))
 
 def _is_script(cp, script):
-    return ord(cp) in idnadata.scripts[script]
+    return intranges_contain(ord(cp), idnadata.scripts[script])
 
 def _punycode(s):
     return s.encode('punycode')
@@ -240,12 +241,12 @@ def check_label(label):
 
     for (pos, cp) in enumerate(label):
         cp_value = ord(cp)
-        if cp_value in idnadata.codepoint_classes['PVALID']:
+        if intranges_contain(cp_value, idnadata.codepoint_classes['PVALID']):
             continue
-        elif cp_value in idnadata.codepoint_classes['CONTEXTJ']:
+        elif intranges_contain(cp_value, idnadata.codepoint_classes['CONTEXTJ']):
             if not valid_contextj(label, pos):
                 raise InvalidCodepointContext('Joiner {0} not allowed at position {1} in {2}'.format(_unot(cp_value), pos+1, repr(label)))
-        elif cp_value in idnadata.codepoint_classes['CONTEXTO']:
+        elif intranges_contain(cp_value, idnadata.codepoint_classes['CONTEXTO']):
             if not valid_contexto(label, pos):
                 raise InvalidCodepointContext('Codepoint {0} not allowed at position {1} in {2}'.format(_unot(cp_value), pos+1, repr(label)))
         else:

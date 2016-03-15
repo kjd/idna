@@ -14,3 +14,4 @@ develop-eggs
 lib
 lib64
 .idea
+*.swp
