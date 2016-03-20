@@ -3,12 +3,15 @@ Internationalized Domain Names in Applications (IDNA)
 
 A library to support the Internationalised Domain Names in Applications
 (IDNA) protocol as specified in `RFC 5891 <http://tools.ietf.org/html/rfc5891>`_.
-This version of the protocol is often referred to as “IDNA2008” and can 
-produce different results from the earlier standard from 2003.
+This version of the protocol is often referred to as “IDNA2008”.
 
-The library is also intended to act as a suitable drop-in replacement for
+This library also provides support for Unicode Technical Standard 46,
+`Unicode IDNA Compatibility Processing <http://unicode.org/reports/tr46/>`_.
+
+The library is also intended to act as a suitable replacement for
 the “encodings.idna” module that comes with the Python standard library
-but currently only supports the older 2003 specification.
+but currently only supports the older, deprecated IDNA specification
+(`RFC 3490 <http://tools.ietf.org/html/rfc3490>`_).
 
 Its basic functions are simply executed:
 
@@ -83,15 +86,19 @@ functions if necessary:
 Compatibility Mapping (UTS #46)
 +++++++++++++++++++++++++++++++
 
-As described in RFC 5895, the IDNA specification no longer including mappings
-from different forms of input that a user may enter, to the form that is provided
-to the IDNA functions. This functionality is now a local user-interface issue
-distinct from the IDNA functionality.
+As described in `RFC 5895 <http://tools.ietf.org/html/rfc5895>`_, the IDNA
+specification no longer including mappings from different forms of input that
+a user may enter, to the form that is provided to the IDNA functions. This
+functionality is now considered by the specification to be a local
+user-interface issue distinct from IDNA conversion functionality.
 
-The Unicode Consortium has developed one such user-level mapping, known as
-`Unicode IDNA Compatibility Processing <http://unicode.org/reports/tr46/>`_.
-It provides for both transitional mapping and non-transitional mapping described
-in this document.
+This library support one user-level mapping, that developed by the Unicode
+Consortium, known as `Unicode IDNA Compatibility Processing <http://unicode.org/reports/tr46/>`_.
+It provides for both regular mapping and transitional mapping.
+
+For example, "Königsgäßchen" is not a permissible label as LATIN CAPITAL
+LETTER K is not allowed (as are capital letters in general). UTS46 will convert
+this into lower case.
 
 .. code-block:: pycon
 
@@ -101,11 +108,23 @@ in this document.
     idna.core.InvalidCodepoint: Codepoint U+004B at position 1 of u'K\xf6nigsg\xe4\xdfchen' not allowed
     >>> idna.encode(u'Königsgäßchen', uts46=True)
     'xn--knigsgchen-b4a3dun'
+
+Transitional processing provides conversions to help transition from the older
+2003 standard to the current standard. For example, in the original IDNA
+specification, the LATIN SMALL LETTER SHARP S (ß) was converted into two
+LATIN SMALL LETTER S (ss), whereas in the current IDNA specification this
+conversion is not performed.
+
+.. code-block:: pycon
+
     >>> idna.encode(u'Königsgäßchen', uts46=True, transitional=True)
     'xn--knigsgsschen-lcb0w'
 
-Note that implementors should use transitional processing with caution as the outputs
-of the functions may differ from what is expected, as noted in the example.
+Implementors should use transitional processing with caution, only in rare
+cases where conversion from legacy labels to current labels must be performed
+(i.e. IDNA implementations that pre-date 2008). For typical applications
+that just need to convert labels, transitional processing is unlikely to be
+beneficial and could produce unexpected incompatible results.
 
 ``encodings.idna`` Compatibility
 ++++++++++++++++++++++++++++++++
