@@ -3,13 +3,24 @@
 History
 -------
 
+2.1 (2016-03-20)
+++++++++++++++++
+
+- Memory consumption optimizations. The library should consume significantly
+  less memory through smarter data structures being used to represent
+  relevant Unicode properties. Many thanks to Shivaram Lingamneni for this
+  patch.
+- Patches to make library work better with Python 2.6. The core library
+  currently works however the unit testing does not. (Thanks, Robert
+  Buchholz)
+- Better affix all Unicode codepoint properties to a specific version.
+
 2.0 (2015-05-18)
 ++++++++++++++++
 
 - Added support for Unicode IDNA Compatibility Processing (aka Unicode
   Technical Standard #46). Big thanks to Jon Ribbens who contributed this
   functionality.
-
 
 1.1 (2015-01-27)
 ++++++++++++++++
