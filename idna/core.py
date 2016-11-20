@@ -306,13 +306,33 @@ def ulabel(label):
 
 def uts46_remap(domain, std3_rules=True, transitional=False):
     """Re-map the characters in the string according to UTS46 processing."""
-    from .uts46data import uts46data
+    from .uts46data import getUts46Data_0
+    from .uts46data import getUts46Data_AAA
+    from .uts46data import getUts46Data_1FFF
+    from .uts46data import getUts46Data_3000
+    from .uts46data import getUts46Data_FA00
+    from .uts46data import getUts46Data_10000
+    from .uts46data import getUts46Data_1EE00
     output = u""
     try:
         for pos, char in enumerate(domain):
             code_point = ord(char)
-            uts46row = uts46data[code_point if code_point < 256 else
-                bisect.bisect_left(uts46data, (code_point, "Z")) - 1]
+            
+            if code_point < 0xAAA:
+                uts46row = getUts46Data_0(code_point)
+            elif code_point < 0x1FFF:
+                uts46row = getUts46Data_AAA(code_point)
+            elif code_point < 0x3000:
+                uts46row = getUts46Data_1FFF(code_point)
+            elif code_point < 0xFA00:
+                uts46row = getUts46Data_3000(code_point)
+            elif code_point < 0x10000:
+                uts46row = getUts46Data_FA00(code_point)
+            elif code_point < 0x1EE00:
+                uts46row = getUts46Data_10000(code_point)
+            else:
+                uts46row = getUts46Data_1EE00(code_point)
+                    
             status = uts46row[1]
             replacement = uts46row[2] if len(uts46row) == 3 else None
             if (status == "V" or
