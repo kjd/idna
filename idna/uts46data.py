@@ -7629,4 +7629,5 @@ uts46data = tuple(
     + _seg_69()
     + _seg_70()
     + _seg_71()
+    + _seg_72()
 )

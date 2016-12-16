@@ -95,11 +95,10 @@ def build_uts46data(version):
             outputstream.write(u"    {0},\n".format(row).encode("utf8"))
         outputstream.write(b"    ]\n\n")
         outputstream.write(b"uts46data = tuple(\n")
-        for i in xrange(0, len(ranges)/SEGMENT_SIZE):
-            if i==0:
-                outputstream.write(u"    _seg_{0}()\n".format(i).encode("utf8"))
-            else:
-                outputstream.write(u"    + _seg_{0}()\n".format(i).encode("utf8"))
+
+        outputstream.write(b"    _seg_0()\n")
+        for i in xrange(1, (len(ranges)-1)/SEGMENT_SIZE+1):
+            outputstream.write(u"    + _seg_{0}()\n".format(i).encode("utf8"))
         outputstream.write(b")\n")
 
 
