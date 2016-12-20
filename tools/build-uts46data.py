@@ -14,6 +14,7 @@ else:
 # pylint: enable=unused-import,import-error,undefined-variable
 
 UNICODE_VERSION = '6.3.0'
+SEGMENT_SIZE = 100
 
 DATA_URL = "http://www.unicode.org/Public/idna/{version}/IdnaMappingTable.txt"
 RE_CHAR_RANGE = re.compile(br"([0-9a-fA-F]{4,6})(?:\.\.([0-9a-fA-F]{4,6}))?$")
@@ -84,10 +85,20 @@ def build_uts46data(version):
 
 """IDNA Mapping Table from UTS46."""
 
-uts46data = (
+
 ''')
-        for row in ranges:
+        for idx, row in enumerate(ranges):
+            if idx % SEGMENT_SIZE == 0:
+                if idx!=0:
+                    outputstream.write(b"    ]\n\n")
+                outputstream.write(u"def _seg_{0}():\n    return [\n".format(idx/SEGMENT_SIZE).encode("utf8"))
             outputstream.write(u"    {0},\n".format(row).encode("utf8"))
+        outputstream.write(b"    ]\n\n")
+        outputstream.write(b"uts46data = tuple(\n")
+
+        outputstream.write(b"    _seg_0()\n")
+        for i in xrange(1, (len(ranges)-1)/SEGMENT_SIZE+1):
+            outputstream.write(u"    + _seg_{0}()\n".format(i).encode("utf8"))
         outputstream.write(b")\n")
 
 
