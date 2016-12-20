@@ -3,6 +3,12 @@
 History
 -------
 
+2.2 (2016-12-xx)
+++++++++++++++++
+
+- Made some changes to the UTS 46 data that should allow Jython to get around
+  64kb Java class limits. (Thanks, John A. Booth and Marcin Płonka.)
+
 2.1 (2016-03-20)
 ++++++++++++++++
 
