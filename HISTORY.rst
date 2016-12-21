@@ -3,11 +3,14 @@
 History
 -------
 
-2.2 (2016-12-xx)
+2.2 (2016-12-21)
 ++++++++++++++++
 
 - Made some changes to the UTS 46 data that should allow Jython to get around
   64kb Java class limits. (Thanks, John A. Booth and Marcin Płonka.)
+- In Python 2.6, skip two tests that rely on data not present in that
+  Python version's unicodedata module.
+- Use relative imports to help downstream users.
 
 2.1 (2016-03-20)
 ++++++++++++++++
