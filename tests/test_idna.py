@@ -82,6 +82,7 @@ class IDNATests(unittest.TestCase):
 
         self.assertTrue(idna.valid_label_length('a' * 63))
         self.assertFalse(idna.valid_label_length('a' * 64))
+        self.assertRaises(idna.IDNAError, idna.encode, 'a' * 64)
 
     def test_check_bidi(self):
 
