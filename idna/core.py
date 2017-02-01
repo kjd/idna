@@ -261,7 +261,7 @@ def alabel(label):
         label = label.encode('ascii')
         try:
             ulabel(label)
-        except:
+        except IDNAError:
             raise IDNAError('The label {0} is not a valid A-label'.format(label))
         if not valid_label_length(label):
             raise IDNAError('Label too long')
