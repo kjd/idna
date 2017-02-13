@@ -80,7 +80,7 @@ class TestIdnaTest(unittest.TestCase):
             if to_unicode[0] == u"[":
                 self.fail("decode() did not emit required error")
             self.assertEqual(output, to_unicode, "unexpected decode() output")
-        except (UnicodeError, ValueError) as exc:
+        except (idna.IDNAError, UnicodeError, ValueError) as exc:
             if unicode(exc).startswith(u"Unknown directionality"):
                 raise unittest.SkipTest("Test requires support for a newer"
                     " version of Unicode than this Python supports")
@@ -101,7 +101,7 @@ class TestIdnaTest(unittest.TestCase):
                 self.assertEqual(output, to_ascii,
                     "unexpected encode(transitional={0}) output".
                     format(transitional))
-            except (UnicodeError, ValueError):
+            except (idna.IDNAError, UnicodeError, ValueError):
                 if to_ascii[0] != u"[" and not nv8:
                     raise
 

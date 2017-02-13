@@ -13,7 +13,7 @@ if sys.version_info[0] == 3:
     unicode = str
     unichr = chr
 
-class IDNAError(UnicodeError):
+class IDNAError(Exception):
     """ Base exception for all IDNA-encoding related problems """
     pass
 
