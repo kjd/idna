@@ -25,8 +25,8 @@ SCRIPT_WHITELIST = sorted(['Greek', 'Han', 'Hebrew', 'Hiragana', 'Katakana'])
 
 def print_optimised_list(d):
     print("(")
-    for (start, end) in intranges_from_list(d):
-        print("        ({}, {}),".format(hex(int(start)), hex(int(end))))
+    for value in intranges_from_list(d):
+        print("        {},".format(hex(value)))
     print("    ),")
 
 
@@ -73,7 +73,7 @@ def build_idnadata(version):
         if not line or line[0] == '#':
             continue
         (codepoint, name, joiningtype, group) = [x.strip() for x in line.split(';')]
-        print("    {0}: '{1}',".format(hex(int(codepoint, 16)), joiningtype))
+        print("    {0}: {1},".format(hex(int(codepoint, 16)), ord(joiningtype)))
     print("}")
 
     #
@@ -108,4 +108,3 @@ def build_idnadata(version):
 
 if __name__ == "__main__":
     build_idnadata(UNICODE_VERSION)
-
