@@ -32,7 +32,7 @@ def _encode_range(start, end):
     return (start << 32) | end
 
 def _decode_range(r):
-    return (r >> 32), (r & ((1 << 31) - 1))
+    return (r >> 32), (r & ((1 << 32) - 1))
 
 
 def intranges_contain(int_, ranges):
