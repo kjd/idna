@@ -167,7 +167,7 @@ def valid_contextj(label, pos):
 
         ok = False
         for i in range(pos+1, len(label)):
-            joining_type = chr(idnadata.joining_types.get(ord(label[i])))
+            joining_type = idnadata.joining_types.get(ord(label[i]))
             if joining_type == ord('T'):
                 continue
             if joining_type in [ord('R'), ord('D')]:
