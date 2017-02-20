@@ -30,7 +30,8 @@ class IntrangeTests(unittest.TestCase):
                 _encode_range(0, 1),
                 _encode_range(2, 3),
                 _encode_range(4, 5),
-                _encode_range(6, 7), _encode_range(9, 12),
+                _encode_range(6, 7),
+                _encode_range(9, 12),
                 _encode_range(13, 14),
                 _encode_range(15, 16),
             )
