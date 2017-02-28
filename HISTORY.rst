@@ -3,6 +3,12 @@
 History
 -------
 
+2.3 (2017-02-28)
+++++++++++++++++
+
+- Fix bugs relating to deriving IDNAError from UnicodeError.
+- More memory footprint improvements (Thanks, Alex Gaynor)
+
 2.2 (2016-12-21)
 ++++++++++++++++
 
