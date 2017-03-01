@@ -13,7 +13,7 @@ if sys.version_info[0] == 3:
     unicode = str
     unichr = chr
 
-class IDNAError(Exception):
+class IDNAError(UnicodeError):
     """ Base exception for all IDNA-encoding related problems """
     pass
 
@@ -266,7 +266,7 @@ def alabel(label):
         if not valid_label_length(label):
             raise IDNAError('Label too long')
         return label
-    except UnicodeError:
+    except UnicodeEncodeError:
         pass
 
     if not label:
@@ -288,7 +288,7 @@ def ulabel(label):
     if not isinstance(label, (bytes, bytearray)):
         try:
             label = label.encode('ascii')
-        except UnicodeError:
+        except UnicodeEncodeError:
             check_label(label)
             return label
 
