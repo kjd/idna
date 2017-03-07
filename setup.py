@@ -9,7 +9,7 @@ the "encodings.idna" module.
 import io, sys
 from setuptools import setup
 
-version = "2.4"
+version = "2.5"
 
 def main():
 

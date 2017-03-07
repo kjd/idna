@@ -3,6 +3,12 @@
 History
 -------
 
+2.5 (2017-03-07)
+++++++++++++++++
+
+- Fix bug with Katakana middle dot context-rule (Thanks, Greg
+  Shikhman.)
+
 2.4 (2017-03-01)
 ++++++++++++++++
 
