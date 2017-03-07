@@ -211,9 +211,9 @@ def valid_contexto(label, pos, exception=False):
         for cp in label:
             if cp == u'\u30fb':
                 continue
-            if not _is_script(cp, 'Hiragana') and not _is_script(cp, 'Katakana') and not _is_script(cp, 'Han'):
-                return False
-        return True
+            if _is_script(cp, 'Hiragana') or _is_script(cp, 'Katakana') or _is_script(cp, 'Han'):
+                return True
+        return False
 
     elif 0x660 <= cp_value <= 0x669:
         for cp in label:
