@@ -225,6 +225,7 @@ class IDNATests(unittest.TestCase):
         self.assertTrue(idna.valid_contexto(katakana + ja_middle_dot + katakana, 1))
         self.assertTrue(idna.valid_contexto(hiragana + ja_middle_dot + hiragana, 1))
         self.assertTrue(idna.valid_contexto(han + ja_middle_dot + han, 1))
+        self.assertTrue(idna.valid_contexto(han + ja_middle_dot + latin, 1))
         self.assertTrue(idna.valid_contexto(u'\u6f22\u30fb\u5b57', 1))
         self.assertFalse(idna.valid_contexto(u'\u0061\u30fb\u0061', 1))
 
