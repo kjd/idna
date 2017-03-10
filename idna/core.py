@@ -299,7 +299,7 @@ def ulabel(label):
         check_label(label)
         return label.decode('ascii')
 
-    label = label.decode('punycode')
+    label = label.decode('punycode').lower()
     check_label(label)
     return label
 
