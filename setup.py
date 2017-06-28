@@ -16,12 +16,13 @@ def main():
     if python_version < (2,6):
         raise SystemExit("Sorry, Python 2.6 or newer required")
 
-    exec(open('idna/package_data.py').read())
+    package_data = {}
+    exec(open('idna/package_data.py').read(), package_data)
 
     arguments = {
         'name': 'idna',
         'packages': ['idna'],
-        'version': __version__,
+        'version': package_data['__version__'],
         'description': 'Internationalized Domain Names in Applications (IDNA)',
         'long_description': io.open("README.rst", encoding="UTF-8").read(),
         'author': 'Kim Davies',
