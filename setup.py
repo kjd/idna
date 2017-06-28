@@ -9,7 +9,6 @@ the "encodings.idna" module.
 import io, sys
 from setuptools import setup
 
-version = "2.5"
 
 def main():
 
@@ -17,10 +16,12 @@ def main():
     if python_version < (2,6):
         raise SystemExit("Sorry, Python 2.6 or newer required")
 
+    exec(open('idna/package_data.py').read())
+
     arguments = {
         'name': 'idna',
         'packages': ['idna'],
-        'version': version,
+        'version': __version__,
         'description': 'Internationalized Domain Names in Applications (IDNA)',
         'long_description': io.open("README.rst", encoding="UTF-8").read(),
         'author': 'Kim Davies',
