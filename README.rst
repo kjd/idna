@@ -175,19 +175,19 @@ This tool will fetch relevant tables from the Unicode Consortium and perform the
 required calculations to identify eligibility. It has three main modes:
 
 * ``idna-data make-libdata``. Generates ``idnadata.py`` and ``uts46data.py``,
-the pre-calculated lookup tables using for IDNA and UTS 46 conversions. Implementors
-who wish to track this library against a different Unicode version may use this tool
-to manually generate a different version of the ``idnadata.py`` and ``uts46data.py``
-files.
+  the pre-calculated lookup tables using for IDNA and UTS 46 conversions. Implementors
+  who wish to track this library against a different Unicode version may use this tool
+  to manually generate a different version of the ``idnadata.py`` and ``uts46data.py``
+  files.
 
 * ``idna-data make-table``. Generate a table of the IDNA disposition
-(e.g. PVALID, CONTEXTJ, CONTEXTO) in the format found in Appendix B.1 of RFC
-5892 and the pre-computed tables published by [IANA](http://iana.org/).
+  (e.g. PVALID, CONTEXTJ, CONTEXTO) in the format found in Appendix B.1 of RFC
+  5892 and the pre-computed tables published by `IANA <http://iana.org/>`_.
 
 * ``idna-data U+0061``. Prints debugging output on the various properties
-associated with an individual Unicode codepoint (in this case, U+0061), that are
-used to assess the IDNA and UTS 46 status of a codepoint. This is helpful in debugging
-or analysis.
+  associated with an individual Unicode codepoint (in this case, U+0061), that are
+  used to assess the IDNA and UTS 46 status of a codepoint. This is helpful in debugging
+  or analysis.
 
 The tool accepts a number of arguments, described using ``idna-data -h``. Most notably,
 the ``--version`` argument allows the specification of the version of Unicode to use
