@@ -163,6 +163,41 @@ an illegal character in an IDN label (i.e. INVALID); and ``idna.InvalidCodepoint
 when the codepoint is illegal based on its positional context (i.e. it is CONTEXTO
 or CONTEXTJ but the contextual requirements are not satisfied.)
 
+Building and Diagnostics
+------------------------
+
+The IDNA and UTS 46 functionality relies upon pre-calculated lookup tables for
+performance. These tables are derived from computing against eligibility criteria
+in the respective standards. These tables are computed using the command-line
+script ``tools/idna-data``.
+
+This tool will fetch relevant tables from the Unicode Consortium and perform the
+required calculations to identify eligibility. It has three main modes:
+
+* ``idna-data make-libdata``. Generates ``idnadata.py`` and ``uts46data.py``,
+  the pre-calculated lookup tables using for IDNA and UTS 46 conversions. Implementors
+  who wish to track this library against a different Unicode version may use this tool
+  to manually generate a different version of the ``idnadata.py`` and ``uts46data.py``
+  files.
+
+* ``idna-data make-table``. Generate a table of the IDNA disposition
+  (e.g. PVALID, CONTEXTJ, CONTEXTO) in the format found in Appendix B.1 of RFC
+  5892 and the pre-computed tables published by `IANA <http://iana.org/>`_.
+
+* ``idna-data U+0061``. Prints debugging output on the various properties
+  associated with an individual Unicode codepoint (in this case, U+0061), that are
+  used to assess the IDNA and UTS 46 status of a codepoint. This is helpful in debugging
+  or analysis.
+
+The tool accepts a number of arguments, described using ``idna-data -h``. Most notably,
+the ``--version`` argument allows the specification of the version of Unicode to use
+in computing the table data. For example, ``idna-data --version 9.0.0 make-libdata``
+will generate library data against Unicode 9.0.0.
+
+Note that this script requires Python 3, but all generated library data will work
+in Python 2.6+.
+
+
 Testing
 -------
 
