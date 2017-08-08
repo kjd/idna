@@ -3,6 +3,20 @@
 History
 -------
 
+2.6 (2017-08-08)
+++++++++++++++++
+
+- Allows generation of IDNA and UTS 46 table data for different
+  versions of Unicode, by deriving properties directly from
+  Unicode data.
+- Ability to generate RFC 5892/IANA-style table data
+- Diagnostic output of IDNA-related Unicode properties and
+  derived calculations for a given codepoint
+- Support for idna.__version__ to report version
+- Support for idna.idnadata.__version__ and
+  idna.uts46data.__version__ to report Unicode version of
+  underlying IDNA and UTS 46 data respectively.
+
 2.5 (2017-03-07)
 ++++++++++++++++
 
