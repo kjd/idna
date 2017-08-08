@@ -300,13 +300,13 @@ class UnicodeData(object):
                 version=version_path,
                 filename=filename,
             )
-            content = urlopen(url).read()
+            content = urlopen(url).read().decode('utf-8')
 
             if cache_file:
                 if not os.path.isdir(os.path.dirname(cache_file)):
                     os.makedirs(os.path.dirname(cache_file))
                 f = open(cache_file, 'wb')
-                f.write(content)
+                f.write(content.encode('utf-8'))
                 f.close()
 
             return str(content)
