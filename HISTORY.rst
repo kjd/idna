@@ -7,6 +7,9 @@ History
 ++++++++++++++++
 
 - Update to Unicode 10.0.0.
+- No longer accepts dot-prefixed domains (e.g. ".example') as valid.
+  This is to be more conformant with the UTS 46 spec. Users should
+  strip dot prefixes from domains before processing.
 
 2.6 (2017-08-08)
 ++++++++++++++++
