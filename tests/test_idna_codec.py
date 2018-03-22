@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 
-import unittest
-import sys
-
-sys.path.append('..')
-import idna.codec
 import codecs
+import sys
+import unittest
+
+import idna.codec
 
 class IDNACodecTests(unittest.TestCase):
     
