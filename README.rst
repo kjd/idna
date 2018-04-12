@@ -55,7 +55,7 @@ Alternatively, you can install the package using the bundled setup script:
 
     $ python setup.py install
 
-This library works with Python 2.6 or later, and Python 3.3 or later.
+This library works with Python 2.7 and Python 3.4 or later.
 
 
 Usage
@@ -195,7 +195,7 @@ in computing the table data. For example, ``idna-data --version 9.0.0 make-libda
 will generate library data against Unicode 9.0.0.
 
 Note that this script requires Python 3, but all generated library data will work
-in Python 2.6+.
+in Python 2.7.
 
 
 Testing

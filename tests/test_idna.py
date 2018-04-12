@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import unittest
-import sys
 
 import idna
 
@@ -9,9 +8,6 @@ import idna
 class IDNATests(unittest.TestCase):
 
     def setUp(self):
-
-        self.python_version = sys.version_info[:2]
-
         self.tld_strings = [
             [u'\u6d4b\u8bd5', b'xn--0zwm56d'],
             [u'\u092a\u0930\u0940\u0915\u094d\u0937\u093e', b'xn--11b5bs3a9aj6g'],
@@ -243,9 +239,8 @@ class IDNATests(unittest.TestCase):
         self.assertEqual(idna.encode('abc.abc'), b'abc.abc')
         self.assertEqual(idna.encode('xn--zckzah.abc'), b'xn--zckzah.abc')
         self.assertEqual(idna.encode(u'\u30c6\u30b9\u30c8.abc'), b'xn--zckzah.abc')
-        if self.python_version != (2, 6):
-            self.assertEqual(idna.encode(u'\u0521\u0525\u0523-\u0523\u0523-----\u0521\u0523\u0523\u0523.aa'),
-                                     b'xn---------90gglbagaar.aa')
+        self.assertEqual(idna.encode(u'\u0521\u0525\u0523-\u0523\u0523-----\u0521\u0523\u0523\u0523.aa'),
+                         b'xn---------90gglbagaar.aa')
         self.assertRaises(idna.IDNAError, idna.encode,
                           u'\u0521\u0524\u0523-\u0523\u0523-----\u0521\u0523\u0523\u0523.aa', uts46=False)
         self.assertEqual(idna.encode('a'*63), b'a'*63)
@@ -258,9 +253,8 @@ class IDNATests(unittest.TestCase):
         self.assertEqual(idna.decode(u'\u30c6\u30b9\u30c8.\u30c6\u30b9\u30c8'),
                          u'\u30c6\u30b9\u30c8.\u30c6\u30b9\u30c8')
         self.assertEqual(idna.decode('abc.abc'), u'abc.abc')
-        if self.python_version != (2, 6):
-            self.assertEqual(idna.decode('xn---------90gglbagaar.aa'),
-                                     u'\u0521\u0525\u0523-\u0523\u0523-----\u0521\u0523\u0523\u0523.aa')
+        self.assertEqual(idna.decode('xn---------90gglbagaar.aa'),
+                         u'\u0521\u0525\u0523-\u0523\u0523-----\u0521\u0523\u0523\u0523.aa')
         self.assertRaises(idna.IDNAError, idna.decode, 'XN---------90GGLBAGAAC.AA')
         self.assertRaises(idna.IDNAError, idna.decode, 'xn---------90gglbagaac.aa')
 
