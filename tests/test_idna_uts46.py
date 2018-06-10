@@ -94,6 +94,8 @@ class TestIdnaTest(unittest.TestCase):
         except ValueError:
             raise unittest.SkipTest(
                 "Test requires Python wide Unicode support")
+        if self.lineno == 89:
+            print("DEBUG", repr(source), repr(_SKIP_TESTS[0]))
         if source in _SKIP_TESTS:
             return
         if not to_unicode:
