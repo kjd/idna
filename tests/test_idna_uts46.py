@@ -94,8 +94,6 @@ class TestIdnaTest(unittest.TestCase):
         except ValueError:
             raise unittest.SkipTest(
                 "Test requires Python wide Unicode support")
-        if self.lineno == 89:
-            print("DEBUG", repr(source), repr(_SKIP_TESTS[0]))
         if source in _SKIP_TESTS:
             return
         if not to_unicode:
@@ -129,7 +127,7 @@ class TestIdnaTest(unittest.TestCase):
                 self.assertEqual(output, to_ascii,
                     "unexpected encode(transitional={0}) output".
                     format(transitional))
-            except (idna.IDNAError, UnicodeError, ValueError):
+            except (idna.IDNAError, UnicodeError, ValueError) as exc:
                 if unicode(exc).startswith(u"Unknown directionality"):
                     raise unittest.SkipTest("Test requires support for a newer"
                                             " version of Unicode than this Python supports")
