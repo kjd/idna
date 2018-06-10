@@ -107,7 +107,7 @@ class TestIdnaTest(unittest.TestCase):
                 self.fail("decode() did not emit required error {0} for {1}".format(to_unicode, repr(source)))
             self.assertEqual(output, to_unicode, "unexpected decode() output")
         except (idna.IDNAError, UnicodeError, ValueError) as exc:
-            if unicode(exc).startswith(u"Unknown directionality"):
+            if unicode(exc).startswith(u"Unknown"):
                 raise unittest.SkipTest("Test requires support for a newer"
                     " version of Unicode than this Python supports")
             if to_unicode[0] != u"[" and not nv8:
@@ -128,7 +128,7 @@ class TestIdnaTest(unittest.TestCase):
                     "unexpected encode(transitional={0}) output".
                     format(transitional))
             except (idna.IDNAError, UnicodeError, ValueError) as exc:
-                if unicode(exc).startswith(u"Unknown directionality"):
+                if unicode(exc).startswith(u"Unknown"):
                     raise unittest.SkipTest("Test requires support for a newer"
                                             " version of Unicode than this Python supports")
                 if to_ascii[0] != u"[" and not nv8:

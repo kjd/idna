@@ -34,7 +34,11 @@ class InvalidCodepointContext(IDNAError):
 
 
 def _combining_class(cp):
-    return unicodedata.combining(unichr(cp))
+    v = unicodedata.combining(unichr(cp))
+    if v == 0:
+        if not unicodedata.name(unichr(cp)):
+            raise ValueError("Unknown character in unicodedata")
+    return v
 
 def _is_script(cp, script):
     return intranges_contain(ord(cp), idnadata.scripts[script])
@@ -243,8 +247,13 @@ def check_label(label):
         if intranges_contain(cp_value, idnadata.codepoint_classes['PVALID']):
             continue
         elif intranges_contain(cp_value, idnadata.codepoint_classes['CONTEXTJ']):
-            if not valid_contextj(label, pos):
-                raise InvalidCodepointContext('Joiner {0} not allowed at position {1} in {2}'.format(_unot(cp_value), pos+1, repr(label)))
+            try:
+                if not valid_contextj(label, pos):
+                    raise InvalidCodepointContext('Joiner {0} not allowed at position {1} in {2}'.format(
+                        _unot(cp_value), pos+1, repr(label)))
+            except ValueError:
+                raise IDNAError('Unknown codepoint adjacent to joiner {0} at position {1} in {2}'.format(
+                    _unot(cp_value), pos+1, repr(label)))
         elif intranges_contain(cp_value, idnadata.codepoint_classes['CONTEXTO']):
             if not valid_contexto(label, pos):
                 raise InvalidCodepointContext('Codepoint {0} not allowed at position {1} in {2}'.format(_unot(cp_value), pos+1, repr(label)))
