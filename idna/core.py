@@ -317,10 +317,10 @@ def uts46_remap(domain, std3_rules=True, transitional=False):
             replacement = uts46row[2] if len(uts46row) == 3 else None
             if (status == "V" or
                     (status == "D" and not transitional) or
-                    (status == "3" and not std3_rules and replacement is None)):
+                    (status == "3" and std3_rules and replacement is None)):
                 output += char
             elif replacement is not None and (status == "M" or
-                    (status == "3" and not std3_rules) or
+                    (status == "3" and std3_rules) or
                     (status == "D" and transitional)):
                 output += replacement
             elif status != "I":
@@ -344,17 +344,15 @@ def encode(s, strict=False, uts46=False, std3_rules=False, transitional=False):
         labels = s.split('.')
     else:
         labels = _unicode_dots_re.split(s)
-    if not labels or labels == ['']:
+    while labels and not labels[0]:
+        del labels[0]
+    if not labels:
         raise IDNAError('Empty domain')
     if labels[-1] == '':
         del labels[-1]
         trailing_dot = True
     for label in labels:
-        s = alabel(label)
-        if s:
-            result.append(s)
-        else:
-            raise IDNAError('Empty label')
+        result.append(alabel(label))
     if trailing_dot:
         result.append(b'')
     s = b'.'.join(result)
@@ -375,17 +373,15 @@ def decode(s, strict=False, uts46=False, std3_rules=False):
         labels = _unicode_dots_re.split(s)
     else:
         labels = s.split(u'.')
-    if not labels or labels == ['']:
+    while labels and not labels[0]:
+        del labels[0]
+    if not labels:
         raise IDNAError('Empty domain')
     if not labels[-1]:
         del labels[-1]
         trailing_dot = True
     for label in labels:
-        s = ulabel(label)
-        if s:
-            result.append(s)
-        else:
-            raise IDNAError('Empty label')
+        result.append(ulabel(label))
     if trailing_dot:
         result.append(u'')
     return u'.'.join(result)
