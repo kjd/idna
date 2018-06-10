@@ -71,7 +71,6 @@ def check_bidi(label, check_ltr=False):
             raise IDNABidiError('Unknown directionality in label {0} at position {1}'.format(repr(label), idx))
         if direction in ['R', 'AL', 'AN']:
             bidi_label = True
-            break
     if not bidi_label and not check_ltr:
         return True
 
