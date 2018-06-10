@@ -317,10 +317,10 @@ def uts46_remap(domain, std3_rules=True, transitional=False):
             replacement = uts46row[2] if len(uts46row) == 3 else None
             if (status == "V" or
                     (status == "D" and not transitional) or
-                    (status == "3" and std3_rules and replacement is None)):
+                    (status == "3" and not std3_rules and replacement is None)):
                 output += char
             elif replacement is not None and (status == "M" or
-                    (status == "3" and std3_rules) or
+                    (status == "3" and not std3_rules) or
                     (status == "D" and transitional)):
                 output += replacement
             elif status != "I":
