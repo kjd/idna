@@ -18,29 +18,29 @@ _SKIP_TESTS = [
     # These appear to be errors in the test vectors. All relate to incorrectly applying
     # bidi rules across label boundaries. Appears independently confirmed
     # at http://www.alvestrand.no/pipermail/idna-update/2017-January/007946.html
-    '0\u00E0.\u05D0', '0a\u0300.\u05D0', '0A\u0300.\u05D0', '0\u00C0.\u05D0', 'xn--0-sfa.xn--4db',
-    '\u00E0\u02c7.\u05D0', 'a\u0300\u02c7.\u05D0', 'A\u0300\u02c7.\u05D0', '\u00C0\u02c7.\u05D0',
-    'xn--0ca88g.xn--4db', '0A.\u05D0', '0a.\u05D0', '0a.xn--4db', 'c.xn--0-eha.xn--4db',
-    'c.0\u00FC.\u05D0', 'c.0u\u0308.\u05D0', 'C.0U\u0308.\u05D0', 'C.0\u00DC.\u05D0',
-    '\u06B6\u06DF\u3002\u2087\uA806', '\u06B6\u06DF\u30027\uA806', 'xn--pkb6f.xn--7-x93e',
-    '\u06B6\u06DF.7\uA806', '1.\uAC7E6.\U00010C41\u06D0', '1.\u1100\u1165\u11B56.\U00010C41\u06D0',
+    u'0\u00E0.\u05D0', u'0a\u0300.\u05D0', u'0A\u0300.\u05D0', u'0\u00C0.\u05D0', 'xn--0-sfa.xn--4db',
+    u'\u00E0\u02c7.\u05D0', u'a\u0300\u02c7.\u05D0', u'A\u0300\u02c7.\u05D0', u'\u00C0\u02c7.\u05D0',
+    'xn--0ca88g.xn--4db', u'0A.\u05D0', u'0a.\u05D0', '0a.xn--4db', 'c.xn--0-eha.xn--4db',
+    u'c.0\u00FC.\u05D0', u'c.0u\u0308.\u05D0', u'C.0U\u0308.\u05D0', u'C.0\u00DC.\u05D0',
+    u'\u06B6\u06DF\u3002\u2087\uA806', u'\u06B6\u06DF\u30027\uA806', 'xn--pkb6f.xn--7-x93e',
+    u'\u06B6\u06DF.7\uA806', u'1.\uAC7E6.\U00010C41\u06D0', u'1.\u1100\u1165\u11B56.\U00010C41\u06D0',
     '1.xn--6-945e.xn--glb1794k',
 
     # These are transitional strings that compute to NV8 and thus are not supported
     # in IDNA 2008.
-    '\U000102F7\u3002\u200D',
-    '\U0001D7F5\u9681\u2BEE\uFF0E\u180D\u200C',
-    '9\u9681\u2BEE.\u180D\u200C',
-    '\u00DF\u200C\uAAF6\u18A5.\u22B6\u2D21\u2D16',
-    'ss\u200C\uAAF6\u18A5.\u22B6\u2D21\u2D16',
-    '\u00DF\u200C\uAAF6\u18A5\uFF0E\u22B6\u2D21\u2D16',
-    'ss\u200C\uAAF6\u18A5\uFF0E\u22B6\u2D21\u2D16',
-    '\U00010A57\u200D\u3002\u2D09\u2D15',
-    '\U00010A57\u200D\uFF61\u2D09\u2D15',
-    '\U0001D7CF\U0001DA19\u2E16.\u200D',
-    '1\U0001DA19\u2E16.\u200D',
-    '\U0001D7E04\U000E01D7\U0001D23B\uFF0E\u200D\U000102F5\u26E7\u200D',
-    '84\U000E01D7\U0001D23B.\u200D\U000102F5\u26E7\u200D',
+    u'\U000102F7\u3002\u200D',
+    u'\U0001D7F5\u9681\u2BEE\uFF0E\u180D\u200C',
+    u'9\u9681\u2BEE.\u180D\u200C',
+    u'\u00DF\u200C\uAAF6\u18A5.\u22B6\u2D21\u2D16',
+    u'ss\u200C\uAAF6\u18A5.\u22B6\u2D21\u2D16',
+    u'\u00DF\u200C\uAAF6\u18A5\uFF0E\u22B6\u2D21\u2D16',
+    u'ss\u200C\uAAF6\u18A5\uFF0E\u22B6\u2D21\u2D16',
+    u'\U00010A57\u200D\u3002\u2D09\u2D15',
+    u'\U00010A57\u200D\uFF61\u2D09\u2D15',
+    u'\U0001D7CF\U0001DA19\u2E16.\u200D',
+    u'1\U0001DA19\u2E16.\u200D',
+    u'\U0001D7E04\U000E01D7\U0001D23B\uFF0E\u200D\U000102F5\u26E7\u200D',
+    u'84\U000E01D7\U0001D23B.\u200D\U000102F5\u26E7\u200D',
 ]
 
 def unicode_fixup(string):
@@ -55,7 +55,7 @@ def parse_idna_test_table(inputstream):
     """Parse IdnaTest.txt and return a list of tuples."""
     tests = []
     for lineno, line in enumerate(inputstream):
-        line = line.decode("utf8").strip()
+        line = line.decode("utf-8").strip()
         if "#" in line:
             line = line.split("#", 1)[0]
         if not line:
@@ -130,6 +130,9 @@ class TestIdnaTest(unittest.TestCase):
                     "unexpected encode(transitional={0}) output".
                     format(transitional))
             except (idna.IDNAError, UnicodeError, ValueError):
+                if unicode(exc).startswith(u"Unknown directionality"):
+                    raise unittest.SkipTest("Test requires support for a newer"
+                                            " version of Unicode than this Python supports")
                 if to_ascii[0] != u"[" and not nv8:
                     raise
 
