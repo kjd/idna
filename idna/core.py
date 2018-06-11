@@ -352,17 +352,15 @@ def encode(s, strict=False, uts46=False, std3_rules=False, transitional=False):
         labels = s.split('.')
     else:
         labels = _unicode_dots_re.split(s)
-    if not labels or labels == ['']:
+    while labels and not labels[0]:
+        del labels[0]
+    if not labels:
         raise IDNAError('Empty domain')
     if labels[-1] == '':
         del labels[-1]
         trailing_dot = True
     for label in labels:
-        s = alabel(label)
-        if s:
-            result.append(s)
-        else:
-            raise IDNAError('Empty label')
+        result.append(alabel(label))
     if trailing_dot:
         result.append(b'')
     s = b'.'.join(result)
@@ -383,17 +381,15 @@ def decode(s, strict=False, uts46=False, std3_rules=False):
         labels = _unicode_dots_re.split(s)
     else:
         labels = s.split(u'.')
-    if not labels or labels == ['']:
+    while labels and not labels[0]:
+        del labels[0]
+    if not labels:
         raise IDNAError('Empty domain')
     if not labels[-1]:
         del labels[-1]
         trailing_dot = True
     for label in labels:
-        s = ulabel(label)
-        if s:
-            result.append(s)
-        else:
-            raise IDNAError('Empty label')
+        result.append(ulabel(label))
     if trailing_dot:
         result.append(u'')
     return u'.'.join(result)

@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 import unittest
+import sys
 
+sys.path.append('..')
 import idna.compat
 
 class IDNACompatTests(unittest.TestCase):
