@@ -3,11 +3,11 @@
 History
 -------
 
-2.7 (2018-03-XX)
+2.7 (2018-03-10)
 ++++++++++++++++
 
 - Update to Unicode 10.0.0.
-- No longer accepts dot-prefixed domains (e.g. ".example') as valid.
+- No longer accepts dot-prefixed domains (e.g. ".example") as valid.
   This is to be more conformant with the UTS 46 spec. Users should
   strip dot prefixes from domains before processing.
 
