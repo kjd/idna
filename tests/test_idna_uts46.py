@@ -94,16 +94,17 @@ class TestIdnaTest(unittest.TestCase):
         except ValueError:
             raise unittest.SkipTest(
                 "Test requires Python wide Unicode support")
+        if source in _SKIP_TESTS:
+            return
         if not to_unicode:
             to_unicode = source
         if not to_ascii:
             to_ascii = to_unicode
-        nv8 = (len(self.fields) > 4 and self.fields[4] or
-            self.lineno in _MISSING_NV8)
+        nv8 = (len(self.fields) > 4 and self.fields[4])
         try:
             output = idna.decode(source, uts46=True, strict=True)
             if to_unicode[0] == u"[":
-                self.fail("decode() did not emit required error")
+                self.fail("decode() did not emit required error {0} for {1}".format(to_unicode, repr(source)))
             self.assertEqual(output, to_unicode, "unexpected decode() output")
         except (idna.IDNAError, UnicodeError, ValueError) as exc:
             if unicode(exc).startswith(u"Unknown"):
@@ -121,8 +122,8 @@ class TestIdnaTest(unittest.TestCase):
                     transitional=transitional).decode("ascii")
                 if to_ascii[0] == u"[":
                     self.fail(
-                        "encode(transitional={0}) did not emit required error".
-                        format(transitional))
+                        "encode(transitional={0}) did not emit required error {1} for {2}".
+                        format(transitional, to_ascii, repr(source)))
                 self.assertEqual(output, to_ascii,
                     "unexpected encode(transitional={0}) output".
                     format(transitional))

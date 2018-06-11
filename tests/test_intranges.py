@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 
 import unittest
-import sys
-import os
-
-sys.path.append('..')
 
 from idna.intranges import intranges_from_list, intranges_contain, _encode_range
 
