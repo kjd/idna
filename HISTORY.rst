@@ -3,7 +3,13 @@
 History
 -------
 
-2.7 (2018-03-10)
+2.8 (2018-12-04)
+++++++++++++++++
+
+- Update to Unicode 11.0.0.
+- Provide more specific exceptions for some malformed labels.
+
+2.7 (2018-06-10)
 ++++++++++++++++
 
 - Update to Unicode 10.0.0.

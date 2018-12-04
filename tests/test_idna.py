@@ -245,6 +245,7 @@ class IDNATests(unittest.TestCase):
                           u'\u0521\u0524\u0523-\u0523\u0523-----\u0521\u0523\u0523\u0523.aa', uts46=False)
         self.assertEqual(idna.encode('a'*63), b'a'*63)
         self.assertRaises(idna.IDNAError, idna.encode, 'a'*64)
+        self.assertRaises(idna.core.InvalidCodepoint, idna.encode, '*')
 
     def test_decode(self):
 
