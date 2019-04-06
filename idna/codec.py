@@ -9,7 +9,7 @@ class Codec(codecs.Codec):
     def encode(self, data, errors='strict'):
 
         if errors != 'strict':
-            raise IDNAError("Unsupported error handling \"{0}\"".format(errors))
+            raise IDNAError("Unsupported error handling \"{}\"".format(errors))
 
         if not data:
             return "", 0
@@ -19,7 +19,7 @@ class Codec(codecs.Codec):
     def decode(self, data, errors='strict'):
 
         if errors != 'strict':
-            raise IDNAError("Unsupported error handling \"{0}\"".format(errors))
+            raise IDNAError("Unsupported error handling \"{}\"".format(errors))
 
         if not data:
             return u"", 0
@@ -29,7 +29,7 @@ class Codec(codecs.Codec):
 class IncrementalEncoder(codecs.BufferedIncrementalEncoder):
     def _buffer_encode(self, data, errors, final):
         if errors != 'strict':
-            raise IDNAError("Unsupported error handling \"{0}\"".format(errors))
+            raise IDNAError("Unsupported error handling \"{}\"".format(errors))
 
         if not data:
             return ("", 0)
@@ -62,7 +62,7 @@ class IncrementalEncoder(codecs.BufferedIncrementalEncoder):
 class IncrementalDecoder(codecs.BufferedIncrementalDecoder):
     def _buffer_decode(self, data, errors, final):
         if errors != 'strict':
-            raise IDNAError("Unsupported error handling \"{0}\"".format(errors))
+            raise IDNAError("Unsupported error handling \"{}\"".format(errors))
 
         if not data:
             return (u"", 0)

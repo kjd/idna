@@ -104,7 +104,7 @@ class TestIdnaTest(unittest.TestCase):
         try:
             output = idna.decode(source, uts46=True, strict=True)
             if to_unicode[0] == u"[":
-                self.fail("decode() did not emit required error {0} for {1}".format(to_unicode, repr(source)))
+                self.fail("decode() did not emit required error {} for {}".format(to_unicode, repr(source)))
             self.assertEqual(output, to_unicode, "unexpected decode() output")
         except (idna.IDNAError, UnicodeError, ValueError) as exc:
             if unicode(exc).startswith(u"Unknown"):
@@ -122,10 +122,10 @@ class TestIdnaTest(unittest.TestCase):
                     transitional=transitional).decode("ascii")
                 if to_ascii[0] == u"[":
                     self.fail(
-                        "encode(transitional={0}) did not emit required error {1} for {2}".
+                        "encode(transitional={}) did not emit required error {} for {}".
                         format(transitional, to_ascii, repr(source)))
                 self.assertEqual(output, to_ascii,
-                    "unexpected encode(transitional={0}) output".
+                    "unexpected encode(transitional={}) output".
                     format(transitional))
             except (idna.IDNAError, UnicodeError, ValueError) as exc:
                 if unicode(exc).startswith(u"Unknown"):

@@ -47,7 +47,7 @@ def _punycode(s):
     return s.encode('punycode')
 
 def _unot(s):
-    return 'U+{0:04X}'.format(s)
+    return 'U+{:04X}'.format(s)
 
 
 def valid_label_length(label):
@@ -72,7 +72,7 @@ def check_bidi(label, check_ltr=False):
         direction = unicodedata.bidirectional(cp)
         if direction == '':
             # String likely comes from a newer version of Unicode
-            raise IDNABidiError('Unknown directionality in label {0} at position {1}'.format(repr(label), idx))
+            raise IDNABidiError('Unknown directionality in label {} at position {}'.format(repr(label), idx))
         if direction in ['R', 'AL', 'AN']:
             bidi_label = True
     if not bidi_label and not check_ltr:
@@ -85,7 +85,7 @@ def check_bidi(label, check_ltr=False):
     elif direction == 'L':
         rtl = False
     else:
-        raise IDNABidiError('First codepoint in label {0} must be directionality L, R or AL'.format(repr(label)))
+        raise IDNABidiError('First codepoint in label {} must be directionality L, R or AL'.format(repr(label)))
 
     valid_ending = False
     number_type = False
@@ -95,7 +95,7 @@ def check_bidi(label, check_ltr=False):
         if rtl:
             # Bidi rule 2
             if not direction in ['R', 'AL', 'AN', 'EN', 'ES', 'CS', 'ET', 'ON', 'BN', 'NSM']:
-                raise IDNABidiError('Invalid direction for codepoint at position {0} in a right-to-left label'.format(idx))
+                raise IDNABidiError('Invalid direction for codepoint at position {} in a right-to-left label'.format(idx))
             # Bidi rule 3
             if direction in ['R', 'AL', 'EN', 'AN']:
                 valid_ending = True
@@ -111,7 +111,7 @@ def check_bidi(label, check_ltr=False):
         else:
             # Bidi rule 5
             if not direction in ['L', 'EN', 'ES', 'CS', 'ET', 'ON', 'BN', 'NSM']:
-                raise IDNABidiError('Invalid direction for codepoint at position {0} in a left-to-right label'.format(idx))
+                raise IDNABidiError('Invalid direction for codepoint at position {} in a left-to-right label'.format(idx))
             # Bidi rule 6
             if direction in ['L', 'EN']:
                 valid_ending = True
@@ -249,16 +249,16 @@ def check_label(label):
         elif intranges_contain(cp_value, idnadata.codepoint_classes['CONTEXTJ']):
             try:
                 if not valid_contextj(label, pos):
-                    raise InvalidCodepointContext('Joiner {0} not allowed at position {1} in {2}'.format(
+                    raise InvalidCodepointContext('Joiner {} not allowed at position {} in {}'.format(
                         _unot(cp_value), pos+1, repr(label)))
             except ValueError:
-                raise IDNAError('Unknown codepoint adjacent to joiner {0} at position {1} in {2}'.format(
+                raise IDNAError('Unknown codepoint adjacent to joiner {} at position {} in {}'.format(
                     _unot(cp_value), pos+1, repr(label)))
         elif intranges_contain(cp_value, idnadata.codepoint_classes['CONTEXTO']):
             if not valid_contexto(label, pos):
-                raise InvalidCodepointContext('Codepoint {0} not allowed at position {1} in {2}'.format(_unot(cp_value), pos+1, repr(label)))
+                raise InvalidCodepointContext('Codepoint {} not allowed at position {} in {}'.format(_unot(cp_value), pos+1, repr(label)))
         else:
-            raise InvalidCodepoint('Codepoint {0} at position {1} of {2} not allowed'.format(_unot(cp_value), pos+1, repr(label)))
+            raise InvalidCodepoint('Codepoint {} at position {} of {} not allowed'.format(_unot(cp_value), pos+1, repr(label)))
 
     check_bidi(label)
 
@@ -335,7 +335,7 @@ def uts46_remap(domain, std3_rules=True, transitional=False):
         return unicodedata.normalize("NFC", output)
     except IndexError:
         raise InvalidCodepoint(
-            "Codepoint {0} not allowed at position {1} in {2}".format(
+            "Codepoint {} not allowed at position {} in {}".format(
             _unot(code_point), pos + 1, repr(domain)))
 
 
