@@ -8,7 +8,7 @@ import unittest
 
 import idna
 
-if sys.version_info[0] == 3:
+if sys.version_info[0] >= 3:
     unichr = chr
     unicode = str
 
