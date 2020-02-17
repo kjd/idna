@@ -7,11 +7,7 @@ from .intranges import intranges_contain
 
 _virama_combining_class = 9
 _alabel_prefix = b'xn--'
-_unicode_dots_re = re.compile(u'[\u002e\u3002\uff0e\uff61]')
-
-if sys.version_info[0] >= 3:
-    unicode = str
-    unichr = chr
+_unicode_dots_re = re.compile('[\u002e\u3002\uff0e\uff61]')
 
 class IDNAError(UnicodeError):
     """ Base exception for all IDNA-encoding related problems """
@@ -34,10 +30,10 @@ class InvalidCodepointContext(IDNAError):
 
 
 def _combining_class(cp):
-    v = unicodedata.combining(unichr(cp))
+    v = unicodedata.combining(chr(cp))
     if v == 0:
-        if not unicodedata.name(unichr(cp)):
-            raise ValueError("Unknown character in unicodedata")
+        if not unicodedata.name(chr(cp)):
+            raise ValueError('Unknown character in unicodedata')
     return v
 
 def _is_script(cp, script):
@@ -277,7 +273,7 @@ def alabel(label):
     if not label:
         raise IDNAError('No Input')
 
-    label = unicode(label)
+    label = str(label)
     check_label(label)
     label = _punycode(label)
     label = _alabel_prefix + label
@@ -314,35 +310,35 @@ def ulabel(label):
 def uts46_remap(domain, std3_rules=True, transitional=False):
     """Re-map the characters in the string according to UTS46 processing."""
     from .uts46data import uts46data
-    output = u""
+    output = ''
     try:
         for pos, char in enumerate(domain):
             code_point = ord(char)
             uts46row = uts46data[code_point if code_point < 256 else
-                bisect.bisect_left(uts46data, (code_point, "Z")) - 1]
+                bisect.bisect_left(uts46data, (code_point, 'Z')) - 1]
             status = uts46row[1]
             replacement = uts46row[2] if len(uts46row) == 3 else None
-            if (status == "V" or
-                    (status == "D" and not transitional) or
-                    (status == "3" and not std3_rules and replacement is None)):
+            if (status == 'V' or
+                    (status == 'D' and not transitional) or
+                    (status == '3' and not std3_rules and replacement is None)):
                 output += char
-            elif replacement is not None and (status == "M" or
-                    (status == "3" and not std3_rules) or
-                    (status == "D" and transitional)):
+            elif replacement is not None and (status == 'M' or
+                    (status == '3' and not std3_rules) or
+                    (status == 'D' and transitional)):
                 output += replacement
-            elif status != "I":
+            elif status != 'I':
                 raise IndexError()
-        return unicodedata.normalize("NFC", output)
+        return unicodedata.normalize('NFC', output)
     except IndexError:
         raise InvalidCodepoint(
-            "Codepoint {} not allowed at position {} in {}".format(
+            'Codepoint {} not allowed at position {} in {}'.format(
             _unot(code_point), pos + 1, repr(domain)))
 
 
 def encode(s, strict=False, uts46=False, std3_rules=False, transitional=False):
 
     if isinstance(s, (bytes, bytearray)):
-        s = s.decode("ascii")
+        s = s.decode('ascii')
     if uts46:
         s = uts46_remap(s, std3_rules, transitional)
     trailing_dot = False
@@ -373,7 +369,7 @@ def encode(s, strict=False, uts46=False, std3_rules=False, transitional=False):
 def decode(s, strict=False, uts46=False, std3_rules=False):
 
     if isinstance(s, (bytes, bytearray)):
-        s = s.decode("ascii")
+        s = s.decode('ascii')
     if uts46:
         s = uts46_remap(s, std3_rules, False)
     trailing_dot = False
@@ -381,7 +377,7 @@ def decode(s, strict=False, uts46=False, std3_rules=False):
     if not strict:
         labels = _unicode_dots_re.split(s)
     else:
-        labels = s.split(u'.')
+        labels = s.split('.')
     if not labels or labels == ['']:
         raise IDNAError('Empty domain')
     if not labels[-1]:
@@ -394,5 +390,5 @@ def decode(s, strict=False, uts46=False, std3_rules=False):
         else:
             raise IDNAError('Empty label')
     if trailing_dot:
-        result.append(u'')
-    return u'.'.join(result)
+        result.append('')
+    return '.'.join(result)
