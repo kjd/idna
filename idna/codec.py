@@ -9,7 +9,7 @@ class Codec(codecs.Codec):
     def encode(self, data, errors='strict'):
 
         if errors != 'strict':
-            raise IDNAError("Unsupported error handling \"{}\"".format(errors))
+            raise IDNAError('Unsupported error handling \"{}\"'.format(errors))
 
         if not data:
             return "", 0
@@ -19,20 +19,20 @@ class Codec(codecs.Codec):
     def decode(self, data, errors='strict'):
 
         if errors != 'strict':
-            raise IDNAError("Unsupported error handling \"{}\"".format(errors))
+            raise IDNAError('Unsupported error handling \"{}\"'.format(errors))
 
         if not data:
-            return "", 0
+            return '', 0
 
         return decode(data), len(data)
 
 class IncrementalEncoder(codecs.BufferedIncrementalEncoder):
     def _buffer_encode(self, data, errors, final):
         if errors != 'strict':
-            raise IDNAError("Unsupported error handling \"{}\"".format(errors))
+            raise IDNAError('Unsupported error handling \"{}\"'.format(errors))
 
         if not data:
-            return ("", 0)
+            return ('', 0)
 
         labels = _unicode_dots_re.split(data)
         trailing_dot = ''
@@ -55,17 +55,17 @@ class IncrementalEncoder(codecs.BufferedIncrementalEncoder):
             size += len(label)
 
         # Join with U+002E
-        result = ".".join(result) + trailing_dot
+        result = '.'.join(result) + trailing_dot
         size += len(trailing_dot)
         return (result, size)
 
 class IncrementalDecoder(codecs.BufferedIncrementalDecoder):
     def _buffer_decode(self, data, errors, final):
         if errors != 'strict':
-            raise IDNAError("Unsupported error handling \"{}\"".format(errors))
+            raise IDNAError('Unsupported error handling \"{}\"'.format(errors))
 
         if not data:
-            return ("", 0)
+            return ('', 0)
 
         # IDNA allows decoding to operate on Unicode strings, too.
         if isinstance(data, unicode):
@@ -73,8 +73,8 @@ class IncrementalDecoder(codecs.BufferedIncrementalDecoder):
         else:
             # Must be ASCII string
             data = str(data)
-            unicode(data, "ascii")
-            labels = data.split(".")
+            unicode(data, 'ascii')
+            labels = data.split('.')
 
         trailing_dot = ''
         if labels:
@@ -95,7 +95,7 @@ class IncrementalDecoder(codecs.BufferedIncrementalDecoder):
                 size += 1
             size += len(label)
 
-        result = ".".join(result) + trailing_dot
+        result = '.'.join(result) + trailing_dot
         size += len(trailing_dot)
         return (result, size)
 

@@ -3,7 +3,7 @@
 """IDNA Mapping Table from UTS46."""
 
 
-__version__ = "12.1.0"
+__version__ = '12.1.0'
 def _seg_0():
     return [
     (0x0, '3'),
