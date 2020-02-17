@@ -17,18 +17,10 @@ Basic functions are simply executed:
 
 .. code-block:: pycon
 
-    # Python 3
     >>> import idna
     >>> idna.encode('ドメイン.テスト')
     b'xn--eckwd4c7c.xn--zckzah'
     >>> print(idna.decode('xn--eckwd4c7c.xn--zckzah'))
-    ドメイン.テスト
-
-    # Python 2
-    >>> import idna
-    >>> idna.encode(u'ドメイン.テスト')
-    'xn--eckwd4c7c.xn--zckzah'
-    >>> print idna.decode('xn--eckwd4c7c.xn--zckzah')
     ドメイン.テスト
 
 Packages
@@ -55,7 +47,8 @@ Alternatively, you can install the package using the bundled setup script:
 
     $ python setup.py install
 
-This library works with Python 2.7 and Python 3.4 or later.
+This library works with Python 3.4 or later. Earlier versions support Python
+2 - use "idna<3" in your requirements file if you need this.
 
 
 Usage
@@ -66,7 +59,6 @@ name argument and perform a conversion to A-labels or U-labels respectively.
 
 .. code-block:: pycon
 
-    # Python 3
     >>> import idna
     >>> idna.encode('ドメイン.テスト')
     b'xn--eckwd4c7c.xn--zckzah'
@@ -78,11 +70,10 @@ You may use the codec encoding and decoding methods using the
 
 .. code-block:: pycon
 
-    # Python 2
     >>> import idna.codec
-    >>> print u'домена.испытание'.encode('idna')
-    xn--80ahd1agd.xn--80akhbyknj4f
-    >>> print 'xn--80ahd1agd.xn--80akhbyknj4f'.decode('idna')
+    >>> print('домена.испытание'.encode('idna'))
+    b'xn--80ahd1agd.xn--80akhbyknj4f'
+    >>> print(b'xn--80ahd1agd.xn--80akhbyknj4f'.decode('idna'))
     домена.испытание
 
 Conversions can be applied at a per-label basis using the ``ulabel`` or ``alabel``
@@ -90,9 +81,8 @@ functions if necessary:
 
 .. code-block:: pycon
 
-    # Python 2
-    >>> idna.alabel(u'测试')
-    'xn--0zwm56d'
+    >>> idna.alabel('测试')
+    b'xn--0zwm56d'
 
 Compatibility Mapping (UTS #46)
 +++++++++++++++++++++++++++++++
@@ -114,9 +104,8 @@ convert this into lower case prior to applying the IDNA conversion.
 
 .. code-block:: pycon
 
-    # Python 3
     >>> import idna
-    >>> idna.encode(u'Königsgäßchen')
+    >>> idna.encode('Königsgäßchen')
     ...
     idna.core.InvalidCodepoint: Codepoint U+004B at position 1 of 'Königsgäßchen' not allowed
     >>> idna.encode('Königsgäßchen', uts46=True)
@@ -132,8 +121,7 @@ conversion is not performed.
 
 .. code-block:: pycon
 
-    # Python 2
-    >>> idna.encode(u'Königsgäßchen', uts46=True, transitional=True)
+    >>> idna.encode('Königsgäßchen', uts46=True, transitional=True)
     'xn--knigsgsschen-lcb0w'
 
 Implementors should use transitional processing with caution, only in rare
@@ -193,9 +181,6 @@ The tool accepts a number of arguments, described using ``idna-data -h``. Most n
 the ``--version`` argument allows the specification of the version of Unicode to use
 in computing the table data. For example, ``idna-data --version 9.0.0 make-libdata``
 will generate library data against Unicode 9.0.0.
-
-Note that this script requires Python 3, but all generated library data will work
-in Python 2.7.
 
 
 Testing

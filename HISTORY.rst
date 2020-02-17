@@ -3,6 +3,13 @@
 History
 -------
 
+3.0 (2020-xx-xx)
+++++++++++++++++
+
+- Python 2 is no longer supported (the 2.x branch supports Python 2,
+  use "idna<3" in your requirements file if you need Python 2
+  support)
+
 2.9 (2020-02-16)
 ++++++++++++++++
 
