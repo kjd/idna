@@ -8,7 +8,7 @@ if sys.version_info[0] < 3:
     print("Only Python 3 supported.")
     sys.exit(2)
 
-PREFERRED_VERSION = '10.0.0'
+PREFERRED_VERSION = '12.1.0'
 UCD_URL = 'http://www.unicode.org/Public/{version}/ucd/{filename}'
 UTS46_URL = 'http://www.unicode.org/Public/idna/{version}/{filename}'
 
