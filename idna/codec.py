@@ -2,7 +2,7 @@ from .core import encode, decode, alabel, ulabel, IDNAError
 import codecs
 import re
 
-_unicode_dots_re = re.compile(u'[\u002e\u3002\uff0e\uff61]')
+_unicode_dots_re = re.compile('[\u002e\u3002\uff0e\uff61]')
 
 class Codec(codecs.Codec):
 
@@ -22,7 +22,7 @@ class Codec(codecs.Codec):
             raise IDNAError("Unsupported error handling \"{}\"".format(errors))
 
         if not data:
-            return u"", 0
+            return "", 0
 
         return decode(data), len(data)
 
@@ -35,7 +35,7 @@ class IncrementalEncoder(codecs.BufferedIncrementalEncoder):
             return ("", 0)
 
         labels = _unicode_dots_re.split(data)
-        trailing_dot = u''
+        trailing_dot = ''
         if labels:
             if not labels[-1]:
                 trailing_dot = '.'
@@ -65,7 +65,7 @@ class IncrementalDecoder(codecs.BufferedIncrementalDecoder):
             raise IDNAError("Unsupported error handling \"{}\"".format(errors))
 
         if not data:
-            return (u"", 0)
+            return ("", 0)
 
         # IDNA allows decoding to operate on Unicode strings, too.
         if isinstance(data, unicode):
@@ -76,16 +76,16 @@ class IncrementalDecoder(codecs.BufferedIncrementalDecoder):
             unicode(data, "ascii")
             labels = data.split(".")
 
-        trailing_dot = u''
+        trailing_dot = ''
         if labels:
             if not labels[-1]:
-                trailing_dot = u'.'
+                trailing_dot = '.'
                 del labels[-1]
             elif not final:
                 # Keep potentially unfinished label until the next call
                 del labels[-1]
                 if labels:
-                    trailing_dot = u'.'
+                    trailing_dot = '.'
 
         result = []
         size = 0
@@ -95,7 +95,7 @@ class IncrementalDecoder(codecs.BufferedIncrementalDecoder):
                 size += 1
             size += len(label)
 
-        result = u".".join(result) + trailing_dot
+        result = ".".join(result) + trailing_dot
         size += len(trailing_dot)
         return (result, size)
 

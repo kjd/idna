@@ -24,7 +24,7 @@ def main():
         'packages': ['idna'],
         'version': package_data['__version__'],
         'description': 'Internationalized Domain Names in Applications (IDNA)',
-        'long_description': io.open("README.rst", encoding="UTF-8").read(),
+        'long_description': open("README.rst", encoding="UTF-8").read(),
         'author': 'Kim Davies',
         'author_email': 'kim@cynosure.com.au',
         'license': 'BSD-like',
