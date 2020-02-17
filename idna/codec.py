@@ -2,7 +2,7 @@ from .core import encode, decode, alabel, ulabel, IDNAError
 import codecs
 import re
 
-_unicode_dots_re = re.compile(u'[\u002e\u3002\uff0e\uff61]')
+_unicode_dots_re = re.compile('[\u002e\u3002\uff0e\uff61]')
 
 class Codec(codecs.Codec):
 
@@ -35,7 +35,7 @@ class IncrementalEncoder(codecs.BufferedIncrementalEncoder):
             return ('', 0)
 
         labels = _unicode_dots_re.split(data)
-        trailing_dot = u''
+        trailing_dot = ''
         if labels:
             if not labels[-1]:
                 trailing_dot = '.'
