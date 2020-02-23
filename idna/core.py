@@ -340,9 +340,11 @@ def uts46_remap(domain, std3_rules=True, transitional=False):
 
 
 def encode(s, strict=False, uts46=False, std3_rules=False, transitional=False):
-
+    if isinstance(s, str):
+        s = remove_leading_trailing_space(s)
     if isinstance(s, (bytes, bytearray)):
         s = s.decode("ascii")
+        s = remove_leading_trailing_space(s)
     if uts46:
         s = uts46_remap(s, std3_rules, transitional)
     trailing_dot = False
@@ -371,9 +373,11 @@ def encode(s, strict=False, uts46=False, std3_rules=False, transitional=False):
 
 
 def decode(s, strict=False, uts46=False, std3_rules=False):
-
+    if isinstance(s, str):
+        s = remove_leading_trailing_space(s)
     if isinstance(s, (bytes, bytearray)):
         s = s.decode("ascii")
+        s = remove_leading_trailing_space(s)
     if uts46:
         s = uts46_remap(s, std3_rules, False)
     trailing_dot = False
@@ -396,3 +400,7 @@ def decode(s, strict=False, uts46=False, std3_rules=False):
     if trailing_dot:
         result.append(u'')
     return u'.'.join(result)
+
+"""this function remove the heading and trailing space from enter url which user enter in url by accident"""
+def remove_leading_trailing_space(url):
+    return url.replace(" ", "")
