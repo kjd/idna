@@ -258,6 +258,7 @@ class IDNATests(unittest.TestCase):
                          u'\u0521\u0525\u0523-\u0523\u0523-----\u0521\u0523\u0523\u0523.aa')
         self.assertRaises(idna.IDNAError, idna.decode, 'XN---------90GGLBAGAAC.AA')
         self.assertRaises(idna.IDNAError, idna.decode, 'xn---------90gglbagaac.aa')
+        self.assertRaises(idna.IDNAError, idna.decode, 'xn--')
 
 if __name__ == '__main__':
     unittest.main()
