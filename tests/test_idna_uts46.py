@@ -145,6 +145,9 @@ class TestIdnaTest(unittest.TestCase):
                 self.fail('decode() did not emit required error {} for {}'.format(to_unicode, repr(source)))
             self.assertEqual(output, to_unicode, 'unexpected decode() output')
         except (idna.IDNAError, UnicodeError, ValueError) as exc:
+            if str(exc).startswith("Unknown"):
+                raise unittest.SkipTest("Test requires support for a newer"
+                    " version of Unicode than this Python supports")
             if to_unicode_status == '[]':
                 raise
 
