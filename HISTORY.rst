@@ -3,6 +3,13 @@
 History
 -------
 
+2.10 (2020-06-27)
++++++++++++++++++
+
+- Update to Unicode 13.0.0.
+- Throws a more specific exception if "xn--" is provided as a label.
+- This is expected to be the last version that supports Python 2.
+
 2.9 (2020-02-16)
 ++++++++++++++++
 
