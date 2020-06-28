@@ -2,16 +2,16 @@ Internationalized Domain Names in Applications (IDNA)
 =====================================================
 
 Support for the Internationalised Domain Names in Applications
-(IDNA) protocol as specified in `RFC 5891 <http://tools.ietf.org/html/rfc5891>`_.
+(IDNA) protocol as specified in `RFC 5891 <https://tools.ietf.org/html/rfc5891>`_.
 This is the latest version of the protocol and is sometimes referred to as
 “IDNA 2008”.
 
 This library also provides support for Unicode Technical Standard 46,
-`Unicode IDNA Compatibility Processing <http://unicode.org/reports/tr46/>`_.
+`Unicode IDNA Compatibility Processing <https://unicode.org/reports/tr46/>`_.
 
 This acts as a suitable replacement for the “encodings.idna” module that
-comes with the Python standard library, but only supports the
-old, deprecated IDNA specification (`RFC 3490 <http://tools.ietf.org/html/rfc3490>`_).
+comes with the Python standard library, but which only supports the
+old, deprecated IDNA specification (`RFC 3490 <https://tools.ietf.org/html/rfc3490>`_).
 
 Basic functions are simply executed:
 
@@ -29,7 +29,7 @@ Packages
 The latest tagged release version is published in the PyPI repository:
 
 .. image:: https://badge.fury.io/py/idna.svg
-   :target: http://badge.fury.io/py/idna
+   :target: https://badge.fury.io/py/idna
 
 
 Installation
@@ -47,8 +47,9 @@ Alternatively, you can install the package using the bundled setup script:
 
     $ python setup.py install
 
-This library works with Python 3.4 or later. Earlier versions support Python
-2 - use "idna<3" in your requirements file if you need this.
+This library works with Python 3.4 or later. Earlier versions of this
+library support Python 2 - use "idna<3" in your requirements file if
+need this library for a Python 2 application.
 
 
 Usage
@@ -87,14 +88,14 @@ functions if necessary:
 Compatibility Mapping (UTS #46)
 +++++++++++++++++++++++++++++++
 
-As described in `RFC 5895 <http://tools.ietf.org/html/rfc5895>`_, the IDNA
-specification no longer normalizes input from different potential ways a user
-may input a domain name. This functionality, known as a “mapping”, is now
+As described in `RFC 5895 <https://tools.ietf.org/html/rfc5895>`_, the IDNA
+specification does not normalize input from different potential ways a user
+may input a domain name. This functionality, known as a “mapping”, is 
 considered by the specification to be a local user-interface issue distinct
 from IDNA conversion functionality.
 
 This library provides one such mapping, that was developed by the Unicode
-Consortium. Known as `Unicode IDNA Compatibility Processing <http://unicode.org/reports/tr46/>`_,
+Consortium. Known as `Unicode IDNA Compatibility Processing <https://unicode.org/reports/tr46/>`_,
 it provides for both a regular mapping for typical applications, as well as
 a transitional mapping to help migrate from older IDNA 2003 applications.
 
@@ -145,22 +146,24 @@ All errors raised during the conversion following the specification should
 raise an exception derived from the ``idna.IDNAError`` base class.
 
 More specific exceptions that may be generated as ``idna.IDNABidiError``
-when the error reflects an illegal combination of left-to-right and right-to-left
-characters in a label; ``idna.InvalidCodepoint`` when a specific codepoint is
-an illegal character in an IDN label (i.e. INVALID); and ``idna.InvalidCodepointContext``
-when the codepoint is illegal based on its positional context (i.e. it is CONTEXTO
-or CONTEXTJ but the contextual requirements are not satisfied.)
+when the error reflects an illegal combination of left-to-right and
+right-to-left characters in a label; ``idna.InvalidCodepoint`` when
+a specific codepoint is an illegal character in an IDN label (i.e.
+INVALID); and ``idna.InvalidCodepointContext`` when the codepoint is
+illegal based on its positional context (i.e. it is CONTEXTO or CONTEXTJ
+but the contextual requirements are not satisfied.)
 
 Building and Diagnostics
 ------------------------
 
-The IDNA and UTS 46 functionality relies upon pre-calculated lookup tables for
-performance. These tables are derived from computing against eligibility criteria
-in the respective standards. These tables are computed using the command-line
-script ``tools/idna-data``.
+The IDNA and UTS 46 functionality relies upon pre-calculated lookup
+tables for performance. These tables are derived from computing against
+eligibility criteria in the respective standards. These tables are
+computed using the command-line script ``tools/idna-data``.
 
-This tool will fetch relevant tables from the Unicode Consortium and perform the
-required calculations to identify eligibility. It has three main modes:
+This tool will fetch relevant codepoint data from the Unicode repository 
+and perform the required calculations to identify eligibility. There are 
+three main modes:
 
 * ``idna-data make-libdata``. Generates ``idnadata.py`` and ``uts46data.py``,
   the pre-calculated lookup tables using for IDNA and UTS 46 conversions. Implementors
@@ -170,7 +173,7 @@ required calculations to identify eligibility. It has three main modes:
 
 * ``idna-data make-table``. Generate a table of the IDNA disposition
   (e.g. PVALID, CONTEXTJ, CONTEXTO) in the format found in Appendix B.1 of RFC
-  5892 and the pre-computed tables published by `IANA <http://iana.org/>`_.
+  5892 and the pre-computed tables published by `IANA <https://www.iana.org/>`_.
 
 * ``idna-data U+0061``. Prints debugging output on the various properties
   associated with an individual Unicode codepoint (in this case, U+0061), that are
@@ -188,7 +191,7 @@ Testing
 
 The library has a test suite based on each rule of the IDNA specification, as
 well as tests that are provided as part of the Unicode Technical Standard 46,
-`Unicode IDNA Compatibility Processing <http://unicode.org/reports/tr46/>`_.
+`Unicode IDNA Compatibility Processing <https://unicode.org/reports/tr46/>`_.
 
 The tests are run automatically on each commit at Travis CI:
 
