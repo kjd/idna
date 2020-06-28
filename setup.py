@@ -13,8 +13,8 @@ from setuptools import setup
 def main():
 
     python_version = sys.version_info[:2]
-    if python_version < (2,7):
-        raise SystemExit("Sorry, Python 2.7 or newer required")
+    if python_version < (3,4):
+        raise SystemExit("Sorry, Python 3.4 or newer required")
 
     package_data = {}
     exec(open('idna/package_data.py').read(), package_data)
@@ -24,7 +24,7 @@ def main():
         'packages': ['idna'],
         'version': package_data['__version__'],
         'description': 'Internationalized Domain Names in Applications (IDNA)',
-        'long_description': io.open("README.rst", encoding="UTF-8").read(),
+        'long_description': open("README.rst", encoding="UTF-8").read(),
         'author': 'Kim Davies',
         'author_email': 'kim@cynosure.com.au',
         'license': 'BSD-like',
@@ -36,9 +36,8 @@ def main():
             'License :: OSI Approved :: BSD License',
             'Operating System :: OS Independent',
             'Programming Language :: Python',
-            'Programming Language :: Python :: 2',
-            'Programming Language :: Python :: 2.7',
             'Programming Language :: Python :: 3',
+            'Programming Language :: Python :: 3 :: Only',
             'Programming Language :: Python :: 3.4',
             'Programming Language :: Python :: 3.5',
             'Programming Language :: Python :: 3.6',
@@ -50,7 +49,8 @@ def main():
             'Topic :: Software Development :: Libraries :: Python Modules',
             'Topic :: Utilities',
         ],
-        'python_requires': '>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*',
+        'python_requires': '>=3.4',
+        'test_suite': 'tests',
     }
 
     setup(**arguments)
