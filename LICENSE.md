@@ -1,8 +1,6 @@
 License
 -------
 
-License: bsd-3-clause
-
 Copyright (c) 2013-2020, Kim Davies. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
