@@ -27,7 +27,7 @@ def main():
         'long_description': open("README.rst", encoding="UTF-8").read(),
         'author': 'Kim Davies',
         'author_email': 'kim@cynosure.com.au',
-        'license': 'BSD-like',
+        'license': 'BSD-3-Clause',
         'url': 'https://github.com/kjd/idna',
         'classifiers': [
             'Development Status :: 5 - Production/Stable',
