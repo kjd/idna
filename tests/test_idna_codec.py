@@ -23,12 +23,8 @@ class IDNACodecTests(unittest.TestCase):
         )
 
         for decoded, encoded in incremental_tests:
-            if sys.version_info[0] == 2:
-                self.assertEqual("".join(codecs.iterdecode(encoded, "idna")),
-                                decoded)
-            else:
-                self.assertEqual("".join(codecs.iterdecode((bytes([c]) for c in encoded), "idna")),
-                                decoded)
+            self.assertEqual("".join(codecs.iterdecode((bytes([c]) for c in encoded), "idna")),
+                             decoded)
 
         decoder = codecs.getincrementaldecoder("idna")()
         self.assertEqual(decoder.decode(b"xn--xam", ), "")
