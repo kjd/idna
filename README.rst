@@ -49,7 +49,7 @@ Alternatively, you can install the package using the bundled setup script:
 
 This library works with Python 3.4 or later. Earlier versions of this
 library support Python 2 - use "idna<3" in your requirements file if
-need this library for a Python 2 application.
+you need this library for a Python 2 application.
 
 
 Usage

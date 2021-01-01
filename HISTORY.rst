@@ -3,7 +3,7 @@
 History
 -------
 
-3.0 (2020-xx-xx)
+3.0 (2021-01-01)
 ++++++++++++++++
 
 - Python 2 is no longer supported (the 2.x branch supports Python 2,
