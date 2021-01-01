@@ -3,6 +3,13 @@
 History
 -------
 
+3.1 (2021-xx-xx)
+++++++++++++++++
+
+- Ensure license is included in package (Thanks, Julien Schueller)
+- No longer mark wheel has universal (Thanks, Matthieu Darbois)
+- Test on PowerPC using Travis CI
+
 3.0 (2021-01-01)
 ++++++++++++++++
 
