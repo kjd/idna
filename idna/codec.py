@@ -67,15 +67,7 @@ class IncrementalDecoder(codecs.BufferedIncrementalDecoder):
         if not data:
             return ('', 0)
 
-        # IDNA allows decoding to operate on Unicode strings, too.
-        if isinstance(data, unicode):
-            labels = _unicode_dots_re.split(data)
-        else:
-            # Must be ASCII string
-            data = str(data)
-            unicode(data, 'ascii')
-            labels = data.split('.')
-
+        labels = _unicode_dots_re.split(data)
         trailing_dot = ''
         if labels:
             if not labels[-1]:

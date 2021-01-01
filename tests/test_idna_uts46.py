@@ -1,10 +1,13 @@
 """Tests for TR46 code."""
 
 import os.path
+import re
 import unittest
 
 import idna
 
+_RE_UNICODE = re.compile("\\\\u([0-9a-fA-F]{4})")
+_RE_SURROGATE = re.compile("[\uD800-\uDBFF][\uDC00-\uDFFF]")
 _SKIP_TESTS = [
     # These are strings that are illegal in IDNA 2008. Older versions of the UTS-46 test suite
     # had these denoted with the 'NV8' marker but this has been removed, so we need to manually
@@ -109,8 +112,7 @@ class TestIdnaTest(unittest.TestCase):
     def __init__(self, lineno=None, fields=None):
         super().__init__()
         self.lineno = lineno
-        if fields:
-            self.fields = fields
+        self.fields = fields
 
     def id(self):
         return '{}.{}'.format(super().id(), self.lineno)
