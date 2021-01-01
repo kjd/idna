@@ -10,12 +10,11 @@ python:
   - "3.8"
   - "3.9"
   - "pypy3"
-  # Disable unsuported version  pypy for ppc64le
+# Disable unsuported version  pypy for ppc64le
 jobs:
   exclude:
-
   - arch: ppc64le
-      python: pypy3
+    python: pypy3
 
 install:
   - pip install .
