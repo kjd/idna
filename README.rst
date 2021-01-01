@@ -192,8 +192,3 @@ Testing
 The library has a test suite based on each rule of the IDNA specification, as
 well as tests that are provided as part of the Unicode Technical Standard 46,
 `Unicode IDNA Compatibility Processing <https://unicode.org/reports/tr46/>`_.
-
-The tests are run automatically on each commit at Travis CI:
-
-.. image:: https://travis-ci.org/kjd/idna.svg?branch=master
-   :target: https://travis-ci.org/kjd/idna
