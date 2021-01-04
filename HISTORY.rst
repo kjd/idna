@@ -3,7 +3,7 @@
 History
 -------
 
-3.1 (2021-xx-xx)
+3.1 (2021-01-04)
 ++++++++++++++++
 
 - Ensure license is included in package (Thanks, Julien Schueller)
