@@ -22,6 +22,8 @@ def main():
     arguments = {
         'name': 'idna',
         'packages': ['idna'],
+        'package_data': {'idna': ['py.typed', '*.pyi']},
+        'include_package_data': True,
         'version': package_data['__version__'],
         'description': 'Internationalized Domain Names in Applications (IDNA)',
         'long_description': open("README.rst", encoding="UTF-8").read(),
@@ -38,7 +40,6 @@ def main():
             'Programming Language :: Python',
             'Programming Language :: Python :: 3',
             'Programming Language :: Python :: 3 :: Only',
-            'Programming Language :: Python :: 3.4',
             'Programming Language :: Python :: 3.5',
             'Programming Language :: Python :: 3.6',
             'Programming Language :: Python :: 3.7',
