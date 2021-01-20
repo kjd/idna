@@ -87,7 +87,7 @@ def hexvalue(value):
 class UnicodeVersion(object):
 
     def __init__(self, version):
-        result = re.match('^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$', version)
+        result = re.match(r'^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$', version)
         if result:
             self.major = int(result.group('major'))
             self.minor = int(result.group('minor'))
@@ -172,7 +172,7 @@ class UnicodeData(object):
         self.ucd_props = collections.defaultdict(list)
         for line in f_pl.splitlines():
             result = re.match(
-                '^(?P<start>[0-9A-F]{4,6})(|\.\.(?P<end>[0-9A-F]{4,6}))\s*;\s*(?P<prop>\S+)\s*(|\#.*)$',
+                r'^(?P<start>[0-9A-F]{4,6})(|\.\.(?P<end>[0-9A-F]{4,6}))\s*;\s*(?P<prop>\S+)\s*(|\#.*)$',
                 line)
             if result:
                 if result.group('end'):
@@ -187,7 +187,7 @@ class UnicodeData(object):
         f_dcp = self._ucdfile('DerivedCoreProperties.txt')
         for line in f_dcp.splitlines():
             result = re.match(
-                '^(?P<start>[0-9A-F]{4,6})(|\.\.(?P<end>[0-9A-F]{4,6}))\s*;\s*(?P<prop>\S+)\s*(|\#.*)$',
+                r'^(?P<start>[0-9A-F]{4,6})(|\.\.(?P<end>[0-9A-F]{4,6}))\s*;\s*(?P<prop>\S+)\s*(|\#.*)$',
                 line)
             if result:
                 if result.group('end'):
@@ -203,7 +203,7 @@ class UnicodeData(object):
         f_b = self._ucdfile('Blocks.txt')
         for line in f_b.splitlines():
             result = re.match(
-                '^(?P<start>[0-9A-F]{4,6})\.\.(?P<end>[0-9A-F]{4,6})\s*;\s*(?P<block>.*)\s*$',
+                r'^(?P<start>[0-9A-F]{4,6})\.\.(?P<end>[0-9A-F]{4,6})\s*;\s*(?P<block>.*)\s*$',
                 line)
             if result:
                 for i in hexrange(result.group('start'), result.group('end')):
@@ -216,7 +216,7 @@ class UnicodeData(object):
         f_cf = self._ucdfile('CaseFolding.txt')
         for line in f_cf.splitlines():
             result = re.match(
-                '^(?P<cp>[0-9A-F]{4,6})\s*;\s*(?P<type>\S+)\s*;\s*(?P<subst>[0-9A-F\s]+)\s*',
+                r'^(?P<cp>[0-9A-F]{4,6})\s*;\s*(?P<type>\S+)\s*;\s*(?P<subst>[0-9A-F\s]+)\s*',
                 line)
             if result:
                 if result.group('type') in ('C', 'F'):
@@ -229,7 +229,7 @@ class UnicodeData(object):
         f_hst = self._ucdfile('HangulSyllableType.txt')
         for line in f_hst.splitlines():
             result = re.match(
-                '^(?P<start>[0-9A-F]{4,6})\.\.(?P<end>[0-9A-F]{4,6})\s*;\s*(?P<type>\S+)\s*(|\#.*)$',
+                r'^(?P<start>[0-9A-F]{4,6})\.\.(?P<end>[0-9A-F]{4,6})\s*;\s*(?P<type>\S+)\s*(|\#.*)$',
                 line)
             if result:
                 for i in hexrange(result.group('start'), result.group('end')):
@@ -240,7 +240,7 @@ class UnicodeData(object):
         self.ucd_as = {}
         f_as = self._ucdfile('ArabicShaping.txt')
         for line in f_as.splitlines():
-            result = re.match('^(?P<cp>[0-9A-F]{4,6})\s*;\s*.*?\s*;\s*(?P<jt>\S+)\s*;', line)
+            result = re.match(r'^(?P<cp>[0-9A-F]{4,6})\s*;\s*.*?\s*;\s*(?P<jt>\S+)\s*;', line)
             if result:
                 self.ucd_as[int(result.group('cp'), 16)] = result.group('jt')
 
@@ -250,7 +250,7 @@ class UnicodeData(object):
         f_s = self._ucdfile('Scripts.txt')
         for line in f_s.splitlines():
             result = re.match(
-                '^(?P<start>[0-9A-F]{4,6})(|\.\.(?P<end>[0-9A-F]{4,6}))\s*;\s*(?P<script>\S+)\s*(|\#.*)$',
+                r'^(?P<start>[0-9A-F]{4,6})(|\.\.(?P<end>[0-9A-F]{4,6}))\s*;\s*(?P<script>\S+)\s*(|\#.*)$',
                 line)
             if result:
                 if not result.group('script') in self.ucd_s:
@@ -268,7 +268,7 @@ class UnicodeData(object):
         f_idnamt = self._ucdfile('IdnaMappingTable.txt', urlbase=UTS46_URL)
         for line in f_idnamt.splitlines():
             result = re.match(
-                '^(?P<start>[0-9A-F]{4,6})(|\.\.(?P<end>[0-9A-F]{4,6}))\s*;\s*(?P<fields>[^#]+)',
+                r'^(?P<start>[0-9A-F]{4,6})(|\.\.(?P<end>[0-9A-F]{4,6}))\s*;\s*(?P<fields>[^#]+)',
                 line)
             if result:
                 fields = [x.strip() for x in result.group('fields').split(';')]
@@ -515,7 +515,7 @@ def idna_libdata(ucdata):
     #
     yield 'scripts = {'
     for script in SCRIPT_WHITELIST:
-        prefix = '    \'{0}\': '.format(script)
+        prefix = '    \'{}\': '.format(script)
         for line in optimised_list(ucdata.ucd_s[script]):
             yield prefix + line
             prefix = ''
@@ -527,7 +527,7 @@ def idna_libdata(ucdata):
     yield 'joining_types = {'
     for cp in ucdata.codepoints():
         if cp.joining_type:
-            yield '    0x{0:x}: {1},'.format(cp.value, ord(cp.joining_type))
+            yield '    0x{:x}: {},'.format(cp.value, ord(cp.joining_type))
     yield '}'
 
     #
@@ -543,7 +543,7 @@ def idna_libdata(ucdata):
             classes[status] = set()
         classes[status].add(cp.value)
     for status in ['PVALID', 'CONTEXTJ', 'CONTEXTO']:
-        prefix = '    \'{0}\': '.format(status)
+        prefix = '    \'{}\': '.format(status)
         for line in optimised_list(classes[status]):
             yield prefix + line
             prefix = ''
@@ -567,9 +567,9 @@ def uts46_ranges(ucdata):
         last = (status, mapping)
 
         if mapping is not None:
-            yield '(0x{0:X}, \'{1}\', \'{2}\')'.format(cp.value, status, mapping)
+            yield '(0x{:X}, \'{}\', \'{}\')'.format(cp.value, status, mapping)
         else:
-            yield '(0x{0:X}, \'{1}\')'.format(cp.value, status)
+            yield '(0x{:X}, \'{}\')'.format(cp.value, status)
 
 def uts46_libdata(ucdata):
 
@@ -585,14 +585,14 @@ def uts46_libdata(ucdata):
         if idx % UTS46_SEGMENT_SIZE == 0:
             if idx != 0:
                 yield '    ]\n'
-            yield 'def _seg_{0}():\n    return ['.format(idx // UTS46_SEGMENT_SIZE)
-        yield '    {0},'.format(row)
+            yield 'def _seg_{}():\n    return ['.format(idx // UTS46_SEGMENT_SIZE)
+        yield '    {},'.format(row)
     yield '    ]\n'
 
     yield 'uts46data = tuple('
     yield '    _seg_0()'
     for i in range(1, idx // UTS46_SEGMENT_SIZE + 1):
-        yield '    + _seg_{0}()'.format(i)
+        yield '    + _seg_{}()'.format(i)
     yield ')'
 
 def make_libdata(args, ucdata):
@@ -655,7 +655,7 @@ def main():
     elif args.action == 'make-libdata':
         make_libdata(args, ucdata)
     else:
-        result = re.match('^(?i)(U\+|)(?P<cp>[0-9A-F]{4,6})$', args.action)
+        result = re.match(r'^(?i)(U\+|)(?P<cp>[0-9A-F]{4,6})$', args.action)
         if result:
             codepoint = int(result.group('cp'), 16)
             diagnose_codepoint(codepoint, args, ucdata)
