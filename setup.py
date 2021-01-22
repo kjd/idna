@@ -22,7 +22,7 @@ def main():
     arguments = {
         'name': 'idna',
         'packages': ['idna'],
-        'package_data': {'idna': ['py.typed', '*.pyi']},
+        'package_data': {'idna': ['py.typed']},
         'include_package_data': True,
         'version': package_data['__version__'],
         'description': 'Internationalized Domain Names in Applications (IDNA)',
@@ -51,7 +51,7 @@ def main():
             'Topic :: Software Development :: Libraries :: Python Modules',
             'Topic :: Utilities',
         ],
-        'python_requires': '>=3.4',
+        'python_requires': '>=3.5',
         'test_suite': 'tests',
     }
 
