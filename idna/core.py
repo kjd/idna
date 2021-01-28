@@ -88,7 +88,7 @@ def check_bidi(label, check_ltr=False):
         raise IDNABidiError('First codepoint in label {} must be directionality L, R or AL'.format(repr(label)))
 
     valid_ending = False
-    number_type = False  # type: Union[str, bool]
+    number_type = None  # type: Optional[str]
     for (idx, cp) in enumerate(label, 1):
         direction = unicodedata.bidirectional(cp)
 
