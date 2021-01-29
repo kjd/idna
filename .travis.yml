@@ -3,18 +3,25 @@ arch:
   - amd64
   - ppc64le
 python:
-  - "3.4"
   - "3.5"
   - "3.6"
   - "3.7"
   - "3.8"
   - "3.9"
   - "pypy3"
-# Disable unsuported version  pypy for ppc64le
+# Disable unsupported version  pypy for ppc64le
 jobs:
   exclude:
   - arch: ppc64le
     python: pypy3
+
+matrix:
+  include:
+    - python: 3.9
+      install:
+        - pip install mypy
+      script:
+        - mypy --strict idna/
 
 install:
   - pip install .

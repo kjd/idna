@@ -12,7 +12,6 @@ from .core import (
     check_nfc,
     decode,
     encode,
-    intranges_contain,
     ulabel,
     uts46_remap,
     valid_contextj,
@@ -20,6 +19,7 @@ from .core import (
     valid_label_length,
     valid_string_length,
 )
+from .intranges import intranges_contain
 
 __all__ = [
     "IDNABidiError",
