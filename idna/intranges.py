@@ -40,7 +40,7 @@ def _decode_range(r):
 
 
 def intranges_contain(int_, ranges):
-    # type: (int, Tuple[int, ...]) -> bool
+    # type: (int, array) -> bool
     """Determine if `int_` falls into one of the ranges in `ranges`."""
     tuple_ = _encode_range(int_, 0)
     pos = bisect.bisect_left(ranges, tuple_)
