@@ -3,6 +3,12 @@
 History
 -------
 
+3.2 (2021-05-29)
+++++++++++++++++
+
+- Add type hints (Thanks, Seth Michael Larson!)
+- Remove support for Python 3.4
+
 3.1 (2021-01-04)
 ++++++++++++++++
 
