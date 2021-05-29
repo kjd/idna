@@ -47,7 +47,7 @@ Alternatively, you can install the package using the bundled setup script:
 
     $ python setup.py install
 
-This library works with Python 3.4 or later. Earlier versions of this
+This library works with Python 3.5 or later. Earlier versions of this
 library support Python 2 - use "idna<3" in your requirements file if
 you need this library for a Python 2 application.
 
