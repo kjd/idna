@@ -72,10 +72,10 @@ You may use the codec encoding and decoding methods using the
 .. code-block:: pycon
 
     >>> import idna.codec
-    >>> print('домена.испытание'.encode('idna'))
-    b'xn--80ahd1agd.xn--80akhbyknj4f'
-    >>> print(b'xn--80ahd1agd.xn--80akhbyknj4f'.decode('idna'))
-    домена.испытание
+    >>> print('домен.испытание'.encode('idna'))
+    b'xn--d1acufc.xn--80akhbyknj4f'
+    >>> print(b'xn--d1acufc.xn--80akhbyknj4f'.decode('idna'))
+    домен.испытание
 
 Conversions can be applied at a per-label basis using the ``ulabel`` or ``alabel``
 functions if necessary:
