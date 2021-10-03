@@ -312,7 +312,10 @@ def ulabel(label):
         check_label(label_bytes)
         return label_bytes.decode('ascii')
 
-    label = label_bytes.decode('punycode')
+    try:
+        label = label_bytes.decode('punycode')
+    except UnicodeError:
+        raise IDNAError('Invalid A-label')
     check_label(label)
     return label
 
