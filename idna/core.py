@@ -383,8 +383,11 @@ def encode(s, strict=False, uts46=False, std3_rules=False, transitional=False):
 
 def decode(s, strict=False, uts46=False, std3_rules=False):
     # type: (Union[str, bytes, bytearray], bool, bool, bool) -> str
-    if isinstance(s, (bytes, bytearray)):
-        s = s.decode('ascii')
+    try:
+        if isinstance(s, (bytes, bytearray)):
+            s = s.decode('ascii')
+    except UnicodeDecodeError:
+        raise IDNAError('Invalid ASCII in A-label')
     if uts46:
         s = uts46_remap(s, std3_rules, False)
     trailing_dot = False
