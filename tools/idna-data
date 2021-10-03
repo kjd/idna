@@ -586,7 +586,7 @@ def uts46_libdata(ucdata):
         if idx % UTS46_SEGMENT_SIZE == 0:
             if idx != 0:
                 yield '    ]\n'
-            yield 'def _seg_{}():\n    # type: () -> List[Union[Tuple[int, str], Tuple[int, str, str]]]\n    return ['.format(idx // UTS46_SEGMENT_SIZE)
+            yield 'def _seg_{}() -> List[Union[Tuple[int, str], Tuple[int, str, str]]]:\n    return ['.format(idx // UTS46_SEGMENT_SIZE)
         yield '    {},'.format(row)
     yield '    ]\n'
 
