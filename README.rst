@@ -11,7 +11,7 @@ This library also provides support for Unicode Technical Standard 46,
 
 This acts as a suitable replacement for the “encodings.idna” module that
 comes with the Python standard library, but which only supports the
-old, deprecated IDNA specification (`RFC 3490 <https://tools.ietf.org/html/rfc3490>`_).
+older superseded IDNA specification (`RFC 3490 <https://tools.ietf.org/html/rfc3490>`_).
 
 Basic functions are simply executed:
 
@@ -22,14 +22,6 @@ Basic functions are simply executed:
     b'xn--eckwd4c7c.xn--zckzah'
     >>> print(idna.decode('xn--eckwd4c7c.xn--zckzah'))
     ドメイン.テスト
-
-Packages
---------
-
-The latest tagged release version is published in the PyPI repository:
-
-.. image:: https://badge.fury.io/py/idna.svg
-   :target: https://badge.fury.io/py/idna
 
 
 Installation
@@ -46,10 +38,6 @@ Alternatively, you can install the package using the bundled setup script:
 .. code-block:: bash
 
     $ python setup.py install
-
-This library works with Python 3.5 or later. Earlier versions of this
-library support Python 2 - use "idna<3" in your requirements file if
-you need this library for a Python 2 application.
 
 
 Usage
@@ -186,9 +174,31 @@ in computing the table data. For example, ``idna-data --version 9.0.0 make-libda
 will generate library data against Unicode 9.0.0.
 
 
-Testing
--------
+Additional Notes
+----------------
 
-The library has a test suite based on each rule of the IDNA specification, as
-well as tests that are provided as part of the Unicode Technical Standard 46,
-`Unicode IDNA Compatibility Processing <https://unicode.org/reports/tr46/>`_.
+* **Packages**. The latest tagged release version is published in the
+  `Python Package Index <https://pypi.org/project/idna/>`_.
+
+* **Version support**. This library supports Python 3.5 and higher. As this library
+  serves as a low-level toolkit for a variety of applications, many of which strive
+  for broad compatibility with older Python versions, there is no rush to remove
+  older intepreter support. Removing support for older versions should be well
+  justified in that the maintenance burden has become too high.
+
+* **Python 2**. Python 2 is supported by version 2.x of this library. While active
+  development of the version 2.x series has ended, notable issues being corrected
+  may be backported to 2.x. Use "idna<3" in your requirements file if you need this
+  library for a Python 2 application.
+
+* **Testing**. The library has a test suite based on each rule of the IDNA specification, as
+  well as tests that are provided as part of the Unicode Technical Standard 46,
+  `Unicode IDNA Compatibility Processing <https://unicode.org/reports/tr46/>`_.
+
+* **Emoji**. It is an occasional request to support emoji domains in this library. Encoding
+  of symbols like emoji is expressly prohibited by the technical standard IDNA 2008 and
+  emoji domains are broadly phased out across the domain industry due to associated security
+  risks. For now, applications that wish need to support these non-compliant labels may
+  wish to consider trying the encode/decode operation in this library first, and then falling
+  back to using `encodings.idna`. See `the Github project <https://github.com/kjd/idna/issues/18>`_
+  for more discussion.
