@@ -3,6 +3,20 @@
 History
 -------
 
+3.3 (2021-10-13)
+++++++++++++++++
+
+- Update to Unicode 14.0.0
+- Update to in-line type annotations
+- Throw IDNAError exception correctly for some malformed input
+- Advertise support for Python 3.10
+- Improve testing regime on Github
+- Fix Russian typo in documentation
+
+Thanks to Jon Defresne, Hugo van Kemenade, Seth Michael Larson,
+Patrick Ventuzelo and Boris Verhovsky for contributions to this
+release.
+
 3.2 (2021-05-29)
 ++++++++++++++++
 
