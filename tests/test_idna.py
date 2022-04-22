@@ -246,7 +246,8 @@ class IDNATests(unittest.TestCase):
         self.assertEqual(idna.encode('a'*63), b'a'*63)
         self.assertRaises(idna.IDNAError, idna.encode, 'a'*64)
         self.assertRaises(idna.core.InvalidCodepoint, idna.encode, '*')
-
+        self.assertRaises(idna.IDNAError, idna.encode, b'\x0a\x33\x81')
+        
     def test_decode(self):
 
         self.assertEqual(idna.decode('xn--zckzah.xn--zckzah'), '\u30c6\u30b9\u30c8.\u30c6\u30b9\u30c8')
@@ -261,6 +262,6 @@ class IDNATests(unittest.TestCase):
         self.assertRaises(idna.IDNAError, idna.decode, 'xn--')
         self.assertRaises(idna.IDNAError, idna.decode, b'\x8d\xd2')
         self.assertRaises(idna.IDNAError, idna.decode, b'A.A.0.a.a.A.0.a.A.A.0.a.A.0A.2.a.A.A.0.a.A.0.A.a.A0.a.a.A.0.a.fB.A.A.a.A.A.B.A.A.a.A.A.B.A.A.a.A.A.0.a.A.a.a.A.A.0.a.A.0.A.a.A0.a.a.A.0.a.fB.A.A.a.A.A.B.0A.A.a.A.A.B.A.A.a.A.A.a.A.A.B.A.A.a.A.0.a.B.A.A.a.A.B.A.a.A.A.5.a.A.0.a.Ba.A.B.A.A.a.A.0.a.Xn--B.A.A.A.a')
-
+ 
 if __name__ == '__main__':
     unittest.main()
