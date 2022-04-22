@@ -341,7 +341,7 @@ def encode(s: Union[str, bytes, bytearray], strict: bool = False, uts46: bool = 
     try:
         if isinstance(s, (bytes, bytearray)):
             s = s.decode('ascii')
-    except UnnicodeDecodeError:
+    except UnicodeDecodeError:
         raise IDNAError('Invalid ASCII in A-label')
     if uts46:
         s = uts46_remap(s, std3_rules, transitional)
