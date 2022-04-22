@@ -338,8 +338,11 @@ def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False
 
 
 def encode(s: Union[str, bytes, bytearray], strict: bool = False, uts46: bool = False, std3_rules: bool = False, transitional: bool = False) -> bytes:
-    if isinstance(s, (bytes, bytearray)):
-        s = s.decode('ascii')
+    try:
+        if isinstance(s, (bytes, bytearray)):
+            s = s.decode('ascii')
+    except UnnicodeDecodeError:
+        raise IDNAError('Invalid ASCII in A-label')
     if uts46:
         s = uts46_remap(s, std3_rules, transitional)
     trailing_dot = False
