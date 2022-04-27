@@ -246,6 +246,7 @@ class IDNATests(unittest.TestCase):
         self.assertEqual(idna.encode('a'*63), b'a'*63)
         self.assertRaises(idna.IDNAError, idna.encode, 'a'*64)
         self.assertRaises(idna.core.InvalidCodepoint, idna.encode, '*')
+        self.assertRaises(idna.IDNAError, idna.encode, b'\x0a\x33\x81')
 
     def test_decode(self):
 
