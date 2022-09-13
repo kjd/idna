@@ -6,6 +6,7 @@ build-backend = "flit_core.buildapi"
 name = "idna"
 description = "Internationalized Domain Names in Applications (IDNA)"
 readme = "README.rst"
+license = {file = "LICENSE.md"}
 authors = [
   {name = "Kim Davies", email = "kim@cynosure.com.au"}
 ]
