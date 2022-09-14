@@ -38,3 +38,6 @@ dynamic = ["version"]
 "Source" = "https://github.com/kjd/idna"
 "Changelog" = "https://github.com/kjd/idna/blob/master/HISTORY.rst"
 "Issue tracker" = "https://github.com/kjd/idna/issues"
+
+[tool.flit.sdist]
+exclude = [".gitignore", ".github/"]
