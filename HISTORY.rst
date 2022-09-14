@@ -3,6 +3,18 @@
 History
 -------
 
+3.4 (2022-09-14)
+++++++++++++++++
+
+- Update to Unicode 15.0.0
+- Migrate to pyproject.toml for build information (PEP 621)
+- Correct another instance where generic exception was raised instead of
+  IDNAError for malformed input
+- Source distribution uses zeroized file ownership for improved
+  reproducibility
+
+Thanks to Seth Michael Larson for contributions to this release.
+
 3.3 (2021-10-13)
 ++++++++++++++++
 
