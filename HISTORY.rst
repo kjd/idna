@@ -3,6 +3,10 @@
 History
 -------
 
+3.5 (XXXX-XX-XX)
+++++++++++++++++
+- Remove 'setup.py' to complete migration to pyproject.toml
+
 3.4 (2022-09-14)
 ++++++++++++++++
 
