@@ -99,7 +99,7 @@ class StreamReader(Codec, codecs.StreamReader):
     pass
 
 
-def getregentry(name) -> codecs.CodecInfo:
+def getregentry(name: str) -> Optional[codecs.CodecInfo]:
     if name != 'idna' and name != 'idna2008':
         return None
 
