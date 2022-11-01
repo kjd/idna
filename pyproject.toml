@@ -8,7 +8,7 @@ description = "Internationalized Domain Names in Applications (IDNA)"
 readme = "README.rst"
 license = {file = "LICENSE.md"}
 authors = [
-  {name = "Kim Davies", email = "kim@cynosure.com.au"}
+  {name = "Kim Davies", email = "kim+pypi@gumleaf.org"}
 ]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
