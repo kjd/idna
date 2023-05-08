@@ -40,7 +40,7 @@ jobs:
   build:
     strategy:
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', 'pypy3']
+        python-version: ['3.7', '3.8', '3.9', '3.10', 'pypy-3.9']
         include:
           - python-version: 3.5
             os: ubuntu-20.04
