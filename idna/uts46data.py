@@ -5210,7 +5210,6 @@ def _seg_49() -> List[Union[Tuple[int, str], Tuple[int, str, str]]]:
 
 def _seg_50() -> List[Union[Tuple[int, str], Tuple[int, str, str]]]:
     return [
-<<<<<<< Updated upstream
     (0xFE5E, 'M', '〕'),
     (0xFE5F, '3', '#'),
     (0xFE60, '3', '&'),
@@ -5412,7 +5411,6 @@ def _seg_50() -> List[Union[Tuple[int, str], Tuple[int, str, str]]]:
         (0xFF18, "M", "8"),
         (0xFF19, "M", "9"),
         (0xFF1A, "3", ":"),
->>>>>>> Stashed changes
     ]
 
 def _seg_51() -> List[Union[Tuple[int, str], Tuple[int, str, str]]]:
@@ -8535,7 +8533,6 @@ def _seg_80() -> List[Union[Tuple[int, str], Tuple[int, str, str]]]:
     (0x2F9D5, 'M', '賁'),
     ]
 
-<<<<<<< Updated upstream
 def _seg_81() -> List[Union[Tuple[int, str], Tuple[int, str, str]]]:
     return [
     (0x2F9D6, 'M', '贛'),
@@ -8618,8 +8615,6 @@ def _seg_81() -> List[Union[Tuple[int, str], Tuple[int, str, str]]]:
     (0xE01F0, 'X'),
     ]
 
-=======
->>>>>>> Stashed changes
 uts46data = tuple(
     _seg_0()
     + _seg_1()

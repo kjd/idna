@@ -1709,7 +1709,6 @@ codepoint_classes = {
         0x30a1000030fb,
         0x30fc000030ff,
         0x310500003130,
-<<<<<<< Updated upstream
         0x31a0000031c0,
         0x31f000003200,
         0x340000004dc0,
@@ -2069,7 +2068,6 @@ codepoint_classes = {
         0x102800001029D,
         0x102A0000102D1,
         0x102E0000102E1,
->>>>>>> Stashed changes
         0x1030000010320,
         0x1032d00010341,
         0x103420001034a,
@@ -2243,7 +2241,6 @@ codepoint_classes = {
         0x1300000013430,
         0x1344000013456,
         0x1440000014647,
-<<<<<<< Updated upstream
         0x1680000016a39,
         0x16a4000016a5f,
         0x16a6000016a6a,
@@ -2400,7 +2397,6 @@ codepoint_classes = {
     ),
     "CONTEXTO": (
         0xB7000000B8,
->>>>>>> Stashed changes
         0x37500000376,
         0x5f3000005f5,
         0x6600000066a,
