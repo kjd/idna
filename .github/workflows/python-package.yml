@@ -12,17 +12,23 @@ permissions:
 
 jobs:
   mypy:
-    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version:
-          - '3.5'
-          - '3.6'
           - '3.7'
           - '3.8'
           - '3.9'
           - '3.10'
+<<<<<<< Updated upstream
           - '3.11'
+=======
+        include:
+          - python-version: 3.5
+            os: ubuntu-20.04
+          - python-version: 3.6
+            os: ubuntu-20.04
+    runs-on: ${{ matrix.os || 'ubuntu-latest' }}
+>>>>>>> Stashed changes
 
     steps:
       - uses: actions/checkout@v3
@@ -36,10 +42,19 @@ jobs:
         run: mypy --strict idna
 
   build:
-    runs-on: ubuntu-latest
     strategy:
       matrix:
+<<<<<<< Updated upstream
         python-version: ['3.5', '3.6', '3.7', '3.8', '3.9', '3.10', '3.11', 'pypy-3.8']
+=======
+        python-version: ['3.7', '3.8', '3.9', '3.10', 'pypy3']
+        include:
+          - python-version: 3.5
+            os: ubuntu-20.04
+          - python-version: 3.6
+            os: ubuntu-20.04
+    runs-on: ${{ matrix.os || 'ubuntu-latest' }}
+>>>>>>> Stashed changes
 
     steps:
     - uses: actions/checkout@v3
