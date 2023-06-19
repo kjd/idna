@@ -26,7 +26,7 @@ class IDNACodecTests(unittest.TestCase):
             self.assertEqual("".join(codecs.iterdecode((bytes([c]) for c in encoded), "idna")),
                              decoded)
 
-        decoder = codecs.getincrementaldecoder("idna")()
+        decoder = idna.codec.IncrementalDecoder()
         self.assertEqual(decoder.decode(b"xn--xam", ), "")
         self.assertEqual(decoder.decode(b"ple-9ta.o", ), "\xe4xample.")
         self.assertEqual(decoder.decode(b"rg"), "")
@@ -53,7 +53,7 @@ class IDNACodecTests(unittest.TestCase):
             self.assertEqual(b"".join(codecs.iterencode(decoded, "idna")),
                              encoded)
 
-        encoder = codecs.getincrementalencoder("idna")()
+        encoder = idna.codec.IncrementalEncoder()
         self.assertEqual(encoder.encode("\xe4x"), b"")
         self.assertEqual(encoder.encode("ample.org"), b"xn--xample-9ta.")
         self.assertEqual(encoder.encode("", True), b"org")
