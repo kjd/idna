@@ -79,7 +79,7 @@ ways a user may input a domain name. This functionality, known as
 a “mapping”, is considered by the specification to be a local
 user-interface issue distinct from IDNA conversion functionality.
 
-This library provides one such mapping, that was developed by the
+This library provides one such mapping that was developed by the
 Unicode Consortium. Known as `Unicode IDNA Compatibility Processing
 <https://unicode.org/reports/tr46/>`_, it provides for both a regular
 mapping for typical applications, as well as a transitional mapping to
@@ -204,7 +204,7 @@ Additional Notes
   this library. Encoding of symbols like emoji is expressly prohibited by
   the technical standard IDNA 2008 and emoji domains are broadly phased
   out across the domain industry due to associated security risks. For
-  now, applications that wish need to support these non-compliant labels
+  now, applications that need to support these non-compliant labels
   may wish to consider trying the encode/decode operation in this library
   first, and then falling back to using `encodings.idna`. See `the Github
   project <https://github.com/kjd/idna/issues/18>`_ for more discussion.

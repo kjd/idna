@@ -5,7 +5,14 @@ History
 
 3.5 (XXXX-XX-XX)
 ++++++++++++++++
+- String codec name is now 'idna2008' as overriding the system
+  codec 'idna' was not working.
+- Fix typing error for codec encoding
 - Remove 'setup.py' to complete migration to pyproject.toml
+- Added security reporting protocol for project
+
+Thanks Jon Ribbens, Diogo Teles Sant'Anna, Wu Tingfeng for contributions
+to this release.
 
 3.4 (2022-09-14)
 ++++++++++++++++
