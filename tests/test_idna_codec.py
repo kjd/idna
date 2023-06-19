@@ -17,11 +17,17 @@ class IDNACodecTests(unittest.TestCase):
     def testCodec(self):
         self.assertIs(codecs.lookup(CODEC_NAME).incrementalencoder, idna.codec.IncrementalEncoder)
 
-    def testDecode(self):
-        return self.idnatests.test_decode(decode=lambda obj: codecs.decode(obj, CODEC_NAME))
+    def testDirectDecode(self):
+        self.idnatests.test_decode(decode=lambda obj: codecs.decode(obj, CODEC_NAME))
 
-    def testEncode(self):
-        return self.idnatests.test_encode(encode=lambda obj: codecs.encode(obj, CODEC_NAME))
+    def testIndirectDecode(self):
+        self.idnatests.test_decode(decode=lambda obj: obj.decode(CODEC_NAME), skip_str=True)
+
+    def testDirectEncode(self):
+        self.idnatests.test_encode(encode=lambda obj: codecs.encode(obj, CODEC_NAME))
+
+    def testIndirectEncode(self):
+        self.idnatests.test_encode(encode=lambda obj: obj.encode(CODEC_NAME), skip_bytes=True)
 
     def testStreamReader(self):
         def decode(obj):

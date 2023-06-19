@@ -231,7 +231,7 @@ class IDNATests(unittest.TestCase):
         self.assertTrue(idna.valid_contexto(ext_arabic_digit + ext_arabic_digit, 0))
         self.assertFalse(idna.valid_contexto(ext_arabic_digit + arabic_digit, 0))
 
-    def test_encode(self, encode=None):
+    def test_encode(self, encode=None, skip_bytes=False):
         if encode is None:
             encode = idna.encode
 
@@ -249,20 +249,22 @@ class IDNATests(unittest.TestCase):
         self.assertEqual(encode('a'*63), b'a'*63)
         self.assertRaises(idna.IDNAError, encode, 'a'*64)
         self.assertRaises(idna.core.InvalidCodepoint, encode, '*')
-        self.assertRaises(idna.IDNAError, encode, b'\x0a\x33\x81')
+        if not skip_bytes:
+            self.assertRaises(idna.IDNAError, encode, b'\x0a\x33\x81')
 
     def test_decode(self, decode=None, skip_str=False):
         if decode is None:
             decode = idna.decode
         self.assertEqual(decode(b'xn--zckzah.xn--zckzah'), '\u30c6\u30b9\u30c8.\u30c6\u30b9\u30c8')
+        self.assertEqual(decode(b'xn--d1acufc.xn--80akhbyknj4f'),
+                         '\u0434\u043e\u043c\u0435\u043d.\u0438\u0441\u043f\u044b\u0442\u0430\u043d\u0438\u0435')
         if not skip_str:
             self.assertEqual(decode('\u30c6\u30b9\u30c8.xn--zckzah'), '\u30c6\u30b9\u30c8.\u30c6\u30b9\u30c8')
             self.assertEqual(decode('\u30c6\u30b9\u30c8.\u30c6\u30b9\u30c8'),
                              '\u30c6\u30b9\u30c8.\u30c6\u30b9\u30c8')
-        self.assertEqual(decode('abc.abc'), 'abc.abc')
-        if not skip_str:
-            self.assertEqual(decode(b'xn---------90gglbagaar.aa'),
-                             '\u0521\u0525\u0523-\u0523\u0523-----\u0521\u0523\u0523\u0523.aa')
+            self.assertEqual(decode('abc.abc'), 'abc.abc')
+        self.assertEqual(decode(b'xn---------90gglbagaar.aa'),
+                         '\u0521\u0525\u0523-\u0523\u0523-----\u0521\u0523\u0523\u0523.aa')
         self.assertRaises(idna.IDNAError, decode, b'XN---------90GGLBAGAAC.AA')
         self.assertRaises(idna.IDNAError, decode, b'xn---------90gglbagaac.aa')
         self.assertRaises(idna.IDNAError, decode, b'xn--')
