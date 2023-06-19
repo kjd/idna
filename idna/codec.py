@@ -99,13 +99,11 @@ class StreamReader(Codec, codecs.StreamReader):
     pass
 
 
-def getregentry(name: str) -> Optional[codecs.CodecInfo]:
-    if name != 'idna' and name != 'idna2008':
+def search_function(name: str) -> Optional[codecs.CodecInfo]:
+    if name != 'idna2008':
         return None
-
-    # Compatibility as a search_function for codecs.register()
     return codecs.CodecInfo(
-        name='idna2008',
+        name=name,
         encode=Codec().encode,  # type: ignore
         decode=Codec().decode,  # type: ignore
         incrementalencoder=IncrementalEncoder,
@@ -114,4 +112,4 @@ def getregentry(name: str) -> Optional[codecs.CodecInfo]:
         streamreader=StreamReader,
     )
 
-codecs.register(getregentry)
+codecs.register(search_function)
