@@ -57,9 +57,9 @@ You may use the codec encoding and decoding methods using the
 .. code-block:: pycon
 
     >>> import idna.codec
-    >>> print('домен.испытание'.encode('idna'))
+    >>> print('домен.испытание'.encode('idna2008'))
     b'xn--d1acufc.xn--80akhbyknj4f'
-    >>> print(b'xn--d1acufc.xn--80akhbyknj4f'.decode('idna'))
+    >>> print(b'xn--d1acufc.xn--80akhbyknj4f'.decode('idna2008'))
     домен.испытание
 
 Conversions can be applied at a per-label basis using the ``ulabel`` or
