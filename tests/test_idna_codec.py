@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import codecs
-import sys
+import io
 import unittest
 
 import idna.codec
@@ -9,9 +9,37 @@ import idna.codec
 CODEC_NAME = 'idna2008'
 
 class IDNACodecTests(unittest.TestCase):
-    
+    def setUp(self):
+        from . import test_idna
+        self.idnatests = test_idna.IDNATests()
+        self.idnatests.setUp()
+
     def testCodec(self):
         self.assertIs(codecs.lookup(CODEC_NAME).incrementalencoder, idna.codec.IncrementalEncoder)
+
+    def testDecode(self):
+        return self.idnatests.test_decode(decode=lambda obj: codecs.decode(obj, CODEC_NAME))
+
+    def testEncode(self):
+        return self.idnatests.test_encode(encode=lambda obj: codecs.encode(obj, CODEC_NAME))
+
+    def testStreamReader(self):
+        def decode(obj):
+            if isinstance(obj, str):
+                obj = bytes(obj, 'ascii')
+            buffer = io.BytesIO(obj)
+            stream = codecs.getreader(CODEC_NAME)(buffer)
+            return stream.read()
+        return self.idnatests.test_decode(decode=decode, skip_str=True)
+
+    def testStreamWriter(self):
+        def encode(obj):
+            buffer = io.BytesIO()
+            stream = codecs.getwriter(CODEC_NAME)(buffer)
+            stream.write(obj)
+            stream.flush()
+            return buffer.getvalue()
+        return self.idnatests.test_encode(encode=encode)
 
     def testIncrementalDecoder(self):
 
