@@ -59,14 +59,14 @@ class IncrementalEncoder(codecs.BufferedIncrementalEncoder):
         return result_bytes, size
 
 class IncrementalDecoder(codecs.BufferedIncrementalDecoder):
-    def _buffer_decode(self, data: str, errors: str, final: bool) -> Tuple[str, int]:  # type: ignore
+    def _buffer_decode(self, data: bytes, errors: str, final: bool) -> Tuple[str, int]:  # type: ignore
         if errors != 'strict':
             raise IDNAError('Unsupported error handling \"{}\"'.format(errors))
 
         if not data:
             return ('', 0)
 
-        labels = _unicode_dots_re.split(data)
+        labels = data.replace(b'\u3002', b'.').replace(b'\uff0e', b'.').replace(b'\uff61', b'.').split(b'.')
         trailing_dot = ''
         if labels:
             if not labels[-1]:
