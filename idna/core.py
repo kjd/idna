@@ -405,4 +405,4 @@ def is_idna(s: str) -> bool:
         labels = encode(s).split(b'.')
     except IDNAError:
         return False
-    return any(label.startswith(b'xn--') for label in labels)
+    return any(label.startswith(_alabel_prefix) for label in labels)
