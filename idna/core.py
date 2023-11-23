@@ -398,3 +398,11 @@ def decode(s: Union[str, bytes, bytearray], strict: bool = False, uts46: bool = 
     if trailing_dot:
         result.append('')
     return '.'.join(result)
+
+
+def is_idna(s: str) -> bool:
+    try:
+        labels = encode(s).split(b'.')
+    except IDNAError:
+        return False
+    return any(label.startswith(b'xn--') for label in labels)

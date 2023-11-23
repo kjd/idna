@@ -62,6 +62,26 @@ class IDNATests(unittest.TestCase):
             ['\u0633\u0648\u062f\u0627\u0646', b'xn--mgbpl2fh'],
         ]
 
+        self.valid_idn_strings = [
+            ['example.英国', b'example.xn--vcst63h'],
+            ['英国.example', b'xn--vcst63h.example'],
+        ]
+
+        self.invalid_idn_strings = [
+            '',
+            ' ',
+            '.',
+            'xn--45',
+            'xn--vcst63h.xn--45',
+            '英国.xn--45',
+            'xn--mgbpl2fh啊',
+        ]
+
+        self.non_idn_strings = [
+            'example',
+            'example.com',
+        ]
+
     def testIDNTLDALabels(self):
 
         for (ulabel, alabel) in self.tld_strings:
@@ -71,6 +91,22 @@ class IDNATests(unittest.TestCase):
 
         for (ulabel, alabel) in self.tld_strings:
             self.assertEqual(ulabel, idna.ulabel(alabel))
+
+    def test_is_idna(self):
+
+        for (ulabel, alabel) in self.tld_strings:
+            self.assertEqual(True, idna.is_idna(ulabel))
+            self.assertEqual(True, idna.is_idna(alabel))
+
+        for (ulabel, alabel) in self.valid_idn_strings:
+            self.assertEqual(True, idna.is_idna(ulabel))
+            self.assertEqual(True, idna.is_idna(alabel))
+
+        for label in self.invalid_idn_strings:
+            self.assertEqual(False, idna.is_idna(label))
+
+        for label in self.non_idn_strings:
+            self.assertEqual(False, idna.is_idna(label))
 
     def test_valid_label_length(self):
 
