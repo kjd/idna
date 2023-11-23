@@ -65,6 +65,7 @@ class IDNATests(unittest.TestCase):
         self.valid_idn_strings = [
             ['example.英国', b'example.xn--vcst63h'],
             ['英国.example', b'xn--vcst63h.example'],
+            ['英国.xn--vcst63h', b'xn--vcst63h.xn--vcst63h'],
         ]
 
         self.invalid_idn_strings = [
