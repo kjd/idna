@@ -318,7 +318,7 @@ def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False
             status = uts46row[1]
             replacement = None  # type: Optional[str]
             if len(uts46row) == 3:
-                replacement = uts46row[2]  # type: ignore
+                replacement = uts46row[2]
             if (status == 'V' or
                     (status == 'D' and not transitional) or
                     (status == '3' and not std3_rules and replacement is None)):

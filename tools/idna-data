@@ -2,13 +2,21 @@
 
 import argparse, collections, datetime, os, re, sys, unicodedata
 from urllib.request import urlopen
+
+# Use intranges.intranges_from_list() from the sibling idna directory
+sys.path.append(
+    os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        "idna"
+    )
+)
 from intranges import intranges_from_list
 
 if sys.version_info[0] < 3:
     print("Only Python 3 supported.")
     sys.exit(2)
 
-PREFERRED_VERSION = '15.0.0'
+PREFERRED_VERSION = '15.1.0'
 UCD_URL = 'http://www.unicode.org/Public/{version}/ucd/{filename}'
 UTS46_URL = 'http://www.unicode.org/Public/idna/{version}/{filename}'
 
