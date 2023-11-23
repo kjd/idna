@@ -6,6 +6,7 @@ History
 3.5 (2023-11-XX)
 ++++++++++++++++
 
+- Update to Unicode 15.1.0
 - String codec name is now "idna2008" as overriding the system codec
   "idna" was not working.
 - Fix typing error for codec encoding
