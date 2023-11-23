@@ -75,6 +75,7 @@ class IDNATests(unittest.TestCase):
             'xn--45',
             'xn--vcst63h.xn--45',
             '英国.xn--45',
+            '英国.🔒',
             'xn--mgbpl2fh啊',
         ]
 
