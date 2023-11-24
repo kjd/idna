@@ -112,7 +112,7 @@ IDNA specification this conversion is not performed.
     >>> idna.encode('Königsgäßchen', uts46=True, transitional=True)
     'xn--knigsgsschen-lcb0w'
 
-Implementors should use transitional processing with caution, only in
+Implementers should use transitional processing with caution, only in
 rare cases where conversion from legacy labels to current labels must be
 performed (i.e. IDNA implementations that pre-date 2008). For typical
 applications that just need to convert labels, transitional processing
@@ -155,8 +155,8 @@ and perform the required calculations to identify eligibility. There are
 three main modes:
 
 * ``idna-data make-libdata``. Generates ``idnadata.py`` and
-  ``uts46data.py``, the pre-calculated lookup tables using for IDNA and
-  UTS 46 conversions. Implementors who wish to track this library against
+  ``uts46data.py``, the pre-calculated lookup tables used for IDNA and
+  UTS 46 conversions. Implementers who wish to track this library against
   a different Unicode version may use this tool to manually generate a
   different version of the ``idnadata.py`` and ``uts46data.py`` files.
 
@@ -172,7 +172,7 @@ three main modes:
 
 The tool accepts a number of arguments, described using ``idna-data
 -h``. Most notably, the ``--version`` argument allows the specification
-of the version of Unicode to use in computing the table data. For
+of the version of Unicode to be used in computing the table data. For
 example, ``idna-data --version 9.0.0 make-libdata`` will generate
 library data against Unicode 9.0.0.
 
@@ -186,7 +186,7 @@ Additional Notes
 * **Version support**. This library supports Python 3.5 and higher.
   As this library serves as a low-level toolkit for a variety of
   applications, many of which strive for broad compatibility with older
-  Python versions, there is no rush to remove older intepreter support.
+  Python versions, there is no rush to remove older interpreter support.
   Removing support for older versions should be well justified in that the
   maintenance burden has become too high.
 
