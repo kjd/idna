@@ -3,12 +3,18 @@
 History
 -------
 
-3.5 (XXXX-XX-XX)
+3.5 (2023-11-24)
 ++++++++++++++++
-- String codec name is now 'idna2008' as overriding the system
-  codec 'idna' was not working.
+
+- Update to Unicode 15.1.0
+- String codec name is now "idna2008" as overriding the system codec
+  "idna" was not working.
 - Fix typing error for codec encoding
-- Remove 'setup.py' to complete migration to pyproject.toml
+- "setup.py" has been restored for this release due to some downstream
+  lack of adherence to PEP 517. Should be removed in a future release
+  so please prepare accordingly.
+- Removed reliance on a symlink for the "idna-data" tool to comport
+  with PEP 517 and the Python Packaging User Guide for sdist archives.
 - Added security reporting protocol for project
 
 Thanks Jon Ribbens, Diogo Teles Sant'Anna, Wu Tingfeng for contributions
