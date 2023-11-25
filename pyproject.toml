@@ -43,3 +43,4 @@ dynamic = ["version"]
 
 [tool.flit.sdist]
 exclude = [".gitignore", ".github/"]
+include = ["tests"]
