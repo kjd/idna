@@ -3,6 +3,11 @@
 History
 -------
 
+3.6 (2023-11-25)
+++++++++++++++++
+
+- Fix regression to include tests in source distribution.
+
 3.5 (2023-11-24)
 ++++++++++++++++
 
@@ -10,7 +15,7 @@ History
 - String codec name is now "idna2008" as overriding the system codec
   "idna" was not working.
 - Fix typing error for codec encoding
-- "setup.py" has been restored for this release due to some downstream
+- "setup.cfg" has been added for this release due to some downstream
   lack of adherence to PEP 517. Should be removed in a future release
   so please prepare accordingly.
 - Removed reliance on a symlink for the "idna-data" tool to comport
