@@ -262,13 +262,8 @@ def alabel(label: str) -> bytes:
     except UnicodeEncodeError:
         pass
 
-    if not label:
-        raise IDNAError('No Input')
-
-    label = str(label)
     check_label(label)
-    label_bytes = _punycode(label)
-    label_bytes = _alabel_prefix + label_bytes
+    label_bytes = _alabel_prefix + _punycode(label)
 
     if not valid_label_length(label_bytes):
         raise IDNAError('Label too long')
