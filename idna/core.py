@@ -150,8 +150,10 @@ def valid_contextj(label: str, pos: int) -> bool:
             joining_type = idnadata.joining_types.get(ord(label[i]))
             if joining_type == ord('T'):
                 continue
-            if joining_type in [ord('L'), ord('D')]:
+            elif joining_type in [ord('L'), ord('D')]:
                 ok = True
+                break
+            else:
                 break
 
         if not ok:
@@ -162,8 +164,10 @@ def valid_contextj(label: str, pos: int) -> bool:
             joining_type = idnadata.joining_types.get(ord(label[i]))
             if joining_type == ord('T'):
                 continue
-            if joining_type in [ord('R'), ord('D')]:
+            elif joining_type in [ord('R'), ord('D')]:
                 ok = True
+                break
+            else:
                 break
         return ok
 
@@ -236,12 +240,8 @@ def check_label(label: Union[str, bytes, bytearray]) -> None:
         if intranges_contain(cp_value, idnadata.codepoint_classes['PVALID']):
             continue
         elif intranges_contain(cp_value, idnadata.codepoint_classes['CONTEXTJ']):
-            try:
-                if not valid_contextj(label, pos):
-                    raise InvalidCodepointContext('Joiner {} not allowed at position {} in {}'.format(
-                        _unot(cp_value), pos+1, repr(label)))
-            except ValueError:
-                raise IDNAError('Unknown codepoint adjacent to joiner {} at position {} in {}'.format(
+            if not valid_contextj(label, pos):
+                raise InvalidCodepointContext('Joiner {} not allowed at position {} in {}'.format(
                     _unot(cp_value), pos+1, repr(label)))
         elif intranges_contain(cp_value, idnadata.codepoint_classes['CONTEXTO']):
             if not valid_contexto(label, pos):
