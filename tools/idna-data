@@ -246,11 +246,18 @@ class UnicodeData(object):
     def _load_arabicshaping(self):
 
         self.ucd_as = {}
-        f_as = self._ucdfile('ArabicShaping.txt')
+        f_as = self._ucdfile('extracted/DerivedJoiningType.txt')
         for line in f_as.splitlines():
-            result = re.match(r'^(?P<cp>[0-9A-F]{4,6})\s*;\s*.*?\s*;\s*(?P<jt>\S+)\s*;', line)
+            result = re.match(
+                r'^(?P<start>[0-9A-F]{4,6})(|\.\.(?P<end>[0-9A-F]{4,6}))\s*;\s*(?P<jt>\S+)\s*(|\#.*)$',
+                line)
             if result:
-                self.ucd_as[int(result.group('cp'), 16)] = result.group('jt')
+                if result.group('end'):
+                    for i in hexrange(result.group('start'), result.group('end')):
+                        self.ucd_as[i] = result.group('jt')
+                else:
+                    i = hexvalue(result.group('start'))
+                    self.ucd_as[i] = result.group('jt')
 
     def _load_scripts(self):
 
