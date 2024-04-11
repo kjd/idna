@@ -1,7 +1,8 @@
-from .core import encode, decode, alabel, ulabel, IDNAError
 import codecs
 import re
-from typing import Any, Tuple, Optional
+from typing import Any, Optional, Tuple
+
+from .core import IDNAError, alabel, decode, encode, ulabel
 
 _unicode_dots_re = re.compile('[\u002e\u3002\uff0e\uff61]')
 

@@ -8,6 +8,7 @@ in the original list?" in time O(log(# runs)).
 import bisect
 from typing import List, Tuple
 
+
 def intranges_from_list(list_: List[int]) -> Tuple[int, ...]:
     """Represent a list of integers as a sequence of ranges:
     ((start_0, end_0), (start_1, end_1), ...), such that the original

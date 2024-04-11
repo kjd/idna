@@ -4,6 +4,7 @@ import unittest
 
 import idna.compat
 
+
 class IDNACompatTests(unittest.TestCase):
 
     def testToASCII(self):

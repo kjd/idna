@@ -2,7 +2,7 @@
 
 import unittest
 
-from idna.intranges import intranges_from_list, intranges_contain, _encode_range
+from idna.intranges import _encode_range, intranges_contain, intranges_from_list
 
 
 class IntrangeTests(unittest.TestCase):
