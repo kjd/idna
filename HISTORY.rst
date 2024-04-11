@@ -3,6 +3,14 @@
 History
 -------
 
+3.7 (2024-04-11)
+++++++++++++++++
+
+- Fix issue where specially crafted inputs to encode() could
+  take exceptionally long amount of time to process. [CVE-2024-3651]
+
+Thanks to Guido Vranken for reporting the issue.
+
 3.6 (2023-11-25)
 ++++++++++++++++
 
