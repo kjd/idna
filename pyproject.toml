@@ -44,3 +44,9 @@ dynamic = ["version"]
 [tool.flit.sdist]
 exclude = [".gitignore", ".github/"]
 include = ["tests", "tools", "HISTORY.rst"]
+
+[tool.black]
+force-exclude = "idna/(idnadata|uts46data).py"
+
+[tool.isort]
+profile = "black"
