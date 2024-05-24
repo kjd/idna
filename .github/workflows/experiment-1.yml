@@ -1,4 +1,4 @@
-name: Experiment 1
+name: H6060 Experiment 1
 
 on:
   push:
@@ -13,3 +13,30 @@ jobs:
     steps:
       - name: Checkout GitHub Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          path: python-idna
+
+      - name: Install Python 3.12
+        uses: actions/setup-python@v5.1.0
+        with:
+          python-version: 3.12
+
+      - name: Install Pip Dependencies
+        uses: seansmith39/H6060-Experiment-Resources/.github/actions/python/install-pip-dependencies@Update_experiment_workflows
+        with:
+          extra-pip-packages: build pytest pytest-cov coverage
+
+      - name: Build And Upload Python Package
+        uses: seansmith39/H6060-Experiment-Resources/.github/actions/python/python-build-upload@Update_experiment_workflows
+
+      - name: Run Tests With Coverage
+        shell: bash
+        run: pytest --cov=.
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
+          if-no-files-found: error

@@ -15,3 +15,5 @@ lib
 lib64
 .idea
 *.swp
+.coverage
+coverage.xml
