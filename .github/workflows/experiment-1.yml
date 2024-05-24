@@ -1,0 +1,15 @@
+name: Experiment 1
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build-application:
+    name: Build Application
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub Repository
+        uses: actions/checkout@v4
