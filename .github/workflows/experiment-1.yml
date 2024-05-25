@@ -58,7 +58,6 @@ jobs:
       sast-semgrep-enabled: true
       sast-deepsource-enabled: false
       sast-codeql-enabled: false
-      sast-snyk-code-enabled: false
       sca-eclipse-steady-enabled: false
       sca-snyk-enabled: false
       sca-owasp-dependency-check-enabled: false
