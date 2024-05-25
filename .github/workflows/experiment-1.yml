@@ -1,10 +1,11 @@
 name: H6060 Experiment 1
 
 on:
-  push:
-    branches:
-      - master
   pull_request:
+  push:
+  #   branches:
+  #     - master
+  #
 
 jobs:
   build-application:
@@ -22,12 +23,12 @@ jobs:
           python-version: 3.12
 
       - name: Install Pip Dependencies
-        uses: seansmith39/H6060-Experiment-Resources/.github/actions/python/install-pip-dependencies@Update_experiment_workflows
+        uses: seansmith39/H6060-Experiment-Resources/.github/actions/python/install-pip-dependencies@main
         with:
           extra-pip-packages: build pytest pytest-cov coverage
 
       - name: Build And Upload Python Package
-        uses: seansmith39/H6060-Experiment-Resources/.github/actions/python/python-build-upload@Update_experiment_workflows
+        uses: seansmith39/H6060-Experiment-Resources/.github/actions/python/python-build-upload@main
         with:
           build-command: python -m build
           build-directory: dist
@@ -38,9 +39,27 @@ jobs:
           pytest --cov=.
           coverage xml
 
-      - name: Upload Coverage Report
+      - name: Upload Coverage XML Report
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: coverage.xml
           if-no-files-found: error
+
+  python-scanning:
+    name: Run SCA and SAST Python Scanning Workflow
+    uses: seansmith39/H6060-Experiment-Resources/.github/workflows/experiment-1-python.yml@main
+    needs: build-application
+    secrets: inherit
+    with:
+      project-name: H6060-Python-idna
+      coverage-filename: coverage.xml
+      sast-sonarqube-enabled: false
+      sast-semgrep-enabled: false
+      sast-deepsource-enabled: false
+      sast-codeql-enabled: false
+      sast-snyk-code-enabled: false
+      sca-eclipse-steady-enabled: false
+      sca-snyk-enabled: false
+      sca-owasp-dependency-check-enabled: false
+      sca-grype-enabled: false
