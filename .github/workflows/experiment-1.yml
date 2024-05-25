@@ -55,7 +55,7 @@ jobs:
       project-name: H6060-Python-idna
       coverage-filename: coverage.xml
       sast-sonarqube-enabled: false
-      sast-semgrep-enabled: false
+      sast-semgrep-enabled: true
       sast-deepsource-enabled: false
       sast-codeql-enabled: false
       sast-snyk-code-enabled: false
