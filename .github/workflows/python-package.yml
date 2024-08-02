@@ -49,8 +49,6 @@ jobs:
           - '3.13'
           - 'pypy-3.9'
         include:
-          - python-version: 3.5
-            os: ubuntu-20.04
           - python-version: 3.6
             os: ubuntu-20.04
     runs-on: ${{ matrix.os || 'ubuntu-latest' }}
