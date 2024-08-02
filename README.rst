@@ -193,9 +193,9 @@ Additional Notes
   maintenance burden has become too high.
 
 * **Python 2**. Python 2 is supported by version 2.x of this library.
-  While active development of the version 2.x series has ended, notable
-  issues being corrected may be backported to 2.x. Use "idna<3" in your
-  requirements file if you need this library for a Python 2 application.
+  Use "idna<3" in your requirements file if you need this library for
+  a Python 2 application. Be advised that these versions are no longer
+  actively developed.
 
 * **Testing**. The library has a test suite based on each rule of the
   IDNA specification, as well as tests that are provided as part of the
