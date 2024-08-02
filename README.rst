@@ -83,7 +83,9 @@ This library provides one such mapping that was developed by the
 Unicode Consortium. Known as `Unicode IDNA Compatibility Processing
 <https://unicode.org/reports/tr46/>`_, it provides for both a regular
 mapping for typical applications, as well as a transitional mapping to
-help migrate from older IDNA 2003 applications.
+help migrate from older IDNA 2003 applications. Strings are
+preprocessed according to Section 4.4 “Preprocessing for IDNA2008”
+prior to the IDNA operations.
 
 For example, “Königsgäßchen” is not a permissible label as *LATIN
 CAPITAL LETTER K* is not allowed (nor are capital letters in general).
