@@ -183,7 +183,7 @@ Additional Notes
 * **Packages**. The latest tagged release version is published in the
   `Python Package Index <https://pypi.org/project/idna/>`_.
 
-* **Version support**. This library supports Python 3.5 and higher.
+* **Version support**. This library supports Python 3.6 and higher.
   As this library serves as a low-level toolkit for a variety of
   applications, many of which strive for broad compatibility with older
   Python versions, there is no rush to remove older interpreter support.
