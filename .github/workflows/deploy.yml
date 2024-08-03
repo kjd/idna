@@ -19,7 +19,7 @@ jobs:
     - name: Build a binary wheel and a source tarball
       run: python3 -m build
     - name: Store the distribution packages
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: python-package-distributions
         path: dist/
@@ -39,7 +39,7 @@ jobs:
 
     steps:
     - name: Download all the dists
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: python-package-distributions
         path: dist/
@@ -60,7 +60,7 @@ jobs:
 
     steps:
     - name: Download all the dists
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: python-package-distributions
         path: dist/
@@ -108,6 +108,12 @@ jobs:
       with:
         name: python-package-distributions
         path: dist/
+    - name: List directory
+      run: ls -R
+    - name: Rename packages to idna-preflight
+      run: find . -exec bash -c 'mv $0 ${0/idna/idna_preflight}' {} \;
+    - name: List directory
+      run: ls -R
     - name: Publish distribution to TestPyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
