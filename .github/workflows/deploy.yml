@@ -26,7 +26,7 @@ jobs:
 
   publish-to-pypi:
     name: >-
-      Publish Python distribution to PyPI
+      Publish to PyPI
     if: startsWith(github.ref, 'refs/tags/')  # only publish to PyPI on tag pushes
     needs:
     - build
@@ -48,8 +48,7 @@ jobs:
 
   github-release:
     name: >-
-      Sign the Python distribution with Sigstore
-      and upload them to GitHub Release
+      Upload GitHub Release w/ signature
     needs:
     - publish-to-pypi
     runs-on: ubuntu-latest
@@ -90,7 +89,7 @@ jobs:
         --repo '${{ github.repository }}'
 
   publish-to-testpypi:
-    name: Publish Python distribution to TestPyPI
+    name: Publish to Test PyPI
     needs:
     - build
     runs-on: ubuntu-latest
@@ -104,7 +103,7 @@ jobs:
 
     steps:
     - name: Download all the dists
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: python-package-distributions
         path: dist/
