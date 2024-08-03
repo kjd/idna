@@ -47,8 +47,7 @@ jobs:
       uses: pypa/gh-action-pypi-publish@release/v1
 
   github-release:
-    name: >-
-      Upload GitHub Release w/ signature
+    name: Sign and upload GitHub Release
     needs:
     - publish-to-pypi
     runs-on: ubuntu-latest
@@ -58,12 +57,12 @@ jobs:
       id-token: write  # IMPORTANT: mandatory for sigstore
 
     steps:
-    - name: Download all the dists
+    - name: Download the dists
       uses: actions/download-artifact@v4
       with:
         name: python-package-distributions
         path: dist/
-    - name: Sign the dists with Sigstore
+    - name: Sign with Sigstore
       uses: sigstore/gh-action-sigstore-python@v2.1.1
       with:
         inputs: >-
@@ -107,12 +106,6 @@ jobs:
       with:
         name: python-package-distributions
         path: dist/
-    - name: List directory
-      run: ls -R
-    - name: Rename packages to idna-preflight
-      run: find . -exec bash -c 'mv $0 ${0/idna/idna_preflight}' {} \;
-    - name: List directory
-      run: ls -R
     - name: Publish distribution to TestPyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
