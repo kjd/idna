@@ -671,7 +671,7 @@ def main():
     elif args.action == 'make-libdata':
         make_libdata(args, ucdata)
     else:
-        result = re.match(r'^(?i)(U\+|)(?P<cp>[0-9A-F]{4,6})$', args.action)
+        result = re.match(r'(?i)^(U\+|)(?P<cp>[0-9A-F]{4,6})$', args.action)
         if result:
             codepoint = int(result.group('cp'), 16)
             diagnose_codepoint(codepoint, args, ucdata)
