@@ -3,6 +3,18 @@
 History
 -------
 
+3.8 (2024-08-23)
+++++++++++++++++
+
+- Fix regression where IDNAError exception was not being produced for
+  certain inputs.
+- Add support for Python 3.13, drop support for Python 3.5 as it is no
+  longer testable.
+- Documentation improvements
+- Updates to package testing using Github actions
+
+Thanks to Hugo van Kemenade for contributions to this release.
+
 3.7 (2024-04-11)
 ++++++++++++++++
 
