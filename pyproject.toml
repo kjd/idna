@@ -44,3 +44,13 @@ dynamic = ["version"]
 [tool.flit.sdist]
 exclude = [".gitignore", ".github/"]
 include = ["tests", "tools", "HISTORY.rst"]
+
+[project.optional-dependencies]
+all = [
+    "ruff >= 0.6.2",
+]
+
+[tool.ruff.lint]
+extend-select = [
+    "I",            # isort
+]
