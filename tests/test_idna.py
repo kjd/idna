@@ -233,12 +233,8 @@ class IDNATests(unittest.TestCase):
             encode = idna.encode
 
         self.assertEqual(encode("xn--zckzah.xn--zckzah"), b"xn--zckzah.xn--zckzah")
-        self.assertEqual(
-            encode("\u30c6\u30b9\u30c8.xn--zckzah"), b"xn--zckzah.xn--zckzah"
-        )
-        self.assertEqual(
-            encode("\u30c6\u30b9\u30c8.\u30c6\u30b9\u30c8"), b"xn--zckzah.xn--zckzah"
-        )
+        self.assertEqual(encode("\u30c6\u30b9\u30c8.xn--zckzah"), b"xn--zckzah.xn--zckzah")
+        self.assertEqual(encode("\u30c6\u30b9\u30c8.\u30c6\u30b9\u30c8"), b"xn--zckzah.xn--zckzah")
         self.assertEqual(encode("abc.abc"), b"abc.abc")
         self.assertEqual(encode("xn--zckzah.abc"), b"xn--zckzah.abc")
         self.assertEqual(encode("\u30c6\u30b9\u30c8.abc"), b"xn--zckzah.abc")
@@ -262,9 +258,7 @@ class IDNATests(unittest.TestCase):
     def test_decode(self, decode=None, skip_str=False):
         if decode is None:
             decode = idna.decode
-        self.assertEqual(
-            decode(b"xn--zckzah.xn--zckzah"), "\u30c6\u30b9\u30c8.\u30c6\u30b9\u30c8"
-        )
+        self.assertEqual(decode(b"xn--zckzah.xn--zckzah"), "\u30c6\u30b9\u30c8.\u30c6\u30b9\u30c8")
         self.assertEqual(
             decode(b"xn--d1acufc.xn--80akhbyknj4f"),
             "\u0434\u043e\u043c\u0435\u043d.\u0438\u0441\u043f\u044b\u0442\u0430\u043d\u0438\u0435",

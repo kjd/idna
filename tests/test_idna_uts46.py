@@ -117,12 +117,7 @@ _SKIP_TESTS = [
 def unicode_fixup(string):
     """Replace backslash-u-XXXX with appropriate unicode characters."""
     return _RE_SURROGATE.sub(
-        lambda match: chr(
-            (ord(match.group(0)[0]) - 0xD800) * 0x400
-            + ord(match.group(0)[1])
-            - 0xDC00
-            + 0x10000
-        ),
+        lambda match: chr((ord(match.group(0)[0]) - 0xD800) * 0x400 + ord(match.group(0)[1]) - 0xDC00 + 0x10000),
         _RE_UNICODE.sub(lambda match: chr(int(match.group(1), 16)), string),
     )
 
@@ -184,56 +179,35 @@ class TestIdnaTest(unittest.TestCase):
         try:
             output = idna.decode(source, uts46=True, strict=True)
             if to_unicode_status != "[]":
-                self.fail(
-                    "decode() did not emit required error {} for {}".format(
-                        to_unicode, repr(source)
-                    )
-                )
+                self.fail("decode() did not emit required error {} for {}".format(to_unicode, repr(source)))
             self.assertEqual(output, to_unicode, "unexpected decode() output")
         except (idna.IDNAError, UnicodeError, ValueError) as exc:
             if str(exc).startswith("Unknown"):
-                raise unittest.SkipTest(
-                    "Test requires support for a newer"
-                    " version of Unicode than this Python supports"
-                )
+                raise unittest.SkipTest("Test requires support for a newer" " version of Unicode than this Python supports")
             if to_unicode_status == "[]":
                 raise
 
         try:
             output = idna.encode(source, uts46=True, strict=True).decode("ascii")
             if to_ascii_status != "[]":
-                self.fail(
-                    "encode() did not emit required error {} for {}".format(
-                        to_ascii_status, repr(source)
-                    )
-                )
+                self.fail("encode() did not emit required error {} for {}".format(to_ascii_status, repr(source)))
             self.assertEqual(output, to_ascii, "unexpected encode() output")
         except (idna.IDNAError, UnicodeError, ValueError) as exc:
             if str(exc).startswith("Unknown"):
-                raise unittest.SkipTest(
-                    "Test requires support for a newer"
-                    " version of Unicode than this Python supports"
-                )
+                raise unittest.SkipTest("Test requires support for a newer" " version of Unicode than this Python supports")
             if to_ascii_status == "[]":
                 raise
 
         try:
-            output = idna.encode(
-                source, uts46=True, strict=True, transitional=True
-            ).decode("ascii")
+            output = idna.encode(source, uts46=True, strict=True, transitional=True).decode("ascii")
             if to_ascii_t_status != "[]":
                 self.fail(
-                    "encode(transitional=True) did not emit required error {} for {}".format(
-                        to_ascii_t_status, repr(source)
-                    )
+                    "encode(transitional=True) did not emit required error {} for {}".format(to_ascii_t_status, repr(source))
                 )
             self.assertEqual(output, to_ascii_t, "unexpected encode() output")
         except (idna.IDNAError, UnicodeError, ValueError) as exc:
             if str(exc).startswith("Unknown"):
-                raise unittest.SkipTest(
-                    "Test requires support for a newer"
-                    " version of Unicode than this Python supports"
-                )
+                raise unittest.SkipTest("Test requires support for a newer" " version of Unicode than this Python supports")
             if to_ascii_t_status == "[]":
                 raise
 
@@ -241,11 +215,6 @@ class TestIdnaTest(unittest.TestCase):
 def load_tests(loader, tests, pattern):
     """Create a suite of all the individual tests."""
     suite = unittest.TestSuite()
-    with open(
-        os.path.join(os.path.dirname(__file__), "IdnaTestV2.txt"), "rb"
-    ) as tests_file:
-        suite.addTests(
-            TestIdnaTest(lineno, fields)
-            for lineno, fields in parse_idna_test_table(tests_file)
-        )
+    with open(os.path.join(os.path.dirname(__file__), "IdnaTestV2.txt"), "rb") as tests_file:
+        suite.addTests(TestIdnaTest(lineno, fields) for lineno, fields in parse_idna_test_table(tests_file))
     return suite
