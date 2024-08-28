@@ -44,3 +44,18 @@ dynamic = ["version"]
 [tool.flit.sdist]
 exclude = [".gitignore", ".github/"]
 include = ["tests", "tools", "HISTORY.rst"]
+
+[project.optional-dependencies]
+all = [
+    "ruff >= 0.6.2",
+    "mypy >= 1.11.2",
+    "pytest >= 8.3.2",
+    "flake8 >= 7.1.1",
+]
+
+[tool.ruff]
+line-length = 127
+[tool.ruff.lint]
+extend-select = [
+    "I",            # isort
+]
