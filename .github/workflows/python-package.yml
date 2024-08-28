@@ -31,7 +31,11 @@ jobs:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
       - name: Install dependencies
-        run: python -m pip install mypy
+        run: python -m pip install ruff mypy
+      - name: Check code style with ruff
+        run: |
+          ruff format --check idna tests
+          ruff check idna tests
       - name: Check types with mypy
         run: mypy --strict idna
 
