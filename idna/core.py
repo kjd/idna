@@ -381,7 +381,7 @@ def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False
             status = uts46row[1]
             replacement: Optional[str] = None
             if std3_rules and code_point <= 0x7F:
-                if not code_point in _ldh:
+                if code_point not in _ldh:
                     raise InvalidCodepoint(
                         "Codepoint {} at position {} does not follow STD3 rules".format(_unot(code_point), pos + 1)
                     )
