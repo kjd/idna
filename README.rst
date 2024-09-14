@@ -79,13 +79,10 @@ ways a user may input a domain name. This functionality, known as
 a “mapping”, is considered by the specification to be a local
 user-interface issue distinct from IDNA conversion functionality.
 
-This library provides one such mapping that was developed by the
-Unicode Consortium. Known as `Unicode IDNA Compatibility Processing
-<https://unicode.org/reports/tr46/>`_, it provides for both a regular
-mapping for typical applications, as well as a transitional mapping to
-help migrate from older IDNA 2003 applications. Strings are
-preprocessed according to Section 4.4 “Preprocessing for IDNA2008”
-prior to the IDNA operations.
+This library provides one such mapping — `Unicode IDNA Compatibility
+Processing <https://unicode.org/reports/tr46/>`_ developed by the Unicode
+Consortium. Strings are preprocessed according to Section 4.4
+“Preprocessing for IDNA2008” prior to the IDNA operations.
 
 For example, “Königsgäßchen” is not a permissible label as *LATIN
 CAPITAL LETTER K* is not allowed (nor are capital letters in general).
@@ -102,24 +99,6 @@ conversion.
     b'xn--knigsgchen-b4a3dun'
     >>> print(idna.decode('xn--knigsgchen-b4a3dun'))
     königsgäßchen
-
-Transitional processing provides conversions to help transition from
-the older 2003 standard to the current standard. For example, in the
-original IDNA specification, the *LATIN SMALL LETTER SHARP S* (ß) was
-converted into two *LATIN SMALL LETTER S* (ss), whereas in the current
-IDNA specification this conversion is not performed.
-
-.. code-block:: pycon
-
-    >>> idna.encode('Königsgäßchen', uts46=True, transitional=True)
-    'xn--knigsgsschen-lcb0w'
-
-Implementers should use transitional processing with caution, only in
-rare cases where conversion from legacy labels to current labels must be
-performed (i.e. IDNA implementations that pre-date 2008). For typical
-applications that just need to convert labels, transitional processing
-is unlikely to be beneficial and could produce unexpected incompatible
-results.
 
 ``encodings.idna`` Compatibility
 ++++++++++++++++++++++++++++++++
@@ -210,3 +189,7 @@ Additional Notes
   may wish to consider trying the encode/decode operation in this library
   first, and then falling back to using `encodings.idna`. See `the Github
   project <https://github.com/kjd/idna/issues/18>`_ for more discussion.
+
+* **Transitional processing**. Unicode 16.0.0 removed transitional
+  processing so the `transitional` argument for the encode() method
+  no longer has any effect and will be removed at a later date.
