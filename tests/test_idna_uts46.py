@@ -130,7 +130,7 @@ def parse_idna_test_table(inputstream):
             line = line.split("#", 1)[0]
         if not line:
             continue
-        yield ((lineno + 1, tuple(field.strip() for field in line.split(";"))))
+        yield ((lineno + 1, tuple(field.strip() for field in unicode_fixup(line).split(";"))))
 
 
 class TestIdnaTest(unittest.TestCase):
