@@ -245,6 +245,7 @@ def valid_contexto(label: str, pos: int, exception: bool = False) -> bool:
 def check_label(label: Union[str, bytes, bytearray]) -> None:
     if isinstance(label, (bytes, bytearray)):
         label = label.decode("utf-8")
+    label = label.strip()
     if len(label) == 0:
         raise IDNAError("Empty Label")
 
