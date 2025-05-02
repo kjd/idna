@@ -192,11 +192,6 @@ Additional Notes
   Removing support for older versions should be well justified in that the
   maintenance burden has become too high.
 
-* **Python 2**. Python 2 is supported by version 2.x of this library.
-  Use "idna<3" in your requirements file if you need this library for
-  a Python 2 application. Be advised that these versions are no longer
-  actively developed.
-
 * **Testing**. The library has a test suite based on each rule of the
   IDNA specification, as well as tests that are provided as part of the
   Unicode Technical Standard 46, `Unicode IDNA Compatibility Processing
