@@ -44,7 +44,6 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-          - '3.7'
           - '3.8'
           - '3.9'
           - '3.10'
@@ -54,6 +53,8 @@ jobs:
           - 'pypy-3.9'
         include:
           - python-version: 3.6
+            os: ubuntu-20.04
+          - python-version: 3.7
             os: ubuntu-20.04
     runs-on: ${{ matrix.os || 'ubuntu-latest' }}
     steps:
