@@ -189,8 +189,9 @@ Additional Notes
   As this library serves as a low-level toolkit for a variety of
   applications, many of which strive for broad compatibility with older
   Python versions, there is no rush to remove older interpreter support.
-  Removing support for older versions should be well justified in that the
-  maintenance burden has become too high.
+  Support for older versions are likely to be removed from new releases
+  as automated tests can no longer easily be run, i.e. once the Python
+  version is officially end-of-life.
 
 * **Testing**. The library has a test suite based on each rule of the
   IDNA specification, as well as tests that are provided as part of the
