@@ -183,7 +183,7 @@ class TestIdnaTest(unittest.TestCase):
             self.assertEqual(output, to_unicode, "unexpected decode() output")
         except (idna.IDNAError, UnicodeError, ValueError) as exc:
             if str(exc).startswith("Unknown"):
-                raise unittest.SkipTest("Test requires support for a newer" " version of Unicode than this Python supports")
+                raise unittest.SkipTest("Test requires support for a newer version of Unicode than this Python supports")
             if to_unicode_status == "[]":
                 raise
 
@@ -194,7 +194,7 @@ class TestIdnaTest(unittest.TestCase):
             self.assertEqual(output, to_ascii, "unexpected encode() output")
         except (idna.IDNAError, UnicodeError, ValueError) as exc:
             if str(exc).startswith("Unknown"):
-                raise unittest.SkipTest("Test requires support for a newer" " version of Unicode than this Python supports")
+                raise unittest.SkipTest("Test requires support for a newer version of Unicode than this Python supports")
             if to_ascii_status == "[]":
                 raise
 
@@ -207,7 +207,7 @@ class TestIdnaTest(unittest.TestCase):
             self.assertEqual(output, to_ascii_t, "unexpected encode() output")
         except (idna.IDNAError, UnicodeError, ValueError) as exc:
             if str(exc).startswith("Unknown"):
-                raise unittest.SkipTest("Test requires support for a newer" " version of Unicode than this Python supports")
+                raise unittest.SkipTest("Test requires support for a newer version of Unicode than this Python supports")
             if to_ascii_t_status == "[]":
                 raise
 
