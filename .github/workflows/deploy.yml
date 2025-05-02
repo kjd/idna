@@ -115,3 +115,4 @@ jobs:
         verbose: true
         print-hash: true
         repository-url: https://test.pypi.org/legacy/
+        skip-existing: true
