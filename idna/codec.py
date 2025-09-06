@@ -8,7 +8,7 @@ _unicode_dots_re = re.compile("[\u002e\u3002\uff0e\uff61]")
 
 
 class Codec(codecs.Codec):
-    def encode(self, data: str, errors: str = "strict") -> Tuple[bytes, int]:
+    def encode(self, data: str | bytes, errors: str = "strict") -> Tuple[bytes, int]:
         if errors != "strict":
             raise IDNAError('Unsupported error handling "{}"'.format(errors))
 
@@ -17,7 +17,7 @@ class Codec(codecs.Codec):
 
         return encode(data), len(data)
 
-    def decode(self, data: bytes, errors: str = "strict") -> Tuple[str, int]:
+    def decode(self, data: str | bytes, errors: str = "strict") -> Tuple[str, int]:
         if errors != "strict":
             raise IDNAError('Unsupported error handling "{}"'.format(errors))
 
