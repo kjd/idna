@@ -1,12 +1,13 @@
 [build-system]
-requires = ["flit_core >=3.2,<4"]
+requires = ["flit_core >=3.11,<4"]
 build-backend = "flit_core.buildapi"
 
 [project]
 name = "idna"
 description = "Internationalized Domain Names in Applications (IDNA)"
 readme = "README.rst"
-license = {file = "LICENSE.md"}
+license = "BSD-3-Clause"
+license-files = ["LICENSE.md"]
 authors = [
   {name = "Kim Davies", email = "kim+pypi@gumleaf.org"}
 ]
@@ -14,7 +15,6 @@ classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
   "Intended Audience :: System Administrators",
-  "License :: OSI Approved :: BSD License",
   "Operating System :: OS Independent",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
@@ -25,6 +25,7 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
   "Topic :: Internet :: Name Service (DNS)",
