@@ -2,7 +2,7 @@ Internationalized Domain Names in Applications (IDNA)
 =====================================================
 
 Support for the `Internationalized Domain Names in
-Applications (IDNA)<https://tools.ietf.org/html/rfc5891>`_
+Applications (IDNA) <https://tools.ietf.org/html/rfc5891>`_
 and `Unicode IDNA Compatibility Processing
 <https://unicode.org/reports/tr46/>`_.
 
