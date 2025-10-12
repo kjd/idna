@@ -3,6 +3,14 @@
 History
 -------
 
+3.11 (2025-10-12)
+
+- Update to Unicode 16.0.0, including significant changes to UTS46
+  processing. As a result of Unicode ending support for it, transitional
+  processing no longer has an effect and returns the same result.
+- Add support for Python 3.14, lowest supported version is Python 3.8.
+- Various updates to packaging, including PEP 740 support.
+
 3.10 (2024-09-15)
 +++++++++++++++++
 

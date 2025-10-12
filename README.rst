@@ -1,19 +1,17 @@
 Internationalized Domain Names in Applications (IDNA)
 =====================================================
 
-Support for the Internationalized Domain Names in
-Applications (IDNA) protocol as specified in `RFC 5891
-<https://tools.ietf.org/html/rfc5891>`_. This is the latest version of
-the protocol and is sometimes referred to as “IDNA 2008”.
-
-This library also provides support for Unicode Technical
-Standard 46, `Unicode IDNA Compatibility Processing
+Support for `Internationalized Domain Names in
+Applications (IDNA) <https://tools.ietf.org/html/rfc5891>`_
+and `Unicode IDNA Compatibility Processing
 <https://unicode.org/reports/tr46/>`_.
 
-This acts as a suitable replacement for the “encodings.idna”
+The latest versions of these standards supplied here provide
+more comprehensive language coverage and reduce the potential of
+allowing domains with known security vulnerabilities. This library
+is a suitable replacement for the “encodings.idna”
 module that comes with the Python standard library, but which
-only supports the older superseded IDNA specification (`RFC 3490
-<https://tools.ietf.org/html/rfc3490>`_).
+only supports an older superseded IDNA specification from 2003.
 
 Basic functions are simply executed:
 
@@ -29,7 +27,8 @@ Basic functions are simply executed:
 Installation
 ------------
 
-This package is available for installation from PyPI:
+This package is available for installation from PyPI via the
+typical mechanisms, such as:
 
 .. code-block:: bash
 
@@ -40,7 +39,8 @@ Usage
 -----
 
 For typical usage, the ``encode`` and ``decode`` functions will take a
-domain name argument and perform a conversion to A-labels or U-labels
+domain name argument and perform a conversion to ASCII compatible encoding
+(known as A-labels), or to Unicode strings (known as U-labels)
 respectively.
 
 .. code-block:: pycon
@@ -51,17 +51,6 @@ respectively.
     >>> print(idna.decode('xn--eckwd4c7c.xn--zckzah'))
     ドメイン.テスト
 
-You may use the codec encoding and decoding methods using the
-``idna.codec`` module:
-
-.. code-block:: pycon
-
-    >>> import idna.codec
-    >>> print('домен.испытание'.encode('idna2008'))
-    b'xn--d1acufc.xn--80akhbyknj4f'
-    >>> print(b'xn--d1acufc.xn--80akhbyknj4f'.decode('idna2008'))
-    домен.испытание
-
 Conversions can be applied at a per-label basis using the ``ulabel`` or
 ``alabel`` functions if necessary:
 
@@ -70,19 +59,17 @@ Conversions can be applied at a per-label basis using the ``ulabel`` or
     >>> idna.alabel('测试')
     b'xn--0zwm56d'
 
+
 Compatibility Mapping (UTS #46)
 +++++++++++++++++++++++++++++++
 
-As described in `RFC 5895 <https://tools.ietf.org/html/rfc5895>`_, the
-IDNA specification does not normalize input from different potential
-ways a user may input a domain name. This functionality, known as
-a “mapping”, is considered by the specification to be a local
-user-interface issue distinct from IDNA conversion functionality.
-
-This library provides one such mapping — `Unicode IDNA Compatibility
-Processing <https://unicode.org/reports/tr46/>`_ developed by the Unicode
-Consortium. Strings are preprocessed according to Section 4.4
-“Preprocessing for IDNA2008” prior to the IDNA operations.
+This library provides support for `Unicode IDNA Compatibility
+Processing <https://unicode.org/reports/tr46/>`_ which normalizes input from
+different potential ways a user may input a domain prior to performing the IDNA
+conversion operations. This functionality, known as a 
+`mapping <https://tools.ietf.org/html/rfc5895>`_, is considered by the
+specification to be a local user-interface issue distinct from IDNA
+conversion functionality.
 
 For example, “Königsgäßchen” is not a permissible label as *LATIN
 CAPITAL LETTER K* is not allowed (nor are capital letters in general).
@@ -100,13 +87,6 @@ conversion.
     >>> print(idna.decode('xn--knigsgchen-b4a3dun'))
     königsgäßchen
 
-``encodings.idna`` Compatibility
-++++++++++++++++++++++++++++++++
-
-Function calls from the Python built-in ``encodings.idna`` module are
-mapped to their IDNA 2008 equivalents using the ``idna.compat`` module.
-Simply substitute the ``import`` clause in your code to refer to the new
-module name.
 
 Exceptions
 ----------
@@ -120,7 +100,7 @@ when the error reflects an illegal combination of left-to-right and
 right-to-left characters in a label; ``idna.InvalidCodepoint`` when
 a specific codepoint is an illegal character in an IDN label (i.e.
 INVALID); and ``idna.InvalidCodepointContext`` when the codepoint is
-illegal based on its positional context (i.e. it is CONTEXTO or CONTEXTJ
+illegal based on its position in the string (i.e. it is CONTEXTO or CONTEXTJ
 but the contextual requirements are not satisfied.)
 
 Building and Diagnostics
@@ -128,8 +108,8 @@ Building and Diagnostics
 
 The IDNA and UTS 46 functionality relies upon pre-calculated lookup
 tables for performance. These tables are derived from computing against
-eligibility criteria in the respective standards. These tables are
-computed using the command-line script ``tools/idna-data``.
+eligibility criteria in the respective standards using the command-line
+script ``tools/idna-data``.
 
 This tool will fetch relevant codepoint data from the Unicode repository
 and perform the required calculations to identify eligibility. There are
