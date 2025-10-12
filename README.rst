@@ -1,19 +1,17 @@
 Internationalized Domain Names in Applications (IDNA)
 =====================================================
 
-Support for the `Internationalized Domain Names in
+Support for `Internationalized Domain Names in
 Applications (IDNA) <https://tools.ietf.org/html/rfc5891>`_
 and `Unicode IDNA Compatibility Processing
 <https://unicode.org/reports/tr46/>`_.
 
-This acts as a suitable replacement for the “encodings.idna”
+The latest versions of these standards supplied here provide
+more comprehensive language coverage and reduce the potential of
+allowing domains with known security vulnerabilities. This library
+is a suitable replacement for the “encodings.idna”
 module that comes with the Python standard library, but which
-only supports the older superseded IDNA specification (`RFC 3490
-<https://tools.ietf.org/html/rfc3490>`_). Using the latest
-version of IDNA along with UTS46 support provides more
-comprehensive language coverage with the latest versions of
-the respective standards, and reduces the potential of allowing
-domains with known security vulnerabilities.
+only supports an older superseded IDNA specification from 2003.
 
 Basic functions are simply executed:
 
