@@ -12,8 +12,8 @@ if sys.version_info[0] < 3:
     sys.exit(2)
 
 PREFERRED_VERSION = "16.0.0"
-UCD_URL = "http://www.unicode.org/Public/{version}/ucd/{filename}"
-UTS46_URL = "http://www.unicode.org/Public/idna/{version}/{filename}"
+UCD_URL = "https://www.unicode.org/Public/{version}/ucd/{filename}"
+UTS46_URL = "https://www.unicode.org/Public/idna/{version}/{filename}"
 
 DEFAULT_CACHE_DIR = "~/.cache/unidata"
 
