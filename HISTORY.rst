@@ -4,6 +4,7 @@ History
 -------
 
 3.11 (2025-10-12)
++++++++++++++++++
 
 - Update to Unicode 16.0.0, including significant changes to UTS46
   processing. As a result of Unicode ending support for it, transitional
