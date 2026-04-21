@@ -3,6 +3,18 @@
 History
 -------
 
+3.12 (2026-04-XX)
++++++++++++++++++
+
+- Update to Unicode 17.0.0
+- Remove the segmentation approach to the data structures that were
+  designed to support Jython since v2.2. Jython only works with Python 2
+  and this library only supports Python 3, so we no longer need to cater
+  to this.
+- Add deprecation warning for the ``transitional`` argument, which no
+  longer has any purpose and will be removed in a future version.
+- Various other tidy-ups, to remove dead code or improve logic.
+
 3.11 (2025-10-12)
 +++++++++++++++++
 
