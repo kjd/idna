@@ -6,15 +6,11 @@ History
 3.12 (2026-04-21)
 +++++++++++++++++
 
-- Update to Unicode 17.0.0
-- Remove the segmentation approach to the data structures that were
-  designed to support Jython since v2.2. Jython only works with Python 2
-  and this library only supports Python 3, so we no longer need to cater
-  to this.
-- Added lazy-loading to provide some performance improvements
-- Add deprecation warning for the ``transitional`` argument, which no
-  longer has any purpose and will be removed in a future version.
-- Various other tidy-ups, to remove dead code or improve logic.
+- Update to Unicode 17.0.0.
+- Issue a deprecation warning for the transitional argument.
+- Added lazy-loading to provide some performance improvements.
+- Removed vestiges of code related to Python 2 support, including
+  segmentation of data structures specific to Jython.
 
 Thanks to Rodrigo Nogueira for contributions to this release.
 

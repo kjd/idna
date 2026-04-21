@@ -131,8 +131,8 @@ three main modes:
   case, U+0061), that are used to assess the IDNA and UTS 46 status of a
   codepoint. This is helpful in debugging or analysis.
 
-The tool accepts a number of arguments, described using ``idna-data
--h``. Most notably, the ``--version`` argument allows the specification
+The tool accepts a number of arguments, described using ``idna-data -h``.
+Most notably, the ``--version`` argument allows the specification
 of the version of Unicode to be used in computing the table data. For
 example, ``idna-data --version 9.0.0 make-libdata`` will generate
 library data against Unicode 9.0.0.
