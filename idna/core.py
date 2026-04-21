@@ -332,13 +332,6 @@ def ulabel(label: Union[str, bytes, bytearray]) -> str:
 
 def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False) -> str:
     """Re-map the characters in the string according to UTS46 processing."""
-    if transitional:
-        warnings.warn(
-            "Transitional processing has been removed from UTS #46. "
-            "The transitional argument will be removed in a future version.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
     from .uts46data import uts46data
 
     output = ""
