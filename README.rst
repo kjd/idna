@@ -39,7 +39,7 @@ Usage
 -----
 
 For typical usage, the ``encode`` and ``decode`` functions will take a
-domain name argument and perform a conversion to ASCII compatible encoding
+domain name argument and perform a conversion to ASCII-compatible encoding
 (known as A-labels), or to Unicode strings (known as U-labels)
 respectively.
 
@@ -159,12 +159,8 @@ Additional Notes
 
 * **Emoji**. It is an occasional request to support emoji domains in
   this library. Encoding of symbols like emoji is expressly prohibited by
-  the technical standard IDNA 2008 and emoji domains are broadly phased
-  out across the domain industry due to associated security risks. For
-  now, applications that need to support these non-compliant labels
-  may wish to consider trying the encode/decode operation in this library
-  first, and then falling back to using `encodings.idna`. See `the Github
-  project <https://github.com/kjd/idna/issues/18>`_ for more discussion.
+  the IDNA technical standard, and emoji domains are broadly phased
+  out across the domain industry due to associated security risks.
 
 * **Transitional processing**. Unicode 16.0.0 removed transitional
   processing so the `transitional` argument for the encode() method
