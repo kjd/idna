@@ -7,10 +7,6 @@ from urllib.request import urlopen
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "idna"))
 from intranges import intranges_from_list
 
-if sys.version_info[0] < 3:
-    print("Only Python 3 supported.")
-    sys.exit(2)
-
 PREFERRED_VERSION = "17.0.0"
 UCD_URL = "https://www.unicode.org/Public/{version}/ucd/{filename}"
 UTS46_URL = "https://www.unicode.org/Public/{version}/idna/{filename}"
@@ -18,7 +14,7 @@ UTS46_URL = "https://www.unicode.org/Public/{version}/idna/{filename}"
 DEFAULT_CACHE_DIR = "~/.cache/unidata"
 
 # Scripts affected by IDNA contextual rules
-SCRIPT_WHITELIST = sorted(["Greek", "Han", "Hebrew", "Hiragana", "Katakana"])
+CONTEXT_SCRIPTS = sorted(["Greek", "Han", "Hebrew", "Hiragana", "Katakana"])
 
 UTS46_STATUSES = {
     "valid": ("V", False),
@@ -526,7 +522,7 @@ def idna_libdata(ucdata):
     # Script classifications are used by some CONTEXTO rules in RFC 5891
     #
     yield "scripts = {"
-    for script in SCRIPT_WHITELIST:
+    for script in CONTEXT_SCRIPTS:
         prefix = '    "{}": '.format(script)
         for line in optimised_list(ucdata.ucd_s[script]):
             yield prefix + line
@@ -789,6 +785,7 @@ def uts46_tests(ucdata):
 
 def make_libdata(args, ucdata):
     dest_dir = args.dir or "."
+    test_dir = args.test_dir or dest_dir
 
     target_filename = os.path.join(dest_dir, "idnadata.py")
     with open(target_filename, "wb") as target:
@@ -800,7 +797,7 @@ def make_libdata(args, ucdata):
         for line in uts46_libdata(ucdata):
             target.write((line + "\n").encode("utf-8"))
 
-    target_filename = os.path.join(dest_dir, "test_idna_uts46.py")
+    target_filename = os.path.join(test_dir, "test_idna_uts46.py")
     with open(target_filename, "wb") as target:
         for line in uts46_tests(ucdata):
             target.write((line + "\n").encode("utf-8"))
@@ -821,6 +818,7 @@ def main():
     parser.add_argument("--version", type=str, default="preferred", help="Unicode version to use (preferred, latest, <x.y.z>)")
     parser.add_argument("--source", type=str, default=None, help="Where to fetch Unicode data (file path)")
     parser.add_argument("--dir", type=str, default=None, help="Where to export the output")
+    parser.add_argument("--test-dir", type=str, default=None, help="Where to export test files (defaults to --dir)")
     parser.add_argument("--cache", type=str, default=None, help="Where to cache Unicode data")
     parser.add_argument("--no-cache", action="store_true", help="Don't cache Unicode data")
     libdata = parser.add_argument_group("make-libdata", "Make module data for Python IDNA library")
