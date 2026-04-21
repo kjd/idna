@@ -549,6 +549,8 @@ def idna_libdata(ucdata):
     #
     # These are the classification of codepoints into PVALID, CONTEXTO, CONTEXTJ, etc.
     #
+    yield ""
+    yield ""
     yield "codepoint_classes = {"
     classes = {}
     for cp in ucdata.codepoints():

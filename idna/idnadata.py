@@ -3113,6 +3113,8 @@ def joining_types() -> Dict[int, int]:
         0xE01EE: 84,
         0xE01EF: 84,
     }
+
+
 codepoint_classes = {
     "PVALID": (
         0x2D0000002E,
