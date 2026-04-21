@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  mypy:
+  lint:
     strategy:
       fail-fast: false
       matrix:
@@ -51,7 +51,7 @@ jobs:
           - '3.11'
           - '3.12'
           - '3.13'
-          - '3.14-dev'
+          - '3.14'
           - 'pypy-3.9'
     runs-on: ${{ matrix.os || 'ubuntu-latest' }}
     steps:
@@ -65,7 +65,6 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install pytest
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Test with pytest
       run: |
         pytest
