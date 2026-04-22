@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import argparse, collections, datetime, os, re, sys, unicodedata
+import argparse, collections, datetime, os, re, sys
 from urllib.request import urlopen
 
 # Use intranges.intranges_from_list() from the sibling idna directory
@@ -132,26 +132,18 @@ class UnicodeVersion(object):
 class UnicodeData(object):
     def __init__(self, version, cache, args):
         self.version = UnicodeVersion(version)
-        self.system_version = UnicodeVersion(unicodedata.unidata_version)
         self.source = args.source
         self.cache = cache
         self.max = 0
-
-        if self.system_version < self.version:
-            print(
-                "Warning: Character stability not guaranteed as Python Unicode data {} older than requested {}".format(
-                    self.system_version, self.version
-                )
-            )
 
         self._load_unicodedata()
         self._load_proplist()
         self._load_derivedcoreprops()
         self._load_blocks()
-        self._load_casefolding()
         self._load_hangulst()
         self._load_arabicshaping()
         self._load_scripts()
+        self._load_nfkc_cf()
         self._load_uts46mapping()
         self._load_uts46testvectors()
 
@@ -209,17 +201,6 @@ class UnicodeData(object):
                     self.ucd_block[i] = result.group("block")
                     self.max = max(self.max, i)
 
-    def _load_casefolding(self):
-        self.ucd_cf = {}
-        f_cf = self._ucdfile("CaseFolding.txt")
-        for line in f_cf.splitlines():
-            result = re.match(r"^(?P<cp>[0-9A-F]{4,6})\s*;\s*(?P<type>\S+)\s*;\s*(?P<subst>[0-9A-F\s]+)\s*", line)
-            if result:
-                if result.group("type") in ("C", "F"):
-                    self.ucd_cf[int(result.group("cp"), 16)] = "".join(
-                        [chr(int(x, 16)) for x in result.group("subst").split(" ")]
-                    )
-
     def _load_hangulst(self):
         self.ucd_hst = {}
         f_hst = self._ucdfile("HangulSyllableType.txt")
@@ -256,6 +237,23 @@ class UnicodeData(object):
                 else:
                     i = hexvalue(result.group("start"))
                     self.ucd_s[result.group("script")].add(i)
+
+    def _load_nfkc_cf(self):
+        self.ucd_nfkc_cf = {}
+        f_nfkc = self._ucdfile("DerivedNormalizationProps.txt")
+        for line in f_nfkc.splitlines():
+            result = re.match(
+                r"^(?P<start>[0-9A-F]{4,6})(|\.\.(?P<end>[0-9A-F]{4,6}))\s*;\s*NFKC_CF\s*;\s*(?P<mapping>[0-9A-F\s]*)\s*(|\#.*)$",
+                line,
+            )
+            if result:
+                mapping = "".join(chr(int(x, 16)) for x in result.group("mapping").split()) if result.group("mapping").strip() else ""
+                if result.group("end"):
+                    for i in hexrange(result.group("start"), result.group("end")):
+                        self.ucd_nfkc_cf[i] = mapping
+                else:
+                    i = hexvalue(result.group("start"))
+                    self.ucd_nfkc_cf[i] = mapping
 
     def _load_uts46mapping(self):
         self.ucd_idnamt = {}
@@ -321,12 +319,6 @@ class CodePoint:
         self.value = value
         self.ucdata = ucdata
 
-    def _casefold(self, s):
-        r = ""
-        for c in s:
-            r += self.ucdata.ucd_cf.get(ord(c), c)
-        return r
-
     @property
     def exception_value(self):
         return exceptions.get(self.value, False)
@@ -372,7 +364,7 @@ class CodePoint:
 
     @property
     def nfkc_cf(self):
-        return unicodedata.normalize("NFKC", self._casefold(unicodedata.normalize("NFKC", self.char)))
+        return self.ucdata.ucd_nfkc_cf.get(self.value, self.char)
 
     @property
     def unstable(self):
@@ -457,7 +449,7 @@ def diagnose_codepoint(codepoint, args, ucdata):
     print("10 .Letters Digits:  {}".format(cp.in_lettersdigits))
     print("== IDNA 2008:        {}".format(cp.idna2008_status))
     print("== UTS 46:           {}".format(cp.uts46_status))
-    print("(Unicode {} [sys:{}])".format(ucdata.version, ucdata.system_version))
+    print("(Unicode {})".format(ucdata.version))
 
 
 def ucdrange(start, end):
