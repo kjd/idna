@@ -4025,7 +4025,6 @@ codepoint_classes = {
         0xA7D70000A7D8,
         0xA7D90000A7DA,
         0xA7DB0000A7DC,
-        0xA7F10000A7F2,
         0xA7F60000A7F8,
         0xA7FA0000A828,
         0xA82C0000A82D,
