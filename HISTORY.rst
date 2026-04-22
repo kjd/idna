@@ -3,6 +3,11 @@
 History
 -------
 
+3.13 (2026-04-22)
++++++++++++++++++
+
+- Correct classification error for codepoint U+A7F1
+
 3.12 (2026-04-21)
 +++++++++++++++++
 
