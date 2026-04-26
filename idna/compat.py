@@ -1,4 +1,4 @@
-from typing import Any, Union
+from typing import Any, NoReturn, Union
 
 from .core import decode, encode
 
@@ -11,5 +11,5 @@ def ToUnicode(label: Union[bytes, bytearray]) -> str:
     return decode(label)
 
 
-def nameprep(s: Any) -> None:
+def nameprep(s: Any) -> NoReturn:
     raise NotImplementedError("IDNA 2008 does not utilise nameprep protocol")
