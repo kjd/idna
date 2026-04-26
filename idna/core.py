@@ -292,6 +292,14 @@ def alabel(label: str) -> bytes:
     except UnicodeEncodeError:
         pass
 
+    # Punycode never encodes a codepoint into fewer than one output byte, and
+    # the resulting A-label gains a 4-byte "xn--" prefix on top.  Any input
+    # longer than the 63-byte label limit therefore cannot produce a valid
+    # A-label, so reject it before doing the expensive validation and
+    # Punycode encoding work.
+    if not valid_label_length(label):
+        raise IDNAError("Label too long")
+
     check_label(label)
     label_bytes = _alabel_prefix + _punycode(label)
 
