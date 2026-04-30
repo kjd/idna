@@ -8,7 +8,7 @@ _unicode_dots_re = re.compile("[\u002e\u3002\uff0e\uff61]")
 
 
 class Codec(codecs.Codec):
-    def encode(self, data: str, errors: str = "strict") -> Tuple[bytes, int]:
+    def encode(self, data: str, errors: str = "strict") -> Tuple[bytes, int]:  # ty: ignore[invalid-method-override]
         if errors != "strict":
             raise IDNAError('Unsupported error handling "{}"'.format(errors))
 
@@ -17,7 +17,7 @@ class Codec(codecs.Codec):
 
         return encode(data), len(data)
 
-    def decode(self, data: bytes, errors: str = "strict") -> Tuple[str, int]:
+    def decode(self, data: bytes, errors: str = "strict") -> Tuple[str, int]:  # ty: ignore[invalid-method-override]
         if errors != "strict":
             raise IDNAError('Unsupported error handling "{}"'.format(errors))
 
@@ -28,7 +28,7 @@ class Codec(codecs.Codec):
 
 
 class IncrementalEncoder(codecs.BufferedIncrementalEncoder):
-    def _buffer_encode(self, data: str, errors: str, final: bool) -> Tuple[bytes, int]:
+    def _buffer_encode(self, data: str, errors: str, final: bool) -> Tuple[bytes, int]:  # ty: ignore[invalid-method-override]
         if errors != "strict":
             raise IDNAError('Unsupported error handling "{}"'.format(errors))
 
@@ -62,7 +62,7 @@ class IncrementalEncoder(codecs.BufferedIncrementalEncoder):
 
 
 class IncrementalDecoder(codecs.BufferedIncrementalDecoder):
-    def _buffer_decode(self, data: Any, errors: str, final: bool) -> Tuple[str, int]:
+    def _buffer_decode(self, data: Any, errors: str, final: bool) -> Tuple[str, int]:  # ty: ignore[invalid-method-override]
         if errors != "strict":
             raise IDNAError('Unsupported error handling "{}"'.format(errors))
 
