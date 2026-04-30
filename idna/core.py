@@ -2,7 +2,7 @@ import bisect
 import re
 import unicodedata
 import warnings
-from typing import Optional, Tuple, Union, cast
+from typing import Optional, Union
 
 from . import idnadata
 from .intranges import intranges_contain
@@ -342,7 +342,7 @@ def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False
         status = uts46row[1]
         replacement: Optional[str] = None
         if len(uts46row) == 3:
-            replacement = cast("Tuple[int, str, str]", uts46row)[2]
+            replacement = uts46row[2]  # ty: ignore[index-out-of-bounds]
         if status == "V" or (status == "D" and not transitional) or (status == "3" and not std3_rules and replacement is None):
             output += char
         elif replacement is not None and (
