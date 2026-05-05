@@ -304,6 +304,15 @@ class IDNATests(unittest.TestCase):
             idna.encode("example.com", uts46=True)
             self.assertEqual(len(w), 0)
 
+    def test_encode_decode_invalid_input_type(self):
+        # encode() and decode() are documented to raise IDNAError on bad
+        # input.  Inputs that are not str, bytes, or bytes-like used to leak
+        # a raw TypeError out of str(s, "ascii"); they should be wrapped in
+        # IDNAError just like UnicodeDecodeError already is.
+        for value in (42, None, 1.5, ["a", "b"], {"a": 1}):
+            self.assertRaises(idna.IDNAError, idna.encode, value)
+            self.assertRaises(idna.IDNAError, idna.decode, value)
+
 
 if __name__ == "__main__":
     unittest.main()
