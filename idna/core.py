@@ -477,6 +477,13 @@ def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False
     :raises InvalidCodepoint: If the domain contains a disallowed
         codepoint under the chosen rules.
     """
+    if transitional:
+        warnings.warn(
+            "Transitional processing has been removed from UTS #46. "
+            "The transitional argument will be removed in a future version.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
     from .uts46data import uts46data
 
     output = ""
@@ -532,13 +539,6 @@ def encode(
     :raises IDNAError: If the domain is empty, contains an invalid label,
         or exceeds the maximum domain length.
     """
-    if transitional:
-        warnings.warn(
-            "Transitional processing has been removed from UTS #46. "
-            "The transitional argument will be removed in a future version.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
     if not isinstance(s, str):
         try:
             s = str(s, "ascii")
@@ -576,6 +576,7 @@ def decode(
     strict: bool = False,
     uts46: bool = False,
     std3_rules: bool = False,
+    transitional: bool = False,
 ) -> str:
     """Decode an A-label-encoded domain name back to Unicode.
 
@@ -590,6 +591,9 @@ def decode(
     :param uts46: If ``True``, apply UTS #46 mapping before decoding.
     :param std3_rules: Forwarded to :func:`uts46_remap` when ``uts46`` is
         ``True``.
+    :param transitional: Forwarded to :func:`uts46_remap` when ``uts46``
+        is ``True``. Deprecated: emits a :class:`DeprecationWarning` and
+        will be removed in a future version.
     :returns: The decoded domain as a Unicode string.
     :raises IDNAError: If the input is not valid ASCII, contains an
         invalid label, or is empty.
@@ -600,7 +604,7 @@ def decode(
         except (UnicodeDecodeError, TypeError):
             raise IDNAError("Invalid ASCII in A-label")
     if uts46:
-        s = uts46_remap(s, std3_rules, False)
+        s = uts46_remap(s, std3_rules, transitional)
     trailing_dot = False
     result = []
     if not strict:
