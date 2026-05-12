@@ -352,16 +352,8 @@ def check_label(label: Union[str, bytes, bytearray]) -> None:
         label = label.decode("utf-8")
     if len(label) == 0:
         raise IDNAError("Empty Label")
-    # Reject oversized labels before per-codepoint validation runs.
-    # CONTEXTJ/CONTEXTO checks scan the whole label per codepoint, so an
-    # uncapped label drives validation into quadratic time
-    # (GHSA-65pc-fj4g-8rjx / CVE-2024-3651). encode()/decode() cap the
-    # whole-domain length; this cap protects direct callers of
-    # alabel/ulabel/check_label and the idna2008 incremental codec.
-    # Use the whole-domain bound rather than the per-label DNS bound so
-    # that UTS #46 lenient decoding of labels longer than 63 chars is
-    # preserved.
-    if not valid_string_length(label, trailing_dot=True):
+    # Avoid further computation on labels that are too long
+    if not valid_label_length(label):
         raise IDNAError("Label too long")
 
     check_nfc(label)
