@@ -106,11 +106,17 @@ Multiple domains may be supplied at once, either as positional
 arguments or by piping one domain per line on standard input:
 
 ```bash
-$ idna пример.рф xn--zckzah
+$ idna пример.рф παράδειγμα
 xn--e1afmkfd.xn--p1ai
-テスト
+xn--hxajbheg2az3al
 $ cat domainlist.txt | idna
 ```
+
+When more than one domain is supplied without a mode flag, the
+direction is picked from the first input and that mode is applied to
+every remaining input, so a stream of A-labels all decode and a stream
+of U-labels all encode. Pass `-e`/`--encode` or `-d`/`--decode` to
+override the heuristic if the first input is ambiguous.
 
 UTS #46 mapping is applied by default, which lets the tool accept
 inputs that aren't strictly valid IDNA 2008 — such as uppercase

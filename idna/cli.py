@@ -5,6 +5,7 @@ Invoked via ``python -m idna``. See :func:`main` for the entry point.
 
 import argparse
 import sys
+from itertools import chain
 from typing import IO, Iterable, List, Optional
 
 from . import IDNAError, decode, encode
@@ -24,11 +25,13 @@ def _build_parser() -> argparse.ArgumentParser:
         description=(
             "Convert a domain name between its Unicode (U-label) and "
             "ASCII-compatible (A-label) forms. With no mode flag, the "
-            "direction is chosen automatically: inputs containing an "
-            "xn-- label are decoded, otherwise the input is encoded. "
-            "UTS #46 mapping is applied by default; pass --strict to "
-            "disable it. When no domains are given on the command line "
-            "and stdin is piped, one domain per line is read from stdin."
+            "direction is chosen from the first input — if it contains "
+            "an xn-- label the stream is decoded, otherwise it is "
+            "encoded — and the same mode is applied to every remaining "
+            "input. UTS #46 mapping is applied by default; pass "
+            "--strict to disable it. When no domains are given on the "
+            "command line and stdin is piped, one domain per line is "
+            "read from stdin."
         ),
     )
     mode = parser.add_mutually_exclusive_group()
@@ -66,14 +69,6 @@ def _build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _convert(domain: str, mode: Optional[str], uts46: bool) -> str:
-    """Apply the requested conversion to ``domain``, picking a mode if needed."""
-    chosen = mode or ("decode" if _looks_like_alabel(domain) else "encode")
-    if chosen == "decode":
-        return decode(domain, uts46=uts46)
-    return encode(domain, uts46=uts46).decode("ascii")
-
-
 def _iter_stdin(stream: IO[str]) -> Iterable[str]:
     """Yield non-empty stripped lines from ``stream``, ignoring blanks."""
     for line in stream:
@@ -84,6 +79,10 @@ def _iter_stdin(stream: IO[str]) -> Iterable[str]:
 
 def main(argv: Optional[List[str]] = None) -> int:
     """Entry point for ``python -m idna``.
+
+    When more than one domain is supplied (via positional arguments or
+    piped stdin) and no mode flag is given, the first input determines
+    the direction and that mode is applied uniformly to the rest.
 
     :param argv: Argument list excluding the program name. Defaults to
         :data:`sys.argv` when ``None``.
@@ -100,12 +99,21 @@ def main(argv: Optional[List[str]] = None) -> int:
     else:
         parser.error("a domain argument is required when stdin is a terminal")
 
+    iterator = iter(domains)
+    first = next(iterator, None)
+    if first is None:
+        return 0
+
+    mode = args.mode or ("decode" if _looks_like_alabel(first) else "encode")
+
     failed = False
-    for domain in domains:
+    for domain in chain([first], iterator):
         try:
-            print(_convert(domain, args.mode, uts46))
+            if mode == "decode":
+                print(decode(domain, uts46=uts46))
+            else:
+                print(encode(domain, uts46=uts46).decode("ascii"))
         except IDNAError as err:
-            mode = args.mode or ("decode" if _looks_like_alabel(domain) else "encode")
             print(f"idna: {mode} failed for {domain!r}: {err}", file=sys.stderr)
             failed = True
     return 1 if failed else 0

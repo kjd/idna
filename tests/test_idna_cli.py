@@ -155,13 +155,18 @@ class CLIVersionTests(unittest.TestCase):
 
 
 class CLIMultipleDomainsTests(unittest.TestCase):
-    def test_multiple_positional_domains_are_each_converted(self):
-        rc, out, _ = run_cli("пример.рф", "xn--zckzah", "example.com")
+    def test_multiple_unicode_positional_domains_are_all_encoded(self):
+        rc, out, _ = run_cli("пример.рф", "παράδειγμα", "한국")
         self.assertEqual(rc, 0)
         self.assertEqual(
             out.splitlines(),
-            ["xn--e1afmkfd.xn--p1ai", "テスト", "example.com"],
+            ["xn--e1afmkfd.xn--p1ai", "xn--hxajbheg2az3al", "xn--3e0b707e"],
         )
+
+    def test_multiple_alabel_positional_domains_are_all_decoded(self):
+        rc, out, _ = run_cli("xn--e1afmkfd.xn--p1ai", "xn--hxajbheg2az3al", "xn--3e0b707e")
+        self.assertEqual(rc, 0)
+        self.assertEqual(out.splitlines(), ["пример.рф", "παράδειγμα", "한국"])
 
     def test_mode_flag_applies_to_every_positional_domain(self):
         rc, out, _ = run_cli("-e", "한국", "παράδειγμα")
@@ -172,31 +177,68 @@ class CLIMultipleDomainsTests(unittest.TestCase):
         )
 
     def test_failures_are_reported_per_domain_and_processing_continues(self):
-        rc, out, err = run_cli("пример.рф", "foo_bar", "xn--zckzah")
+        rc, out, err = run_cli("пример.рф", "foo_bar", "παράδειγμα")
         self.assertEqual(rc, 1)
         self.assertEqual(
             out.splitlines(),
-            ["xn--e1afmkfd.xn--p1ai", "テスト"],
+            ["xn--e1afmkfd.xn--p1ai", "xn--hxajbheg2az3al"],
         )
         self.assertIn("encode failed for 'foo_bar'", err)
 
 
+class CLIModeLockTests(unittest.TestCase):
+    """The first input picks the mode; the rest of the stream follows."""
+
+    def test_first_unicode_input_locks_subsequent_inputs_to_encode(self):
+        # 'foo_bar' is invalid in either direction; the stderr mode word
+        # reveals which mode the second input was processed in.
+        rc, out, err = run_cli("пример.рф", "foo_bar")
+        self.assertEqual(rc, 1)
+        self.assertEqual(out.splitlines(), ["xn--e1afmkfd.xn--p1ai"])
+        self.assertIn("encode failed for 'foo_bar'", err)
+
+    def test_first_alabel_input_locks_subsequent_inputs_to_decode(self):
+        rc, out, err = run_cli("xn--zckzah", "foo_bar")
+        self.assertEqual(rc, 1)
+        self.assertEqual(out.splitlines(), ["テスト"])
+        self.assertIn("decode failed for 'foo_bar'", err)
+
+    def test_explicit_mode_flag_overrides_first_input_heuristic(self):
+        # First input looks like an A-label but -e forces encode for everything.
+        rc, out, err = run_cli("-e", "xn--zckzah", "foo_bar")
+        self.assertEqual(rc, 1)
+        self.assertEqual(out.splitlines(), ["xn--zckzah"])
+        self.assertIn("encode failed for 'foo_bar'", err)
+
+    def test_stdin_first_line_locks_mode_for_the_stream(self):
+        rc, out, err = run_cli(stdin="xn--zckzah\nfoo_bar\n")
+        self.assertEqual(rc, 1)
+        self.assertEqual(out.splitlines(), ["テスト"])
+        self.assertIn("decode failed for 'foo_bar'", err)
+
+
 class CLIStdinTests(unittest.TestCase):
     def test_reads_one_domain_per_line_from_piped_stdin(self):
-        rc, out, _ = run_cli(stdin="пример.рф\nxn--zckzah\nexample.com\n")
+        rc, out, _ = run_cli(stdin="пример.рф\nπαράδειγμα\n한국\n")
         self.assertEqual(rc, 0)
         self.assertEqual(
             out.splitlines(),
-            ["xn--e1afmkfd.xn--p1ai", "テスト", "example.com"],
+            ["xn--e1afmkfd.xn--p1ai", "xn--hxajbheg2az3al", "xn--3e0b707e"],
         )
 
     def test_blank_lines_in_stdin_are_skipped(self):
-        rc, out, _ = run_cli(stdin="\nпример.рф\n\n   \nxn--zckzah\n")
+        rc, out, _ = run_cli(stdin="\nпример.рф\n\n   \nπαράδειγμα\n")
         self.assertEqual(rc, 0)
         self.assertEqual(
             out.splitlines(),
-            ["xn--e1afmkfd.xn--p1ai", "テスト"],
+            ["xn--e1afmkfd.xn--p1ai", "xn--hxajbheg2az3al"],
         )
+
+    def test_empty_stdin_exits_cleanly_with_no_output(self):
+        rc, out, err = run_cli(stdin="")
+        self.assertEqual(rc, 0)
+        self.assertEqual(out, "")
+        self.assertEqual(err, "")
 
     def test_positional_domains_take_precedence_over_piped_stdin(self):
         rc, out, _ = run_cli("example.com", stdin="ignored.example\n")
@@ -204,11 +246,11 @@ class CLIStdinTests(unittest.TestCase):
         self.assertEqual(out.splitlines(), ["example.com"])
 
     def test_stdin_errors_continue_processing_and_set_exit_code(self):
-        rc, out, err = run_cli(stdin="пример.рф\nfoo_bar\nxn--zckzah\n")
+        rc, out, err = run_cli(stdin="пример.рф\nfoo_bar\nπαράδειγμα\n")
         self.assertEqual(rc, 1)
         self.assertEqual(
             out.splitlines(),
-            ["xn--e1afmkfd.xn--p1ai", "テスト"],
+            ["xn--e1afmkfd.xn--p1ai", "xn--hxajbheg2az3al"],
         )
         self.assertIn("encode failed for 'foo_bar'", err)
 
@@ -232,10 +274,10 @@ class CLIModuleEntryTests(unittest.TestCase):
         self.assertEqual(result.stderr, "")
 
     def test_python_dash_m_idna_reads_piped_stdin(self):
-        # End-to-end: pipe a list of domains and check each is converted.
+        # End-to-end: pipe a list of A-labels and confirm they all decode.
         result = subprocess.run(
             [sys.executable, "-m", "idna"],
-            input="пример.рф\nxn--zckzah\n",
+            input="xn--e1afmkfd.xn--p1ai\nxn--zckzah\n",
             check=False,
             capture_output=True,
             text=True,
@@ -243,7 +285,7 @@ class CLIModuleEntryTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
         self.assertEqual(
             result.stdout.splitlines(),
-            ["xn--e1afmkfd.xn--p1ai", "テスト"],
+            ["пример.рф", "テスト"],
         )
         self.assertEqual(result.stderr, "")
 
