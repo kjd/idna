@@ -85,10 +85,10 @@ königsgäßchen
 
 ## Command-line tool
 
-The package supports command-line usage to convert a single domain
-between its Unicode and ASCII-compatible forms. It can be run either as
-a module (`python3 -m idna`) or, once installed (such as with `uv tool`
-or `pipx`), via the `idna` script:
+The package supports command-line usage to convert domain names
+between their Unicode and ASCII-compatible forms. It can be run either
+as a module (`python3 -m idna`) or, once installed (such as with `uv
+tool` or `pipx`), via the `idna` script:
 
 ```bash
 $ uv tool install idna
@@ -102,6 +102,16 @@ With no mode flag the direction is chosen automatically: inputs
 containing an `xn--` label are decoded, anything else is encoded. Pass
 `-e`/`--encode` or `-d`/`--decode` to force a specific direction.
 
+Multiple domains may be supplied at once, either as positional
+arguments or by piping one domain per line on standard input:
+
+```bash
+$ idna пример.рф xn--zckzah
+xn--e1afmkfd.xn--p1ai
+テスト
+$ cat domainlist.txt | idna
+```
+
 UTS #46 mapping is applied by default, which lets the tool accept
 inputs that aren't strictly valid IDNA 2008 — such as uppercase
 letters — by normalising them first:
@@ -114,8 +124,9 @@ xn--hxajbheg2az3al.xn--qxam
 Pass `--strict` to disable UTS #46 and apply IDNA 2008 rules verbatim;
 the same input will then be rejected.
 
-Conversion failures are reported on stderr and the tool
-exits with a non-zero status.
+Conversion failures are reported on stderr together with the
+offending input; processing continues with the remaining domains and
+the tool exits with a non-zero status if any conversion failed.
 
 
 ## Exceptions

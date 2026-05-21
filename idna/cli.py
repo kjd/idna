@@ -5,7 +5,7 @@ Invoked via ``python -m idna``. See :func:`main` for the entry point.
 
 import argparse
 import sys
-from typing import List, Optional
+from typing import IO, Iterable, List, Optional
 
 from . import IDNAError, decode, encode
 from .core import _alabel_prefix, _unicode_dots_re
@@ -27,7 +27,8 @@ def _build_parser() -> argparse.ArgumentParser:
             "direction is chosen automatically: inputs containing an "
             "xn-- label are decoded, otherwise the input is encoded. "
             "UTS #46 mapping is applied by default; pass --strict to "
-            "disable it."
+            "disable it. When no domains are given on the command line "
+            "and stdin is piped, one domain per line is read from stdin."
         ),
     )
     mode = parser.add_mutually_exclusive_group()
@@ -59,9 +60,26 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "domain",
-        help="The domain name to convert.",
+        nargs="*",
+        help="One or more domain names to convert. Omit to read from stdin.",
     )
     return parser
+
+
+def _convert(domain: str, mode: Optional[str], uts46: bool) -> str:
+    """Apply the requested conversion to ``domain``, picking a mode if needed."""
+    chosen = mode or ("decode" if _looks_like_alabel(domain) else "encode")
+    if chosen == "decode":
+        return decode(domain, uts46=uts46)
+    return encode(domain, uts46=uts46).decode("ascii")
+
+
+def _iter_stdin(stream: IO[str]) -> Iterable[str]:
+    """Yield non-empty stripped lines from ``stream``, ignoring blanks."""
+    for line in stream:
+        stripped = line.strip()
+        if stripped:
+            yield stripped
 
 
 def main(argv: Optional[List[str]] = None) -> int:
@@ -69,21 +87,28 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     :param argv: Argument list excluding the program name. Defaults to
         :data:`sys.argv` when ``None``.
-    :returns: ``0`` on success, ``1`` if conversion fails.
+    :returns: ``0`` on success, ``1`` if any conversion fails.
     """
-    args = _build_parser().parse_args(argv)
-    mode = args.mode or ("decode" if _looks_like_alabel(args.domain) else "encode")
+    parser = _build_parser()
+    args = parser.parse_args(argv)
     uts46 = not args.strict
 
-    try:
-        if mode == "decode":
-            print(decode(args.domain, uts46=uts46))
-        else:
-            print(encode(args.domain, uts46=uts46).decode("ascii"))
-    except IDNAError as err:
-        print(f"idna: {mode} failed: {err}", file=sys.stderr)
-        return 1
-    return 0
+    if args.domain:
+        domains: Iterable[str] = args.domain
+    elif not sys.stdin.isatty():
+        domains = _iter_stdin(sys.stdin)
+    else:
+        parser.error("a domain argument is required when stdin is a terminal")
+
+    failed = False
+    for domain in domains:
+        try:
+            print(_convert(domain, args.mode, uts46))
+        except IDNAError as err:
+            mode = args.mode or ("decode" if _looks_like_alabel(domain) else "encode")
+            print(f"idna: {mode} failed for {domain!r}: {err}", file=sys.stderr)
+            failed = True
+    return 1 if failed else 0
 
 
 if __name__ == "__main__":

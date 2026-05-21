@@ -4,19 +4,33 @@ import io
 import subprocess
 import sys
 import unittest
-from contextlib import redirect_stderr, redirect_stdout
+from contextlib import contextmanager, redirect_stderr, redirect_stdout
+from unittest import mock
 
 from idna import cli
 from idna.package_data import __version__
 
 
-def run_cli(*argv):
-    """Invoke ``cli.main`` with ``argv`` and capture (rc, stdout, stderr)."""
+def run_cli(*argv, stdin=None):
+    """Invoke ``cli.main`` with ``argv`` and capture (rc, stdout, stderr).
+
+    Pass ``stdin`` as a string to simulate a piped stdin; omit it to
+    simulate an interactive terminal.
+    """
     out = io.StringIO()
     err = io.StringIO()
-    with redirect_stdout(out), redirect_stderr(err):
+    with redirect_stdout(out), redirect_stderr(err), _patched_stdin(stdin):
         rc = cli.main(list(argv))
     return rc, out.getvalue(), err.getvalue()
+
+
+@contextmanager
+def _patched_stdin(data):
+    """Replace ``sys.stdin`` with a fake stream and isatty() result."""
+    stream = io.StringIO("" if data is None else data)
+    stream.isatty = lambda: data is None  # type: ignore[method-assign]
+    with mock.patch.object(sys, "stdin", stream):
+        yield
 
 
 class CLIAutoDetectTests(unittest.TestCase):
@@ -115,7 +129,7 @@ class CLIErrorHandlingTests(unittest.TestCase):
         rc, out, err = run_cli("foo_bar")
         self.assertEqual(rc, 1)
         self.assertEqual(out, "")
-        self.assertTrue(err.startswith("idna: encode failed:"))
+        self.assertTrue(err.startswith("idna: encode failed for 'foo_bar':"))
 
     def test_invalid_alabel_decode_returns_nonzero(self):
         # Trailing hyphen after the xn-- prefix is rejected by ulabel().
@@ -124,8 +138,9 @@ class CLIErrorHandlingTests(unittest.TestCase):
         self.assertEqual(out, "")
         self.assertIn("decode failed", err)
 
-    def test_missing_argument_is_an_argparse_error(self):
-        with self.assertRaises(SystemExit) as ctx, redirect_stderr(io.StringIO()):
+    def test_missing_argument_with_tty_stdin_is_an_argparse_error(self):
+        # Interactive shell (no piped stdin) and no domain arg → argparse exits 2.
+        with self.assertRaises(SystemExit) as ctx, redirect_stderr(io.StringIO()), _patched_stdin(None):
             cli.main([])
         self.assertEqual(ctx.exception.code, 2)
 
@@ -139,6 +154,70 @@ class CLIVersionTests(unittest.TestCase):
         self.assertIn(__version__, buf.getvalue())
 
 
+class CLIMultipleDomainsTests(unittest.TestCase):
+    def test_multiple_positional_domains_are_each_converted(self):
+        rc, out, _ = run_cli("пример.рф", "xn--zckzah", "example.com")
+        self.assertEqual(rc, 0)
+        self.assertEqual(
+            out.splitlines(),
+            ["xn--e1afmkfd.xn--p1ai", "テスト", "example.com"],
+        )
+
+    def test_mode_flag_applies_to_every_positional_domain(self):
+        rc, out, _ = run_cli("-e", "한국", "παράδειγμα")
+        self.assertEqual(rc, 0)
+        self.assertEqual(
+            out.splitlines(),
+            ["xn--3e0b707e", "xn--hxajbheg2az3al"],
+        )
+
+    def test_failures_are_reported_per_domain_and_processing_continues(self):
+        rc, out, err = run_cli("пример.рф", "foo_bar", "xn--zckzah")
+        self.assertEqual(rc, 1)
+        self.assertEqual(
+            out.splitlines(),
+            ["xn--e1afmkfd.xn--p1ai", "テスト"],
+        )
+        self.assertIn("encode failed for 'foo_bar'", err)
+
+
+class CLIStdinTests(unittest.TestCase):
+    def test_reads_one_domain_per_line_from_piped_stdin(self):
+        rc, out, _ = run_cli(stdin="пример.рф\nxn--zckzah\nexample.com\n")
+        self.assertEqual(rc, 0)
+        self.assertEqual(
+            out.splitlines(),
+            ["xn--e1afmkfd.xn--p1ai", "テスト", "example.com"],
+        )
+
+    def test_blank_lines_in_stdin_are_skipped(self):
+        rc, out, _ = run_cli(stdin="\nпример.рф\n\n   \nxn--zckzah\n")
+        self.assertEqual(rc, 0)
+        self.assertEqual(
+            out.splitlines(),
+            ["xn--e1afmkfd.xn--p1ai", "テスト"],
+        )
+
+    def test_positional_domains_take_precedence_over_piped_stdin(self):
+        rc, out, _ = run_cli("example.com", stdin="ignored.example\n")
+        self.assertEqual(rc, 0)
+        self.assertEqual(out.splitlines(), ["example.com"])
+
+    def test_stdin_errors_continue_processing_and_set_exit_code(self):
+        rc, out, err = run_cli(stdin="пример.рф\nfoo_bar\nxn--zckzah\n")
+        self.assertEqual(rc, 1)
+        self.assertEqual(
+            out.splitlines(),
+            ["xn--e1afmkfd.xn--p1ai", "テスト"],
+        )
+        self.assertIn("encode failed for 'foo_bar'", err)
+
+    def test_decode_flag_applies_to_every_stdin_line(self):
+        rc, out, _ = run_cli("-d", stdin="xn--hxajbheg2az3al\nxn--3e0b707e\n")
+        self.assertEqual(rc, 0)
+        self.assertEqual(out.splitlines(), ["παράδειγμα", "한국"])
+
+
 class CLIModuleEntryTests(unittest.TestCase):
     def test_python_dash_m_idna_runs_cli(self):
         # End-to-end: spawn ``python -m idna`` and check the round trip.
@@ -150,6 +229,22 @@ class CLIModuleEntryTests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0)
         self.assertEqual(result.stdout.strip(), "テスト")
+        self.assertEqual(result.stderr, "")
+
+    def test_python_dash_m_idna_reads_piped_stdin(self):
+        # End-to-end: pipe a list of domains and check each is converted.
+        result = subprocess.run(
+            [sys.executable, "-m", "idna"],
+            input="пример.рф\nxn--zckzah\n",
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stdout.splitlines(),
+            ["xn--e1afmkfd.xn--p1ai", "テスト"],
+        )
         self.assertEqual(result.stderr, "")
 
     def test_python_dash_m_idna_reports_errors(self):
