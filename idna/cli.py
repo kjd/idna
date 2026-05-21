@@ -5,8 +5,9 @@ Invoked via ``python -m idna``. See :func:`main` for the entry point.
 
 import argparse
 import sys
+from collections.abc import Iterable
 from itertools import chain
-from typing import IO, Iterable, List, Optional
+from typing import IO, Optional
 
 from . import IDNAError, decode, encode
 from .core import _alabel_prefix, _unicode_dots_re
@@ -90,7 +91,7 @@ def _convert_one(domain: str, mode: str, uts46: bool) -> bool:
     return True
 
 
-def main(argv: Optional[List[str]] = None) -> int:
+def main(argv: Optional[list[str]] = None) -> int:
     """Entry point for ``python -m idna``.
 
     When more than one domain is supplied (via positional arguments or

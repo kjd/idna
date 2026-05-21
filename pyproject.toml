@@ -19,7 +19,6 @@ classifiers = [
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -32,7 +31,7 @@ classifiers = [
   "Topic :: Software Development :: Libraries :: Python Modules",
   "Topic :: Utilities",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dynamic = ["version"]
 
 [project.urls]
@@ -63,7 +62,16 @@ extend-select = [
     "SIM",          # flake8-simplify
     "UP",           # pyupgrade
     "PERF",         # perflint
+    "PIE",          # flake8-pie
+    "RET",          # flake8-return
+    "RUF",          # ruff-specific
 ]
-[tool.ruff.lint.pyupgrade]
-# Honour the project's Python 3.8 floor when applying pyupgrade rules.
-keep-runtime-typing = true
+ignore = [
+    # An IDN library legitimately handles confusable / ambiguous Unicode;
+    # flagging it everywhere produces tens of thousands of false positives.
+    "RUF001",       # ambiguous-unicode-character-string
+    "RUF002",       # ambiguous-unicode-character-docstring
+    "RUF003",       # ambiguous-unicode-character-comment
+    # `__all__` lists __version__ first by convention; otherwise sorted.
+    "RUF022",       # unsorted-dunder-all
+]

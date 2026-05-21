@@ -187,13 +187,10 @@ library data against Unicode 9.0.0.
 * **Packages**. The latest tagged release version is published in the
   [Python Package Index](https://pypi.org/project/idna/).
 
-* **Version support**. This library supports Python 3.8 and higher.
+* **Version support**. This library supports Python 3.9 and higher.
   As this library serves as a low-level toolkit for a variety of
-  applications, many of which strive for broad compatibility with older
-  Python versions, there is no rush to remove older interpreter support.
-  Support for older versions are likely to be removed from new releases
-  as automated tests can no longer easily be run, i.e. once the Python
-  version is officially end-of-life.
+  applications, we strive to support all versions of Python that are
+  not beyond end-of-life.
 
 * **Testing**. The library has a test suite based on each rule of the
   IDNA specification, as well as tests that are provided as part of the
