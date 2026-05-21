@@ -77,6 +77,19 @@ def _iter_stdin(stream: IO[str]) -> Iterable[str]:
             yield stripped
 
 
+def _convert_one(domain: str, mode: str, uts46: bool) -> bool:
+    """Convert ``domain`` and write the result; return ``False`` on failure."""
+    try:
+        if mode == "decode":
+            print(decode(domain, uts46=uts46))
+        else:
+            print(encode(domain, uts46=uts46).decode("ascii"))
+    except IDNAError as err:
+        print(f"idna: {mode} failed for {domain!r}: {err}", file=sys.stderr)
+        return False
+    return True
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     """Entry point for ``python -m idna``.
 
@@ -106,17 +119,8 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     mode = args.mode or ("decode" if _looks_like_alabel(first) else "encode")
 
-    failed = False
-    for domain in chain([first], iterator):
-        try:
-            if mode == "decode":
-                print(decode(domain, uts46=uts46))
-            else:
-                print(encode(domain, uts46=uts46).decode("ascii"))
-        except IDNAError as err:
-            print(f"idna: {mode} failed for {domain!r}: {err}", file=sys.stderr)
-            failed = True
-    return 1 if failed else 0
+    results = [_convert_one(domain, mode, uts46) for domain in chain([first], iterator)]
+    return 0 if all(results) else 1
 
 
 if __name__ == "__main__":
