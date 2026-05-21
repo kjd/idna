@@ -115,7 +115,7 @@ the same input will then be rejected.
 Conversion failures are reported on stderr and the tool
 exits with a non-zero status. The tool can be invoked using
 [`uv tool`](https://docs.astral.sh/uv/concepts/tools/) or
-[`pipx`](https://pipx.pypa.io/) as well: own:
+[`pipx`](https://pipx.pypa.io/) as well:
 
 ```bash
 $ uv tool install idna
