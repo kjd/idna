@@ -85,11 +85,13 @@ königsgäßchen
 
 ## Command-line tool
 
-The package support command-line usage to convert a single domain
+The package supports command-line usage to convert a single domain
 between its Unicode and ASCII-compatible forms. It can be run either as
-a module (`python3 -m idna`) or, once installed, via the `idna` script:
+a module (`python3 -m idna`) or, once installed (such as with `uv tool`
+or `pipx`), via the `idna` script:
 
 ```bash
+$ uv tool install idna
 $ idna xn--e1afmkfd.xn--p1ai
 пример.рф
 $ idna пример.рф
@@ -113,15 +115,7 @@ Pass `--strict` to disable UTS #46 and apply IDNA 2008 rules verbatim;
 the same input will then be rejected.
 
 Conversion failures are reported on stderr and the tool
-exits with a non-zero status. The tool can be invoked using
-[`uv tool`](https://docs.astral.sh/uv/concepts/tools/) or
-[`pipx`](https://pipx.pypa.io/) as well:
-
-```bash
-$ uv tool install idna
-$ idna xn--11b5bs3a9aj6g
-परीक्षा
-```
+exits with a non-zero status.
 
 
 ## Exceptions
