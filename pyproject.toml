@@ -40,6 +40,9 @@ dynamic = ["version"]
 "Changelog" = "https://github.com/kjd/idna/blob/master/HISTORY.md"
 "Issue tracker" = "https://github.com/kjd/idna/issues"
 
+[project.scripts]
+idna = "idna.cli:main"
+
 [tool.flit.sdist]
 exclude = [".gitignore", ".github/"]
 include = ["tests", "tools", "HISTORY.md"]
