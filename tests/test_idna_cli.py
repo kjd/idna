@@ -24,11 +24,21 @@ def run_cli(*argv, stdin=None):
     return rc, out.getvalue(), err.getvalue()
 
 
+class _FakeStdin(io.StringIO):
+    """``io.StringIO`` with a configurable ``isatty`` result."""
+
+    def __init__(self, data: str, is_tty: bool) -> None:
+        super().__init__(data)
+        self._is_tty = is_tty
+
+    def isatty(self) -> bool:
+        return self._is_tty
+
+
 @contextmanager
 def _patched_stdin(data):
     """Replace ``sys.stdin`` with a fake stream and isatty() result."""
-    stream = io.StringIO("" if data is None else data)
-    stream.isatty = lambda: data is None  # type: ignore[method-assign]
+    stream = _FakeStdin("" if data is None else data, is_tty=data is None)
     with mock.patch.object(sys, "stdin", stream):
         yield
 
