@@ -522,13 +522,17 @@ def encode(
             s = str(s, "ascii")
         except (UnicodeDecodeError, TypeError) as err:
             raise IDNAError("should pass a unicode string to the function rather than a byte string.") from err
-    if uts46:
-        s = uts46_remap(s, std3_rules, transitional)
-
-    # Reject inputs that exceed the maximum DNS domain length up-front
-    # to avoid expensive computation on long inputs.
+    # Reject inputs that exceed the maximum DNS domain length up-front to
+    # avoid expensive computation on long inputs. This runs before
+    # uts46_remap because its NFC normalization is superlinear on adversarial
+    # combining-mark sequences; checking afterwards lets such input through.
     if not valid_string_length(s, trailing_dot=True):
         raise IDNAError("Domain too long")
+
+    if uts46:
+        s = uts46_remap(s, std3_rules, transitional)
+        if not valid_string_length(s, trailing_dot=True):
+            raise IDNAError("Domain too long")
 
     trailing_dot = False
     result = []
@@ -580,12 +584,16 @@ def decode(
             s = str(s, "ascii")
         except (UnicodeDecodeError, TypeError) as err:
             raise IDNAError("Invalid ASCII in A-label") from err
-    if uts46:
-        s = uts46_remap(s, std3_rules, False)
-    # Reject inputs that exceed the maximum DNS domain length up-front
-    # to avoid expensive computation on long inputs.
+    # Reject inputs that exceed the maximum DNS domain length up-front to
+    # avoid expensive computation on long inputs. This runs before
+    # uts46_remap because its NFC normalization is superlinear on adversarial
+    # combining-mark sequences; checking afterwards lets such input through.
     if not valid_string_length(s, trailing_dot=True):
         raise IDNAError("Domain too long")
+    if uts46:
+        s = uts46_remap(s, std3_rules, False)
+        if not valid_string_length(s, trailing_dot=True):
+            raise IDNAError("Domain too long")
     trailing_dot = False
     result = []
     labels = s.split(".") if strict else _unicode_dots_re.split(s)

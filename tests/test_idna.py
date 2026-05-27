@@ -94,6 +94,19 @@ class IDNATests(unittest.TestCase):
             self.assertRaises(idna.IDNAError, idna.decode, payload)
             self.assertLess(time.perf_counter() - start, 1.0)
 
+    def test_oversized_uts46_input_rejected_promptly(self):
+        # The whole-domain cap must run before uts46_remap(), whose NFC
+        # normalization is superlinear on long combining-mark runs. Without an
+        # up-front guard, oversized input fed through uts46=True drives that
+        # normalization into quadratic time before any length check applies.
+        import time
+
+        payload = "a" + "̖̣̗́" * 50000
+        start = time.perf_counter()
+        self.assertRaises(idna.IDNAError, idna.encode, payload, uts46=True)
+        self.assertRaises(idna.IDNAError, idna.decode, payload, uts46=True)
+        self.assertLess(time.perf_counter() - start, 1.0)
+
     def test_oversized_label_rejected_promptly(self):
         # The whole-domain cap in encode()/decode() does not cover direct
         # callers of alabel/ulabel/check_label, nor the idna2008
