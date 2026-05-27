@@ -419,6 +419,11 @@ def ulabel(label: Union[str, bytes, bytearray]) -> str:
         check_label(label_bytes)
         return label_bytes.decode("ascii")
 
+    # check_label enforces the DNS-length cap only after the Punycode decode
+    # below, which is quadratic in its input, so bound the A-label here first.
+    if not valid_string_length(label_bytes, trailing_dot=True):
+        raise IDNAError("A-label too long")
+
     try:
         label = label_bytes.decode("punycode")
     except UnicodeError as err:

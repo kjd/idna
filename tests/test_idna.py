@@ -118,6 +118,29 @@ class IDNATests(unittest.TestCase):
         )
         self.assertLess(time.perf_counter() - start, 1.0)
 
+    def test_oversized_alabel_rejected_promptly(self):
+        # ulabel() Punycode-decodes an A-label before check_label can apply
+        # its length cap, so the per-label cap does not protect against an
+        # oversized xn-- label whose decode runs in quadratic time. alabel
+        # (via its ASCII fast path) and the idna2008 incremental decoder
+        # both reach the same decode.
+        import codecs
+        import time
+
+        import idna.codec  # register the idna2008 codec
+
+        payload = "xn--" + "a" * 100000
+        start = time.perf_counter()
+        self.assertRaises(idna.IDNAError, idna.ulabel, payload)
+        self.assertRaises(idna.IDNAError, idna.alabel, payload)
+        self.assertRaises(
+            idna.IDNAError,
+            codecs.getincrementaldecoder("idna2008")().decode,
+            payload.encode("ascii"),
+            True,
+        )
+        self.assertLess(time.perf_counter() - start, 1.0)
+
     def test_check_bidi(self):
         la = "\u0061"
         r = "\u05d0"
