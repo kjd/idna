@@ -12,6 +12,14 @@ _alabel_prefix = b"xn--"
 _unicode_dots_re = re.compile("[\u002e\u3002\uff0e\uff61]")
 
 
+# Loose sanity cap applied before uts46_remap. The exact DNS limit (254) is
+# enforced after remapping, since mapping can both grow and shrink the string;
+# this only exists to keep pathological inputs out of the superlinear NFC
+# normalization in uts46_remap, so it is set an order of magnitude above the
+# real limit to avoid rejecting input that legitimately maps down to size.
+_max_preremap_length = 2540
+
+
 # Bidi category sets from RFC 5893, hoisted out of the per-codepoint loop
 _bidi_rtl_first = frozenset({"R", "AL"})
 _bidi_rtl_categories = frozenset({"R", "AL", "AN"})
@@ -522,17 +530,17 @@ def encode(
             s = str(s, "ascii")
         except (UnicodeDecodeError, TypeError) as err:
             raise IDNAError("should pass a unicode string to the function rather than a byte string.") from err
-    # Reject inputs that exceed the maximum DNS domain length up-front to
-    # avoid expensive computation on long inputs. This runs before
-    # uts46_remap because its NFC normalization is superlinear on adversarial
-    # combining-mark sequences; checking afterwards lets such input through.
-    if not valid_string_length(s, trailing_dot=True):
+    # Bound the input before uts46_remap so its superlinear NFC normalization
+    # cannot be driven into pathological time by an oversized adversarial
+    # string. This is a loose cap, not the DNS limit, since mapping may shrink
+    # the string; the exact length is enforced after remapping below.
+    if len(s) > _max_preremap_length:
         raise IDNAError("Domain too long")
 
     if uts46:
         s = uts46_remap(s, std3_rules, transitional)
-        if not valid_string_length(s, trailing_dot=True):
-            raise IDNAError("Domain too long")
+    if not valid_string_length(s, trailing_dot=True):
+        raise IDNAError("Domain too long")
 
     trailing_dot = False
     result = []
@@ -584,16 +592,16 @@ def decode(
             s = str(s, "ascii")
         except (UnicodeDecodeError, TypeError) as err:
             raise IDNAError("Invalid ASCII in A-label") from err
-    # Reject inputs that exceed the maximum DNS domain length up-front to
-    # avoid expensive computation on long inputs. This runs before
-    # uts46_remap because its NFC normalization is superlinear on adversarial
-    # combining-mark sequences; checking afterwards lets such input through.
-    if not valid_string_length(s, trailing_dot=True):
+    # Bound the input before uts46_remap so its superlinear NFC normalization
+    # cannot be driven into pathological time by an oversized adversarial
+    # string. This is a loose cap, not the DNS limit, since mapping may shrink
+    # the string; the exact length is enforced after remapping below.
+    if len(s) > _max_preremap_length:
         raise IDNAError("Domain too long")
     if uts46:
         s = uts46_remap(s, std3_rules, False)
-        if not valid_string_length(s, trailing_dot=True):
-            raise IDNAError("Domain too long")
+    if not valid_string_length(s, trailing_dot=True):
+        raise IDNAError("Domain too long")
     trailing_dot = False
     result = []
     labels = s.split(".") if strict else _unicode_dots_re.split(s)
