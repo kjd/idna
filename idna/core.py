@@ -475,7 +475,7 @@ def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False
         raise IDNAError("Domain too long")
     from .uts46data import uts46_replacements, uts46_starts, uts46_statuses
 
-    output = ""
+    output = []
 
     for pos, char in enumerate(domain):
         code_point = ord(char)
@@ -495,16 +495,16 @@ def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False
         )
 
         if keep_as_is:
-            output += char
+            output.append(char)
         elif use_replacement:
             assert replacement is not None  # narrowed by use_replacement
-            output += replacement
+            output.append(replacement)
         elif status == "I":
             continue
         else:
             raise InvalidCodepoint(f"Codepoint {_unot(code_point)} not allowed at position {pos + 1} in {domain!r}")
 
-    return unicodedata.normalize("NFC", output)
+    return unicodedata.normalize("NFC", "".join(output))
 
 
 def encode(
@@ -542,13 +542,21 @@ def encode(
             DeprecationWarning,
             stacklevel=2,
         )
-    if not isinstance(s, str):
+    if isinstance(s, (bytes, bytearray)):
+        if len(s) > _max_input_length:
+            raise IDNAError("Domain too long")
         try:
             s = str(s, "ascii")
         except (UnicodeDecodeError, TypeError) as err:
             raise IDNAError("should pass a unicode string to the function rather than a byte string.") from err
-    if len(s) > _max_input_length:
-        raise IDNAError("Domain too long")
+    elif isinstance(s, str):
+        if len(s) > _max_input_length:
+            raise IDNAError("Domain too long")
+    else:
+        try:
+            s = str(s, "ascii")
+        except (UnicodeDecodeError, TypeError) as err:
+            raise IDNAError("should pass a unicode string to the function rather than a byte string.") from err
     if uts46:
         s = uts46_remap(s, std3_rules, transitional)
 
@@ -610,13 +618,21 @@ def decode(
     :raises IDNAError: If the input is not valid ASCII, contains an
         invalid label, or is empty.
     """
-    if not isinstance(s, str):
+    if isinstance(s, (bytes, bytearray)):
+        if len(s) > _max_input_length:
+            raise IDNAError("Domain too long")
         try:
             s = str(s, "ascii")
         except (UnicodeDecodeError, TypeError) as err:
             raise IDNAError("Invalid ASCII in A-label") from err
-    if len(s) > _max_input_length:
-        raise IDNAError("Domain too long")
+    elif isinstance(s, str):
+        if len(s) > _max_input_length:
+            raise IDNAError("Domain too long")
+    else:
+        try:
+            s = str(s, "ascii")
+        except (UnicodeDecodeError, TypeError) as err:
+            raise IDNAError("Invalid ASCII in A-label") from err
     if uts46:
         s = uts46_remap(s, std3_rules, False)
     # Reject inputs that exceed the maximum DNS domain length up-front

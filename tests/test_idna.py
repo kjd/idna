@@ -88,7 +88,7 @@ class IDNATests(unittest.TestCase):
         # cannot drive validation into quadratic time.
         import time
 
-        for payload in ("٠" * 8000, "・" * 8000 + "漢"):
+        for payload in ("٠" * 8000, "・" * 8000 + "漢", b"a" * 8000, bytearray(b"a" * 8000)):
             start = time.perf_counter()
             self.assertRaises(idna.IDNAError, idna.encode, payload)
             self.assertRaises(idna.IDNAError, idna.decode, payload)
