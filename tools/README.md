@@ -29,3 +29,10 @@ Most notably, the `--version` argument allows the specification
 of the version of Unicode to be used in computing the table data. For
 example, `idna-data --version 9.0.0 make-libdata` will generate
 library data against Unicode 9.0.0.
+
+## Supplemental Information
+
+While this package does not include data files and/or software from
+the Unicode standard, in operating the `idna-data` tool it will retrieve
+data files to process that are governed by
+[these terms](https://www.unicode.org/license.txt).
