@@ -359,12 +359,13 @@ def check_label(label: Union[str, bytes, bytearray]) -> None:
             continue
         if intranges_contain(cp_value, idnadata.codepoint_classes["CONTEXTJ"]):
             try:
-                if not valid_contextj(label, pos):
-                    raise InvalidCodepointContext(f"Joiner {_unot(cp_value)} not allowed at position {pos + 1} in {label!r}")
+                contextj_ok = valid_contextj(label, pos)
             except ValueError as err:
                 raise IDNAError(
                     f"Unknown codepoint adjacent to joiner {_unot(cp_value)} at position {pos + 1} in {label!r}"
                 ) from err
+            if not contextj_ok:
+                raise InvalidCodepointContext(f"Joiner {_unot(cp_value)} not allowed at position {pos + 1} in {label!r}")
         elif intranges_contain(cp_value, idnadata.codepoint_classes["CONTEXTO"]):
             if not valid_contexto(label, pos):
                 raise InvalidCodepointContext(f"Codepoint {_unot(cp_value)} not allowed at position {pos + 1} in {label!r}")

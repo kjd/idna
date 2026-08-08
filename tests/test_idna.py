@@ -213,6 +213,36 @@ class IDNATests(unittest.TestCase):
         self.assertFalse(idna.valid_contextj(latin + zwj, 1))  # No preceding Virama
         self.assertTrue(idna.valid_contextj(virama + zwj, 1))  # Preceding Virama
 
+    def test_check_label_contextj_violation(self):
+        zwnj = "\u200c"
+        zwj = "\u200d"
+        virama = "\u094d"
+        latin = "\u0061"
+
+        for joiner in (zwnj, zwj):
+            with self.assertRaises(idna.InvalidCodepointContext) as context:
+                idna.check_label(latin + joiner + latin)
+            self.assertIn("not allowed at position 2", str(context.exception))
+            self.assertRaises(idna.InvalidCodepointContext, idna.encode, latin + joiner + latin)
+
+        # Valid joiner contexts are still accepted
+        idna.check_label(latin + virama + zwj + latin)
+        idna.check_label(latin + virama + zwnj + latin)
+
+    def test_check_label_contextj_unknown_codepoint(self):
+        # An adjacent codepoint unknown to unicodedata (e.g. in a
+        # newer Unicode version than the Python build supports) must still
+        # surface as an IDNAError. Need to mock this to test.
+        from unittest import mock
+
+        with (
+            mock.patch("idna.core._combining_class", side_effect=ValueError("Unknown character in unicodedata")),
+            self.assertRaises(idna.IDNAError) as context,
+        ):
+            idna.check_label("\u0061\u200d\u0061")
+        self.assertNotIsInstance(context.exception, idna.InvalidCodepointContext)
+        self.assertIn("Unknown codepoint adjacent to joiner", str(context.exception))
+
     def test_valid_contexto(self):
         latin = "\u0061"
         latin_l = "\u006c"
