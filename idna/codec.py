@@ -19,7 +19,7 @@ class Codec(codecs.Codec):
 
     def encode(self, data: str, errors: str = "strict") -> tuple[bytes, int]:  # ty: ignore[invalid-method-override]
         if errors != "strict":
-            raise IDNAError(f'Unsupported error handling "{errors}"')
+            raise IDNAError(f'Unsupported error handling "{errors}"', code="unsupported_errors")
 
         if not data:
             return b"", 0
@@ -28,7 +28,7 @@ class Codec(codecs.Codec):
 
     def decode(self, data: bytes, errors: str = "strict") -> tuple[str, int]:  # ty: ignore[invalid-method-override]
         if errors != "strict":
-            raise IDNAError(f'Unsupported error handling "{errors}"')
+            raise IDNAError(f'Unsupported error handling "{errors}"', code="unsupported_errors")
 
         if not data:
             return "", 0
@@ -50,7 +50,7 @@ class IncrementalEncoder(codecs.BufferedIncrementalEncoder):
 
     def _buffer_encode(self, data: str, errors: str, final: bool) -> tuple[bytes, int]:  # ty: ignore[invalid-method-override]
         if errors != "strict":
-            raise IDNAError(f'Unsupported error handling "{errors}"')
+            raise IDNAError(f'Unsupported error handling "{errors}"', code="unsupported_errors")
 
         if not data:
             return b"", 0
@@ -93,7 +93,7 @@ class IncrementalDecoder(codecs.BufferedIncrementalDecoder):
 
     def _buffer_decode(self, data: Any, errors: str, final: bool) -> tuple[str, int]:  # ty: ignore[invalid-method-override]
         if errors != "strict":
-            raise IDNAError(f'Unsupported error handling "{errors}"')
+            raise IDNAError(f'Unsupported error handling "{errors}"', code="unsupported_errors")
 
         if not data:
             return ("", 0)
@@ -102,7 +102,7 @@ class IncrementalDecoder(codecs.BufferedIncrementalDecoder):
             try:
                 data = str(data, "ascii")
             except UnicodeDecodeError as err:
-                raise IDNAError("Invalid ASCII in A-label") from err
+                raise IDNAError("Invalid ASCII in A-label", code="invalid_ascii") from err
 
         labels = _unicode_dots_re.split(data)
         trailing_dot = ""

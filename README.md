@@ -74,20 +74,46 @@ base class. The more specific exceptions are:
   codepoint appears in a position whose contextual requirements are
   not satisfied.
 
-When a failure can be attributed to a particular character, the
-exception also carries `text` (the label, or domain for UTS 46
-processing, being validated), `codepoint` (the offending codepoint as
-an integer) and `position` (its 1-based index within `text`, as quoted
-in the message), so applications can highlight the problem without
-parsing the message. Each is `None` when it does not apply.
+Exceptions carry machine-readable attributes so that applications
+do not need to parse the message: `code` is a short, stable identifier
+for the rule that failed (listed below); and, when the failure can be
+attributed to a particular character, `text` (the label, or domain for
+UTS 46 processing, being validated), `codepoint` (the offending
+codepoint as an integer) and `position` (its 1-based index within
+`text`, as quoted in the message) are set. Each is `None` when it does
+not apply. Message wording is not part of the API and may change.
 
 ```pycon
 >>> try:
 ...     idna.encode('Königsgäßchen')
 ... except idna.IDNAError as err:
-...     print(err.codepoint, err.position, err.text)
-75 1 Königsgäßchen
+...     print(err.code, err.codepoint, err.position, err.text)
+disallowed_codepoint 75 1 Königsgäßchen
 ```
+
+| `code` | Meaning |
+|---|---|
+| `input_too_long` | Input exceeds the library's defensive length limit and was not processed |
+| `label_too_long` | A label exceeds 63 octets |
+| `domain_too_long` | The domain exceeds 253 octets |
+| `empty_label` | A label is empty (e.g. consecutive dots) |
+| `empty_domain` | The domain is empty |
+| `not_nfc` | The label is not in Unicode Normalization Form C |
+| `hyphen_3_4` | The label has hyphens in the 3rd and 4th positions |
+| `hyphen_start_end` | The label starts or ends with a hyphen |
+| `leading_combiner` | The label starts with a combining mark |
+| `disallowed_codepoint` | A codepoint is DISALLOWED or UNASSIGNED under IDNA 2008 |
+| `contextj` | A CONTEXTJ codepoint (joiner) appears in an invalid context |
+| `contexto` | A CONTEXTO codepoint appears in an invalid context |
+| `unknown_codepoint` | A codepoint next to a joiner is unknown to this Python's Unicode database |
+| `bidi_rule_1` … `bidi_rule_6` | The corresponding rule of RFC 5893 (the Bidi Rule) is violated |
+| `bidi_unknown_direction` | A codepoint's directionality is unknown to this Python's Unicode database |
+| `invalid_alabel` | An `xn--` label is malformed or is not valid Punycode |
+| `invalid_ascii` | Byte input is not ASCII |
+| `invalid_utf8` | Byte input is not UTF-8 |
+| `uts46_disallowed` | A codepoint is disallowed by the UTS 46 mapping table |
+| `uts46_std3` | An ASCII character is rejected by the UTS 46 STD3 rules |
+| `unsupported_errors` | The codec was given an `errors` handler other than `strict` |
 
 
 ## Command-line tool
