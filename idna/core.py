@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 import bisect
 import re
 import unicodedata
 import warnings
-from typing import Optional, Union
 
 from . import idnadata
 from .intranges import intranges_contain
@@ -25,7 +26,7 @@ _bidi_joiner_l_or_d = frozenset({"L", "D"})
 _bidi_joiner_r_or_d = frozenset({"R", "D"})
 
 
-def _joining_type(cp: int) -> Optional[str]:
+def _joining_type(cp: int) -> str | None:
     for jt, ranges in idnadata.joining_types.items():
         if intranges_contain(cp, ranges):
             return jt
@@ -67,7 +68,7 @@ def _unot(s: int) -> str:
     return f"U+{s:04X}"
 
 
-def valid_label_length(label: Union[bytes, str]) -> bool:
+def valid_label_length(label: bytes | str) -> bool:
     """Check that a label does not exceed the maximum permitted length.
 
     Per :rfc:`1035` (and :rfc:`5891` §4.2.4) a DNS label must not exceed
@@ -82,7 +83,7 @@ def valid_label_length(label: Union[bytes, str]) -> bool:
     return len(label) <= 63
 
 
-def valid_string_length(domain: Union[bytes, str], trailing_dot: bool) -> bool:
+def valid_string_length(domain: bytes | str, trailing_dot: bool) -> bool:
     """Check that a full domain name does not exceed the maximum length.
 
     Per :rfc:`1035`, a domain name is limited to 253 octets when no trailing
@@ -136,7 +137,7 @@ def check_bidi(label: str, check_ltr: bool = False) -> bool:
         raise IDNABidiError(f"First codepoint in label {label!r} must be directionality L, R or AL")
 
     valid_ending = False
-    number_type: Optional[str] = None
+    number_type: str | None = None
     for idx, cp in enumerate(label, 1):
         direction = unicodedata.bidirectional(cp)
 
@@ -319,7 +320,7 @@ def valid_contexto(label: str, pos: int, exception: bool = False) -> bool:
     return False
 
 
-def check_label(label: Union[str, bytes, bytearray]) -> None:
+def check_label(label: str | bytes | bytearray) -> None:
     """Run the full set of IDNA 2008 validity checks on a single label.
 
     Applies, in order: NFC normalisation (:func:`check_nfc`), hyphen
@@ -409,7 +410,7 @@ def alabel(label: str) -> bytes:
     return label_bytes
 
 
-def ulabel(label: Union[str, bytes, bytearray]) -> str:
+def ulabel(label: str | bytes | bytearray) -> str:
     """Convert a single A-label into its U-label form.
 
     Performs the inverse of :func:`alabel`: an ``xn--``-prefixed label is
@@ -482,7 +483,7 @@ def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False
         code_point = ord(char)
         i = code_point if code_point < 256 else bisect.bisect_right(uts46_starts, code_point) - 1
         status = chr(uts46_statuses[i])
-        replacement: Optional[str] = uts46_replacements[i]
+        replacement: str | None = uts46_replacements[i]
 
         # UTS #46 §4: V is always valid, D is deviation (kept unless transitional),
         # 3 is disallowed-STD3 (kept unmapped if std3_rules is off and no mapping).
@@ -509,7 +510,7 @@ def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False
 
 
 def encode(
-    s: Union[str, bytes, bytearray],
+    s: str | bytes | bytearray,
     strict: bool = False,
     uts46: bool = False,
     std3_rules: bool = False,
@@ -581,7 +582,7 @@ def encode(
 
 
 def decode(
-    s: Union[str, bytes, bytearray],
+    s: str | bytes | bytearray,
     strict: bool = False,
     uts46: bool = False,
     std3_rules: bool = False,

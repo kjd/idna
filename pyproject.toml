@@ -48,7 +48,7 @@ include = ["tests", "tools", "HISTORY.md"]
 
 [project.optional-dependencies]
 all = [
-    "ruff >= 0.6.2",
+    "ruff >= 0.16.0",
     "mypy >= 1.11.2",
     "pytest >= 8.3.2",
 ]
@@ -57,6 +57,11 @@ all = [
 line-length = 127
 [tool.ruff.lint]
 extend-select = [
+    # pycodestyle import/statement/runtime errors; these were part of ruff's
+    # default rule set before 0.16 and are kept explicitly here.
+    "E4",
+    "E7",
+    "E9",
     "I",            # isort
     "B",            # flake8-bugbear
     "SIM",          # flake8-simplify
@@ -65,6 +70,10 @@ extend-select = [
     "PIE",          # flake8-pie
     "RET",          # flake8-return
     "RUF",          # ruff-specific
+    "PTH",          # flake8-use-pathlib
+    "TC",           # flake8-type-checking
+    "FURB",         # refurb
+    "C4",           # flake8-comprehensions
 ]
 ignore = [
     # An IDN library legitimately handles confusable / ambiguous Unicode;

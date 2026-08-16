@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import codecs
-from typing import Any, Optional
+from typing import Any
 
 from .core import IDNAError, _unicode_dots_re, alabel, decode, encode, ulabel
 
@@ -132,7 +134,7 @@ class StreamReader(Codec, codecs.StreamReader):
     pass
 
 
-def search_function(name: str) -> Optional[codecs.CodecInfo]:
+def search_function(name: str) -> codecs.CodecInfo | None:
     """Codec search function registered with :mod:`codecs`.
 
     Returns a :class:`codecs.CodecInfo` for the ``"idna2008"`` codec name
