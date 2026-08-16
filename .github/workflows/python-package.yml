@@ -23,12 +23,34 @@ jobs:
         run: python -m pip install --require-hashes -r .github/requirements/lint.txt
       - name: Check code style with ruff
         run: |
-          ruff format --check idna
+          ruff format --check idna tests/fuzz_*.py
           ruff check idna tests
       - name: Check types with mypy
         run: mypy --strict idna
       - name: Check types with ty
         run: ty check idna tests
+
+  tables:
+    name: Verify generated tables
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.14'
+      - name: Read pinned Unicode version
+        id: unicode
+        run: echo "version=$(sed -n 's/^PREFERRED_VERSION = "\(.*\)"$/\1/p' tools/idna-data)" >> "$GITHUB_OUTPUT"
+      - name: Cache Unicode Character Database
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/unidata
+          key: unidata-${{ steps.unicode.outputs.version }}
+      - name: Regenerate tables and conformance tests from Unicode ${{ steps.unicode.outputs.version }}
+        run: python tools/idna-data make-libdata --dir idna --test-dir tests
+      - name: Verify checked-in files match generator output
+        run: git diff --exit-code -- idna/idnadata.py idna/uts46data.py tests/test_idna_uts46.py
 
   build:
     strategy:

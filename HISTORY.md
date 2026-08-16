@@ -1,5 +1,24 @@
 # History
 
+## 3.19 (2026-08-XX)
+
+- Restore the `std3_rules` option, which had no effect since changes
+  to UTS #46 processing in Unicode 16. Note that `uts46_remap()`
+  defaults to enabling STD3 rules, so direct callers will see input
+  containing non-LDH ASCII characters rejected again.
+- Performance improvements to UTS #46 mapping, particularly for
+  ASCII-only domains.
+- Fix CONTEXTJ violations raising `IDNAError` instead of
+  `InvalidCodepointContext`.
+- Consistently raise `IDNAError` for empty labels and non-ASCII bytes
+  passed to label helper functions and the incremental codec.
+- Add property-based tests, extended fuzzing targets, and CI checks
+  that the data tables match the generator output.
+- Various code quality and tooling improvements.
+
+Thanks to stefan6419846, LouieLuNZ, and Salvatore Corvaglia for
+contributions to this release.
+
 ## 3.18 (2026-06-02)
 
 - When decoding a domain, add a `display` argument that will pass

@@ -91,6 +91,45 @@ def unicode_fixup(string):
     )
 
 
+def stable_repr(string, ucdata, quote="'"):
+    """Return a Python literal for ``string`` that does not depend on the host interpreter.
+
+    Mirrors ``str.__repr__`` (quote selection, escapes) but decides whether a
+    non-ASCII codepoint is printable from the UCD version being processed rather
+    than from the running Python's ``unicodedata``, so the generated files are
+    byte-identical no matter which Python regenerates them. ``quote`` selects
+    the preferred quote character; the other one is used if that avoids escaping.
+    """
+    other = '"' if quote == "'" else "'"
+    if quote in string and other not in string:
+        quote, other = other, quote
+    out = [quote]
+    for ch in string:
+        cp = ord(ch)
+        if ch == quote or ch == "\\":
+            out.append("\\" + ch)
+        elif ch == "\t":
+            out.append("\\t")
+        elif ch == "\n":
+            out.append("\\n")
+        elif ch == "\r":
+            out.append("\\r")
+        elif cp < 0x20 or cp == 0x7F:
+            out.append("\\x{:02x}".format(cp))
+        elif cp < 0x7F:
+            out.append(ch)
+        elif ucdata.printable(cp):
+            out.append(ch)
+        elif cp <= 0xFF:
+            out.append("\\x{:02x}".format(cp))
+        elif cp <= 0xFFFF:
+            out.append("\\u{:04x}".format(cp))
+        else:
+            out.append("\\U{:08x}".format(cp))
+    out.append(quote)
+    return "".join(out)
+
+
 class UnicodeVersion(object):
     def __init__(self, version):
         result = re.match(r"^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$", version)
@@ -308,6 +347,18 @@ class UnicodeData(object):
                 f.close()
 
             return str(content)
+
+    def printable(self, cp):
+        """Whether ``str.__repr__`` would emit codepoint ``cp`` literally.
+
+        CPython treats every codepoint in general categories C* and Z* as
+        non-printable, except U+0020 SPACE; unassigned codepoints (absent from
+        UnicodeData.txt) are category Cn and therefore non-printable.
+        """
+        if cp == 0x20:
+            return True
+        fields = self.ucd_data.get(cp)
+        return fields is not None and fields[1][0] not in ("C", "Z")
 
     def codepoints(self):
         for i in range(0, self.max + 1):
@@ -618,7 +669,7 @@ def uts46_libdata(ucdata):
         if mapping is None:
             yield "    None,"
         else:
-            yield "    {!r},".format(mapping)
+            yield "    {},".format(stable_repr(mapping, ucdata, quote='"'))
     yield ")"
 
 
@@ -745,23 +796,24 @@ def uts46_tests(ucdata):
 
         yield "    def test_uts46_{}(self):".format(lineno)
 
+        source_repr = stable_repr(source, ucdata)
         if to_unicode_status == "[]" and not nv8:
             yield (
-                "        self.assertEqual(idna.decode({}, uts46=True, strict=True), {})".format(repr(source), repr(to_unicode))
+                "        self.assertEqual(idna.decode({}, uts46=True, strict=True), {})".format(
+                    source_repr, stable_repr(to_unicode, ucdata)
+                )
             )
         else:
-            yield ("        self.assertRaises(idna.IDNAError, idna.decode, {}, strict=True)".format(repr(source)))
+            yield ("        self.assertRaises(idna.IDNAError, idna.decode, {}, strict=True)".format(source_repr))
         if to_ascii_status == "[]" and not nv8:
             yield (
-                "        self.assertEqual(idna.encode({}, uts46=True, strict=True), b{})".format(repr(source), repr(to_ascii))
+                "        self.assertEqual(idna.encode({}, uts46=True, strict=True), b{})".format(
+                    source_repr, stable_repr(to_ascii, ucdata)
+                )
             )
         else:
-            yield ("        self.assertRaises(idna.IDNAError, idna.encode, {}, strict=True)".format(repr(source)))
+            yield ("        self.assertRaises(idna.IDNAError, idna.encode, {}, strict=True)".format(source_repr))
         yield ""
-
-
-#        self.assertEqual(idna.uts46_remap("A_", std3_rules=False), "a_")
-#        self.assertRaises(idna.InvalidCodepoint, idna.uts46_remap, "A_", std3_rules=True)
 
 
 """

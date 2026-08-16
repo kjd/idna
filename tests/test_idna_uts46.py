@@ -16240,8 +16240,8 @@ class UTS46Tests(unittest.TestCase):
         self.assertRaises(idna.IDNAError, idna.encode, 'xn--1ug39444n.xn--mkb20b', strict=True)
 
     def test_uts46_4218(self):
-        self.assertRaises(idna.IDNAError, idna.decode, '\U00032931⒛⾳．ꡦ⒈', strict=True)
-        self.assertRaises(idna.IDNAError, idna.encode, '\U00032931⒛⾳．ꡦ⒈', strict=True)
+        self.assertRaises(idna.IDNAError, idna.decode, '𲤱⒛⾳．ꡦ⒈', strict=True)
+        self.assertRaises(idna.IDNAError, idna.encode, '𲤱⒛⾳．ꡦ⒈', strict=True)
 
     def test_uts46_4221(self):
         self.assertRaises(idna.IDNAError, idna.decode, 'xn--dth6033bzbvx.xn--tsh9439b', strict=True)
@@ -16964,20 +16964,20 @@ class UTS46Tests(unittest.TestCase):
         self.assertRaises(idna.IDNAError, idna.encode, 'xn--0-z6jy93b.xn--8lh28773l', strict=True)
 
     def test_uts46_4401(self):
-        self.assertRaises(idna.IDNAError, idna.decode, '\U00032b9a９ꍩ៓．\u200dß', strict=True)
-        self.assertRaises(idna.IDNAError, idna.encode, '\U00032b9a９ꍩ៓．\u200dß', strict=True)
+        self.assertRaises(idna.IDNAError, idna.decode, '𲮚９ꍩ៓．\u200dß', strict=True)
+        self.assertRaises(idna.IDNAError, idna.encode, '𲮚９ꍩ៓．\u200dß', strict=True)
 
     def test_uts46_4402(self):
-        self.assertRaises(idna.IDNAError, idna.decode, '\U00032b9a9ꍩ៓.\u200dß', strict=True)
-        self.assertRaises(idna.IDNAError, idna.encode, '\U00032b9a9ꍩ៓.\u200dß', strict=True)
+        self.assertRaises(idna.IDNAError, idna.decode, '𲮚9ꍩ៓.\u200dß', strict=True)
+        self.assertRaises(idna.IDNAError, idna.encode, '𲮚9ꍩ៓.\u200dß', strict=True)
 
     def test_uts46_4403(self):
-        self.assertRaises(idna.IDNAError, idna.decode, '\U00032b9a9ꍩ៓.\u200dSS', strict=True)
-        self.assertRaises(idna.IDNAError, idna.encode, '\U00032b9a9ꍩ៓.\u200dSS', strict=True)
+        self.assertRaises(idna.IDNAError, idna.decode, '𲮚9ꍩ៓.\u200dSS', strict=True)
+        self.assertRaises(idna.IDNAError, idna.encode, '𲮚9ꍩ៓.\u200dSS', strict=True)
 
     def test_uts46_4404(self):
-        self.assertRaises(idna.IDNAError, idna.decode, '\U00032b9a9ꍩ៓.\u200dss', strict=True)
-        self.assertRaises(idna.IDNAError, idna.encode, '\U00032b9a9ꍩ៓.\u200dss', strict=True)
+        self.assertRaises(idna.IDNAError, idna.decode, '𲮚9ꍩ៓.\u200dss', strict=True)
+        self.assertRaises(idna.IDNAError, idna.encode, '𲮚9ꍩ៓.\u200dss', strict=True)
 
     def test_uts46_4408(self):
         self.assertRaises(idna.IDNAError, idna.decode, 'xn--9-i0j5967eg3qz.xn--ss-l1t', strict=True)
@@ -16988,20 +16988,20 @@ class UTS46Tests(unittest.TestCase):
         self.assertRaises(idna.IDNAError, idna.encode, 'xn--9-i0j5967eg3qz.xn--zca770n', strict=True)
 
     def test_uts46_4410(self):
-        self.assertRaises(idna.IDNAError, idna.decode, '\U00032b9a９ꍩ៓．\u200dSS', strict=True)
-        self.assertRaises(idna.IDNAError, idna.encode, '\U00032b9a９ꍩ៓．\u200dSS', strict=True)
+        self.assertRaises(idna.IDNAError, idna.decode, '𲮚９ꍩ៓．\u200dSS', strict=True)
+        self.assertRaises(idna.IDNAError, idna.encode, '𲮚９ꍩ៓．\u200dSS', strict=True)
 
     def test_uts46_4411(self):
-        self.assertRaises(idna.IDNAError, idna.decode, '\U00032b9a９ꍩ៓．\u200dss', strict=True)
-        self.assertRaises(idna.IDNAError, idna.encode, '\U00032b9a９ꍩ៓．\u200dss', strict=True)
+        self.assertRaises(idna.IDNAError, idna.decode, '𲮚９ꍩ៓．\u200dss', strict=True)
+        self.assertRaises(idna.IDNAError, idna.encode, '𲮚９ꍩ៓．\u200dss', strict=True)
 
     def test_uts46_4412(self):
-        self.assertRaises(idna.IDNAError, idna.decode, '\U00032b9a9ꍩ៓.\u200dSs', strict=True)
-        self.assertRaises(idna.IDNAError, idna.encode, '\U00032b9a9ꍩ៓.\u200dSs', strict=True)
+        self.assertRaises(idna.IDNAError, idna.decode, '𲮚9ꍩ៓.\u200dSs', strict=True)
+        self.assertRaises(idna.IDNAError, idna.encode, '𲮚9ꍩ៓.\u200dSs', strict=True)
 
     def test_uts46_4413(self):
-        self.assertRaises(idna.IDNAError, idna.decode, '\U00032b9a９ꍩ៓．\u200dSs', strict=True)
-        self.assertRaises(idna.IDNAError, idna.encode, '\U00032b9a９ꍩ៓．\u200dSs', strict=True)
+        self.assertRaises(idna.IDNAError, idna.decode, '𲮚９ꍩ៓．\u200dSs', strict=True)
+        self.assertRaises(idna.IDNAError, idna.encode, '𲮚９ꍩ៓．\u200dSs', strict=True)
 
     def test_uts46_4414(self):
         self.assertRaises(idna.IDNAError, idna.decode, 'ꗷ𑆀.ݝ𐩒', strict=True)
@@ -22084,12 +22084,12 @@ class UTS46Tests(unittest.TestCase):
         self.assertRaises(idna.IDNAError, idna.encode, 'xn--4-xn17i.xn--rpb459k', strict=True)
 
     def test_uts46_5693(self):
-        self.assertRaises(idna.IDNAError, idna.decode, '\U0003250f\U0001eae8\U0007afc2硲．ڭ', strict=True)
-        self.assertRaises(idna.IDNAError, idna.encode, '\U0003250f\U0001eae8\U0007afc2硲．ڭ', strict=True)
+        self.assertRaises(idna.IDNAError, idna.decode, '𲔏\U0001eae8\U0007afc2硲．ڭ', strict=True)
+        self.assertRaises(idna.IDNAError, idna.encode, '𲔏\U0001eae8\U0007afc2硲．ڭ', strict=True)
 
     def test_uts46_5694(self):
-        self.assertRaises(idna.IDNAError, idna.decode, '\U0003250f\U0001eae8\U0007afc2硲.ڭ', strict=True)
-        self.assertRaises(idna.IDNAError, idna.encode, '\U0003250f\U0001eae8\U0007afc2硲.ڭ', strict=True)
+        self.assertRaises(idna.IDNAError, idna.decode, '𲔏\U0001eae8\U0007afc2硲.ڭ', strict=True)
+        self.assertRaises(idna.IDNAError, idna.encode, '𲔏\U0001eae8\U0007afc2硲.ڭ', strict=True)
 
     def test_uts46_5695(self):
         self.assertRaises(idna.IDNAError, idna.decode, 'xn--lcz1610fn78gk609a.xn--gkb', strict=True)
@@ -22656,20 +22656,20 @@ class UTS46Tests(unittest.TestCase):
         self.assertRaises(idna.IDNAError, idna.encode, 'xn--6nd5215jr2u0h.xn--8md', strict=True)
 
     def test_uts46_5836(self):
-        self.assertRaises(idna.IDNAError, idna.decode, '\U0005747f꠆₄\U000a9786｡\U00032a67\U000e04b9ς', strict=True)
-        self.assertRaises(idna.IDNAError, idna.encode, '\U0005747f꠆₄\U000a9786｡\U00032a67\U000e04b9ς', strict=True)
+        self.assertRaises(idna.IDNAError, idna.decode, '\U0005747f꠆₄\U000a9786｡𲩧\U000e04b9ς', strict=True)
+        self.assertRaises(idna.IDNAError, idna.encode, '\U0005747f꠆₄\U000a9786｡𲩧\U000e04b9ς', strict=True)
 
     def test_uts46_5837(self):
-        self.assertRaises(idna.IDNAError, idna.decode, '\U0005747f꠆4\U000a9786。\U00032a67\U000e04b9ς', strict=True)
-        self.assertRaises(idna.IDNAError, idna.encode, '\U0005747f꠆4\U000a9786。\U00032a67\U000e04b9ς', strict=True)
+        self.assertRaises(idna.IDNAError, idna.decode, '\U0005747f꠆4\U000a9786。𲩧\U000e04b9ς', strict=True)
+        self.assertRaises(idna.IDNAError, idna.encode, '\U0005747f꠆4\U000a9786。𲩧\U000e04b9ς', strict=True)
 
     def test_uts46_5838(self):
-        self.assertRaises(idna.IDNAError, idna.decode, '\U0005747f꠆4\U000a9786。\U00032a67\U000e04b9Σ', strict=True)
-        self.assertRaises(idna.IDNAError, idna.encode, '\U0005747f꠆4\U000a9786。\U00032a67\U000e04b9Σ', strict=True)
+        self.assertRaises(idna.IDNAError, idna.decode, '\U0005747f꠆4\U000a9786。𲩧\U000e04b9Σ', strict=True)
+        self.assertRaises(idna.IDNAError, idna.encode, '\U0005747f꠆4\U000a9786。𲩧\U000e04b9Σ', strict=True)
 
     def test_uts46_5839(self):
-        self.assertRaises(idna.IDNAError, idna.decode, '\U0005747f꠆4\U000a9786。\U00032a67\U000e04b9σ', strict=True)
-        self.assertRaises(idna.IDNAError, idna.encode, '\U0005747f꠆4\U000a9786。\U00032a67\U000e04b9σ', strict=True)
+        self.assertRaises(idna.IDNAError, idna.decode, '\U0005747f꠆4\U000a9786。𲩧\U000e04b9σ', strict=True)
+        self.assertRaises(idna.IDNAError, idna.encode, '\U0005747f꠆4\U000a9786。𲩧\U000e04b9σ', strict=True)
 
     def test_uts46_5840(self):
         self.assertRaises(idna.IDNAError, idna.decode, 'xn--4-w93ej7463a9io5a.xn--4xa31142bk3f0d', strict=True)
@@ -22680,12 +22680,12 @@ class UTS46Tests(unittest.TestCase):
         self.assertRaises(idna.IDNAError, idna.encode, 'xn--4-w93ej7463a9io5a.xn--3xa51142bk3f0d', strict=True)
 
     def test_uts46_5842(self):
-        self.assertRaises(idna.IDNAError, idna.decode, '\U0005747f꠆₄\U000a9786｡\U00032a67\U000e04b9Σ', strict=True)
-        self.assertRaises(idna.IDNAError, idna.encode, '\U0005747f꠆₄\U000a9786｡\U00032a67\U000e04b9Σ', strict=True)
+        self.assertRaises(idna.IDNAError, idna.decode, '\U0005747f꠆₄\U000a9786｡𲩧\U000e04b9Σ', strict=True)
+        self.assertRaises(idna.IDNAError, idna.encode, '\U0005747f꠆₄\U000a9786｡𲩧\U000e04b9Σ', strict=True)
 
     def test_uts46_5843(self):
-        self.assertRaises(idna.IDNAError, idna.decode, '\U0005747f꠆₄\U000a9786｡\U00032a67\U000e04b9σ', strict=True)
-        self.assertRaises(idna.IDNAError, idna.encode, '\U0005747f꠆₄\U000a9786｡\U00032a67\U000e04b9σ', strict=True)
+        self.assertRaises(idna.IDNAError, idna.decode, '\U0005747f꠆₄\U000a9786｡𲩧\U000e04b9σ', strict=True)
+        self.assertRaises(idna.IDNAError, idna.encode, '\U0005747f꠆₄\U000a9786｡𲩧\U000e04b9σ', strict=True)
 
     def test_uts46_5844(self):
         self.assertRaises(idna.IDNAError, idna.decode, '󠆀ܣ。ᷴݵ', strict=True)
@@ -24624,8 +24624,8 @@ class UTS46Tests(unittest.TestCase):
         self.assertRaises(idna.IDNAError, idna.encode, 'xn----bm3an932a1l5d.xn--xvj', strict=True)
 
     def test_uts46_6330(self):
-        self.assertRaises(idna.IDNAError, idna.decode, '𑄳。\u1adc𐹻', strict=True)
-        self.assertRaises(idna.IDNAError, idna.encode, '𑄳。\u1adc𐹻', strict=True)
+        self.assertRaises(idna.IDNAError, idna.decode, '𑄳。᫜𐹻', strict=True)
+        self.assertRaises(idna.IDNAError, idna.encode, '𑄳。᫜𐹻', strict=True)
 
     def test_uts46_6331(self):
         self.assertRaises(idna.IDNAError, idna.decode, 'xn--v80d.xn--2rf1154i', strict=True)

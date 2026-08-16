@@ -29,6 +29,14 @@ class IDNACodecTests(unittest.TestCase):
     def testIndirectEncode(self):
         self.idnatests.test_encode(encode=lambda obj: obj.encode(CODEC_NAME), skip_bytes=True)
 
+    def testIncrementalDecoderNonASCII(self):
+        # Non-ASCII bytes must surface as IDNAError, as they do from
+        # idna.decode() and the one-shot codec, not as UnicodeDecodeError.
+        decoder = codecs.getincrementaldecoder(CODEC_NAME)()
+        self.assertRaises(idna.IDNAError, decoder.decode, b"\x80")
+        self.assertRaises(idna.IDNAError, decoder.decode, b"\xc3\x9f", True)
+        self.assertRaises(idna.IDNAError, b"\x80".decode, CODEC_NAME)
+
     def testStreamReader(self):
         def decode(obj):
             if isinstance(obj, str):

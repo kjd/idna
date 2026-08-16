@@ -99,7 +99,10 @@ class IncrementalDecoder(codecs.BufferedIncrementalDecoder):
             return ("", 0)
 
         if not isinstance(data, str):
-            data = str(data, "ascii")
+            try:
+                data = str(data, "ascii")
+            except UnicodeDecodeError as err:
+                raise IDNAError("Invalid ASCII in A-label") from err
 
         labels = _unicode_dots_re.split(data)
         trailing_dot = ""
