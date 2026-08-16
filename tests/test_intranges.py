@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import unittest
 
 from idna.intranges import _encode_range, intranges_contain, intranges_from_list
