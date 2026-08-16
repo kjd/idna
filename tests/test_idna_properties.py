@@ -138,7 +138,12 @@ class OutputShapeTests(unittest.TestCase):
         if err is not None:
             return
         self.assertTrue(unicodedata.is_normalized("NFC", out))
-        self.assertEqual(idna.uts46_remap(out, std3_rules=std3_rules, transitional=transitional), out)
+        # Non-transitional mapping is idempotent. Transitional mapping is
+        # not: deviation handling applies to the input, not to mapping
+        # output, so e.g. U+1E9E maps to U+00DF which a second transitional
+        # pass would turn into "ss". A non-transitional pass over
+        # transitional output must still be a fixed point.
+        self.assertEqual(idna.uts46_remap(out, std3_rules=std3_rules, transitional=False), out)
         if std3_rules:
             # UTS #46 §4.1 UseSTD3ASCIIRules: only LDH ASCII (plus the label
             # separator) may survive mapping.
