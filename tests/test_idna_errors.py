@@ -24,7 +24,7 @@ class ErrorAttributeTests(unittest.TestCase):
             (lambda: idna.alabel("a\u200cb"), idna.InvalidCodepointContext, "a\u200cb", 0x200C, 2),
             (lambda: idna.alabel("a\xb7b"), idna.InvalidCodepointContext, "a\xb7b", 0xB7, 2),
             (lambda: idna.alabel("\u0301abc"), idna.IDNAError, "\u0301abc", 0x301, 1),
-            (lambda: idna.check_bidi("a\u0378"), idna.IDNABidiError, "a\u0378", 0x378, 2),
+            (lambda: self._unknown_direction("ab"), idna.IDNABidiError, "ab", 0x61, 1),
             (lambda: idna.check_bidi(an + r), idna.IDNABidiError, an + r, 0x660, 1),  # rule 1
             (lambda: idna.check_bidi(r + "a"), idna.IDNABidiError, r + "a", 0x61, 2),  # rule 2
             (lambda: idna.check_bidi(r + "-" + nsm), idna.IDNABidiError, r + "-" + nsm, 0x2D, 2),  # rule 3
@@ -78,7 +78,7 @@ class ErrorAttributeTests(unittest.TestCase):
             "bidi_rule_4": lambda: idna.check_bidi(r + an + "0"),
             "bidi_rule_5": lambda: idna.alabel("a" + r),
             "bidi_rule_6": lambda: idna.check_bidi("a-", check_ltr=True),
-            "bidi_unknown_direction": lambda: idna.check_bidi("a\u0378"),
+            "bidi_unknown_direction": lambda: self._unknown_direction("ab"),
             "invalid_alabel": lambda: idna.ulabel("xn--"),
             "invalid_ascii": lambda: idna.encode(b"\xff"),
             "invalid_utf8": lambda: idna.check_label(b"\xff"),
@@ -106,9 +106,17 @@ class ErrorAttributeTests(unittest.TestCase):
         documented.discard("code")  # the table header
         self.assertEqual(documented, codes)
 
+    # Conditions that depend on the host's Unicode database being older than
+    # the input cannot be triggered portably (from Python 3.15,
+    # ``unicodedata.bidirectional`` returns a default class for every
+    # codepoint), so simulate them.
     def _unknown_codepoint(self):
         with mock.patch("idna.core._combining_class", side_effect=ValueError):
             idna.check_label("a\u200cb")
+
+    def _unknown_direction(self, label):
+        with mock.patch("idna.core.unicodedata.bidirectional", return_value=""):
+            idna.check_bidi(label)
 
     def test_unknown_codepoint_adjacent_to_joiner(self):
         unknown = mock.patch("idna.core._combining_class", side_effect=ValueError)
