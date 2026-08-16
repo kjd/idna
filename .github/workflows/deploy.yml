@@ -92,6 +92,13 @@ jobs:
 
   publish-to-testpypi:
     name: Publish to Test PyPI
+    # Only master, release branches (where the rcN pre-release commit lands
+    # before tagging) and tags reach TestPyPI; topic and Dependabot branches
+    # still build but do not publish.
+    if: >-
+      github.ref == 'refs/heads/master' ||
+      startsWith(github.ref, 'refs/heads/release-') ||
+      startsWith(github.ref, 'refs/tags/')
     needs:
     - build
     runs-on: ubuntu-latest
