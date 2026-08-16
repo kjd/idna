@@ -182,7 +182,7 @@ def check_initial_combiner(label: str) -> bool:
     :returns: ``True`` if the first character is not a combining mark.
     :raises IDNAError: If the label begins with a combining character.
     """
-    if unicodedata.category(label[0])[0] == "M":
+    if label and unicodedata.category(label[0])[0] == "M":
         raise IDNAError("Label begins with an illegal combining character")
     return True
 
@@ -200,7 +200,7 @@ def check_hyphen_ok(label: str) -> bool:
     """
     if label[2:4] == "--":
         raise IDNAError("Label has disallowed hyphens in 3rd and 4th position")
-    if label[0] == "-" or label[-1] == "-":
+    if label.startswith("-") or label.endswith("-"):
         raise IDNAError("Label must not start or end with a hyphen")
     return True
 
@@ -341,7 +341,10 @@ def check_label(label: str | bytes | bytearray) -> None:
     if len(label) > _max_input_length:
         raise IDNAError("Label too long")
     if isinstance(label, (bytes, bytearray)):
-        label = label.decode("utf-8")
+        try:
+            label = label.decode("utf-8")
+        except UnicodeDecodeError as err:
+            raise IDNAError("Invalid UTF-8 in label") from err
     if len(label) == 0:
         raise IDNAError("Empty Label")
 
@@ -433,6 +436,8 @@ def ulabel(label: str | bytes | bytearray) -> str:
             return label
     else:
         label_bytes = bytes(label)
+        if not label_bytes.isascii():
+            raise IDNAError("Invalid ASCII in A-label")
 
     label_bytes = label_bytes.lower()
     if label_bytes.startswith(_alabel_prefix):

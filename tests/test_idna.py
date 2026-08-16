@@ -187,6 +187,7 @@ class IDNATests(unittest.TestCase):
         self.assertTrue(idna.check_initial_combiner(a))
         self.assertTrue(idna.check_initial_combiner(a + m))
         self.assertRaises(idna.IDNAError, idna.check_initial_combiner, m + a)
+        self.assertTrue(idna.check_initial_combiner(""))
 
     def test_check_hyphen_ok(self):
         self.assertTrue(idna.check_hyphen_ok("abc"))
@@ -194,6 +195,8 @@ class IDNATests(unittest.TestCase):
         self.assertRaises(idna.IDNAError, idna.check_hyphen_ok, "aa--")
         self.assertRaises(idna.IDNAError, idna.check_hyphen_ok, "a-")
         self.assertRaises(idna.IDNAError, idna.check_hyphen_ok, "-a")
+        self.assertRaises(idna.IDNAError, idna.check_hyphen_ok, "-")
+        self.assertTrue(idna.check_hyphen_ok(""))
 
     def test_valid_contextj(self):
         zwnj = "\u200c"
@@ -376,6 +379,16 @@ class IDNATests(unittest.TestCase):
         for value in (42, None, 1.5, ["a", "b"], {"a": 1}):
             self.assertRaises(idna.IDNAError, idna.encode, value)
             self.assertRaises(idna.IDNAError, idna.decode, value)
+
+    def test_bytes_input_errors_are_idnaerror(self):
+        # bytes given to the label helpers must fail with IDNAError, not leak
+        # UnicodeDecodeError: check_label() decodes bytes as UTF-8, ulabel()
+        # treats bytes as ASCII.
+        self.assertRaises(idna.IDNAError, idna.check_label, b"\xff")
+        self.assertRaises(idna.IDNAError, idna.ulabel, b"\xff")
+        self.assertRaises(idna.IDNAError, idna.ulabel, b"\xc3\x9f")  # valid UTF-8 for U+00DF, still not ASCII
+        self.assertRaises(idna.IDNAError, idna.ulabel, bytearray(b"xn--\xff"))
+        self.assertEqual(idna.ulabel(b"xn--e1afmkfd"), "\u043f\u0440\u0438\u043c\u0435\u0440")
 
     def test_decode_display(self):
         # A label whose Punycode decode succeeds but contains disallowed
