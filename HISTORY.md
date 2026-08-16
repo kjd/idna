@@ -8,6 +8,9 @@
   containing non-LDH ASCII characters rejected again.
 - Performance improvements to UTS #46 mapping, particularly for
   ASCII-only domains.
+- Add `text`, `codepoint` and `position` attributes to `IDNAError` so
+  that the offending character can be identified without parsing the
+  exception message.
 - Fix CONTEXTJ violations raising `IDNAError` instead of
   `InvalidCodepointContext`.
 - Consistently raise `IDNAError` for empty labels and non-ASCII bytes

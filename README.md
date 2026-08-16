@@ -74,6 +74,21 @@ base class. The more specific exceptions are:
   codepoint appears in a position whose contextual requirements are
   not satisfied.
 
+When a failure can be attributed to a particular character, the
+exception also carries `text` (the label, or domain for UTS 46
+processing, being validated), `codepoint` (the offending codepoint as
+an integer) and `position` (its 1-based index within `text`, as quoted
+in the message), so applications can highlight the problem without
+parsing the message. Each is `None` when it does not apply.
+
+```pycon
+>>> try:
+...     idna.encode('Königsgäßchen')
+... except idna.IDNAError as err:
+...     print(err.codepoint, err.position, err.text)
+75 1 Königsgäßchen
+```
+
 
 ## Command-line tool
 
