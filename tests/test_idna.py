@@ -426,8 +426,53 @@ class IDNATests(unittest.TestCase):
                 self.assertIsNone(uts46_replacements[cp], char)
         for std3_rules in (True, False):
             self.assertEqual(idna.uts46_remap("WWW.Example.COM", std3_rules=std3_rules), "www.example.com")
-            self.assertEqual(idna.uts46_remap("a-b_c d~", std3_rules=std3_rules), "a-b_c d~")
+        self.assertEqual(idna.uts46_remap("a-b_c d~", std3_rules=False), "a-b_c d~")
+        self.assertRaises(idna.InvalidCodepoint, idna.uts46_remap, "a-b_c d~", std3_rules=True)
         self.assertRaises(idna.IDNAError, idna.uts46_remap, "A" * 1025)
+
+    def test_uts46_remap_std3(self):
+        # UTS #46 §4.1: with UseSTD3ASCIIRules, an ASCII character in the
+        # mapped output must be a lowercase letter, digit or hyphen (or the
+        # label separator). The offending codepoint and position reported are
+        # those of the *input* character, including when the ASCII character
+        # was produced by a mapping.
+        remap = idna.uts46_remap
+        for domain, expected, cp, position in (
+            ("a_b", "a_b", "U+005F", 2),  # ASCII fast path
+            ("A B", "a b", "U+0020", 2),
+            ("a/b.c", "a/b.c", "U+002F", 2),
+            ("a\uff01b", "a!b", "U+FF01", 2),  # fullwidth ! maps to !
+            ("\u00a0x", " x", "U+00A0", 1),  # NBSP maps to space
+            ("a\u2100b", "aa/cb", "U+2100", 2),  # ACCOUNT OF maps to a/c
+            ("a\u03b2_", "a\u03b2_", "U+005F", 3),  # in a run after a non-ASCII char
+            ("\u03b2\u0391a~", "\u03b2\u03b1a~", "U+007E", 4),  # in the tail run
+            ("~\u0391", "~\u03b1", "U+007E", 1),  # in a run before a mapped char
+        ):
+            with self.subTest(domain=domain):
+                self.assertEqual(remap(domain, std3_rules=False), expected)
+                with self.assertRaises(idna.InvalidCodepoint) as cm:
+                    remap(domain, std3_rules=True)
+                self.assertEqual(str(cm.exception), f"Codepoint {cp} not allowed at position {position} in {domain!r}")
+        # Letters, digits, hyphens and label separators (including the ones
+        # mapped to U+002E) are fine either way.
+        for domain, expected in (
+            ("a-b.c9", "a-b.c9"),
+            ("XN--80AK6AA92E.COM", "xn--80ak6aa92e.com"),
+            ("\u0431\uff0e\u0432\u3002\u0433\uff61", "\u0431.\u0432.\u0433."),
+            ("\uff21\uff22\uff23", "abc"),
+        ):
+            for std3_rules in (True, False):
+                self.assertEqual(remap(domain, std3_rules=std3_rules), expected)
+        # encode() forwards the flag (default off): with it on the mapping
+        # step rejects the character; with it off the character survives
+        # mapping and is only rejected later by IDNA 2008 label validation.
+        with self.assertRaises(idna.InvalidCodepoint) as cm:
+            idna.encode("a_b", uts46=True, std3_rules=True)
+        self.assertEqual(str(cm.exception), "Codepoint U+005F not allowed at position 2 in 'a_b'")
+        with self.assertRaises(idna.InvalidCodepoint) as cm:
+            idna.encode("a_b", uts46=True)
+        self.assertEqual(str(cm.exception), "Codepoint U+005F at position 2 of 'a_b' not allowed")
+        self.assertEqual(idna.encode("a\u00adb", uts46=True, std3_rules=True), b"ab")
 
     def test_bytes_input_errors_are_idnaerror(self):
         # bytes given to the label helpers must fail with IDNAError, not leak

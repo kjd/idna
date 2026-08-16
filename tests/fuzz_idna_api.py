@@ -27,6 +27,7 @@ with atheris.instrument_imports():
     import idna
 
 MAX_INPUT = 1100  # just past idna's 1024-character input cap
+STD3_ASCII = frozenset("abcdefghijklmnopqrstuvwxyz0123456789-.")
 
 
 def _only_idnaerror(fn, *args, **kwargs):
@@ -67,6 +68,8 @@ def fuzz_uts46_remap(fdp):
         return
     assert unicodedata.is_normalized("NFC", out), out
     assert idna.uts46_remap(out, std3_rules=std3) == out, out
+    if std3:  # UTS #46 §4.1 UseSTD3ASCIIRules
+        assert all(c in STD3_ASCII for c in out if c.isascii()), out
 
 
 def fuzz_labels(fdp):

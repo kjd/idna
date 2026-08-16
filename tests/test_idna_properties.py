@@ -66,6 +66,7 @@ labels = st.text(alphabet=st.one_of(_interesting, _bidi_range, st.characters()),
 ascii_domains = st.text(alphabet=st.characters(max_codepoint=0x7F), max_size=300)
 binary = st.binary(max_size=300)
 flags = st.booleans()
+_STD3_ASCII = frozenset("abcdefghijklmnopqrstuvwxyz0123456789-.")
 
 
 def _run(fn: Callable[..., Any], *args: Any, **kwargs: Any) -> tuple[Any, idna.IDNAError | None]:
@@ -138,6 +139,14 @@ class OutputShapeTests(unittest.TestCase):
             return
         self.assertTrue(unicodedata.is_normalized("NFC", out))
         self.assertEqual(idna.uts46_remap(out, std3_rules=std3_rules, transitional=transitional), out)
+        if std3_rules:
+            # UTS #46 §4.1 UseSTD3ASCIIRules: only LDH ASCII (plus the label
+            # separator) may survive mapping.
+            self.assertTrue(all(c in _STD3_ASCII for c in out if c.isascii()), out)
+        else:
+            # Turning the rules on must never change a result, only reject it.
+            strict, err = _run(idna.uts46_remap, s, std3_rules=True, transitional=transitional)
+            self.assertTrue(err is not None or strict == out)
 
 
 class RoundTripTests(unittest.TestCase):

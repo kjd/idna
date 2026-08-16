@@ -13,8 +13,12 @@ _alabel_prefix = b"xn--"
 _max_input_length = 1024
 
 # UTS #46 status codes as stored in ``uts46data.uts46_statuses``.
-_STATUS_VALID, _STATUS_MAPPED, _STATUS_DEVIATION, _STATUS_IGNORED, _STATUS_DISALLOWED_STD3 = b"VMDI3"
+_STATUS_VALID, _STATUS_MAPPED, _STATUS_DEVIATION, _STATUS_IGNORED = b"VMDI"
 _unicode_dots_re = re.compile("[\u002e\u3002\uff0e\uff61]")
+# ASCII codepoints other than the label separator and the STD3 set
+# (lowercase letters, digits, hyphen) permitted by UTS #46 §4.1 when
+# UseSTD3ASCIIRules is on.
+_std3_disallowed_re = re.compile("[\x00-\x2c\x2f\x3a-\x60\x7b-\x7f]")
 
 
 # Bidi category sets from RFC 5893, hoisted out of the per-codepoint loop
@@ -461,17 +465,32 @@ def ulabel(label: str | bytes | bytearray) -> str:
     return label
 
 
+def _check_std3(text: str, domain: str, offset: int) -> None:
+    """Raise if ``text``, a slice of ``domain`` starting at ``offset`` that
+    UTS #46 mapping left unchanged, contains an ASCII character disallowed
+    under ``UseSTD3ASCIIRules``."""
+    match = _std3_disallowed_re.search(text)
+    if match:
+        raise InvalidCodepoint(
+            f"Codepoint {_unot(ord(match.group()))} not allowed at position {offset + match.start() + 1} in {domain!r}"
+        )
+
+
 def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False) -> str:
     """Apply the UTS #46 character mapping to a domain string.
 
     Implements the mapping table from `UTS #46 §4
     <https://www.unicode.org/reports/tr46/>`_: each character is kept,
-    replaced, or rejected based on its status (``V``, ``M``, ``D``, ``3``,
-    ``I``). The result is returned in Normalisation Form C.
+    replaced, or rejected based on its status (``V``, ``M``, ``D``,
+    ``I``, ``X``). The result is returned in Normalisation Form C.
 
     :param domain: The full domain name to remap.
-    :param std3_rules: If ``True``, apply the stricter STD3 ASCII rules
-        (status ``3`` codepoints raise instead of being kept or mapped).
+    :param std3_rules: If ``True``, apply UTS #46's ``UseSTD3ASCIIRules``:
+        after mapping, any ASCII character other than a lowercase letter,
+        digit, hyphen or the label separator ``.`` is rejected, whether it
+        appeared in the input or was produced by a mapping (e.g. U+FF01
+        FULLWIDTH EXCLAMATION MARK maps to ``!``). If ``False``, such
+        characters are passed through.
     :param transitional: If ``True``, use transitional processing (status
         ``D`` codepoints are mapped instead of kept). Transitional
         processing has been removed from UTS #46 and this option is
@@ -487,7 +506,10 @@ def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False
         # The only ASCII mapping in UTS #46 is upper- to lowercase; every
         # other ASCII codepoint has status V (tests pin this against the
         # table). ASCII is invariant under NFC, so this is the whole job.
-        return domain.lower()
+        result = domain.lower()
+        if std3_rules:
+            _check_std3(result, domain, 0)
+        return result
 
     from .uts46data import uts46_replacements, uts46_starts, uts46_statuses
 
@@ -495,6 +517,8 @@ def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False
     # ``start`` marks the beginning of the current run of unchanged input,
     # and a run is only sliced out when a character has to be replaced or
     # dropped. For the common case where nothing changes no copy is made.
+    # The STD3 check is applied to each piece of output as it is produced,
+    # so that a violation is reported at its position in the input.
     output: list[str] = []
     start = 0
     for pos, char in enumerate(domain):
@@ -502,7 +526,6 @@ def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False
         i = code_point if code_point < 256 else bisect.bisect_right(uts46_starts, code_point) - 1
         status = uts46_statuses[i]
         # UTS #46 §4: V is always valid, D is deviation (kept unless transitional),
-        # 3 is disallowed-STD3 (kept unmapped if std3_rules is off and no mapping),
         # M is mapped, I is ignored, anything else is disallowed.
         if status == _STATUS_VALID:
             continue
@@ -514,21 +537,27 @@ def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False
             replacement = uts46_replacements[i]
         elif status == _STATUS_IGNORED:
             replacement = None
-        elif status == _STATUS_DISALLOWED_STD3 and not std3_rules:
-            replacement = uts46_replacements[i]
-            if replacement is None:
-                continue
         else:
             raise InvalidCodepoint(f"Codepoint {_unot(code_point)} not allowed at position {pos + 1} in {domain!r}")
         if start < pos:
-            output.append(domain[start:pos])
+            run = domain[start:pos]
+            if std3_rules:
+                _check_std3(run, domain, start)
+            output.append(run)
         if replacement:
+            if std3_rules and _std3_disallowed_re.search(replacement):
+                raise InvalidCodepoint(f"Codepoint {_unot(code_point)} not allowed at position {pos + 1} in {domain!r}")
             output.append(replacement)
         start = pos + 1
 
     if start == 0:
+        if std3_rules:
+            _check_std3(domain, domain, 0)
         return unicodedata.normalize("NFC", domain)
-    output.append(domain[start:])
+    tail = domain[start:]
+    if std3_rules:
+        _check_std3(tail, domain, start)
+    output.append(tail)
     return unicodedata.normalize("NFC", "".join(output))
 
 
