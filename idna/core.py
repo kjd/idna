@@ -11,6 +11,9 @@ from .intranges import intranges_contain
 _virama_combining_class = 9
 _alabel_prefix = b"xn--"
 _max_input_length = 1024
+
+# UTS #46 status codes as stored in ``uts46data.uts46_statuses``.
+_STATUS_VALID, _STATUS_MAPPED, _STATUS_DEVIATION, _STATUS_IGNORED, _STATUS_DISALLOWED_STD3 = b"VMDI3"
 _unicode_dots_re = re.compile("[\u002e\u3002\uff0e\uff61]")
 
 
@@ -480,38 +483,53 @@ def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False
     """
     if len(domain) > _max_input_length:
         raise IDNAError("Domain too long")
+    if domain.isascii():
+        # The only ASCII mapping in UTS #46 is upper- to lowercase; every
+        # other ASCII codepoint has status V (tests pin this against the
+        # table). ASCII is invariant under NFC, so this is the whole job.
+        return domain.lower()
+
     from .uts46data import uts46_replacements, uts46_starts, uts46_statuses
 
-    output = ""
-
+    # Characters that pass through unchanged are not copied one at a time:
+    # ``start`` marks the beginning of the current run of unchanged input,
+    # and a run is only sliced out when a character has to be replaced or
+    # dropped. For the common case where nothing changes no copy is made.
+    output: list[str] = []
+    start = 0
     for pos, char in enumerate(domain):
         code_point = ord(char)
         i = code_point if code_point < 256 else bisect.bisect_right(uts46_starts, code_point) - 1
-        status = chr(uts46_statuses[i])
-        replacement: str | None = uts46_replacements[i]
-
+        status = uts46_statuses[i]
         # UTS #46 §4: V is always valid, D is deviation (kept unless transitional),
-        # 3 is disallowed-STD3 (kept unmapped if std3_rules is off and no mapping).
-        keep_as_is = (
-            status == "V" or (status == "D" and not transitional) or (status == "3" and not std3_rules and replacement is None)
-        )
-        # M is mapped, 3-with-replacement and transitional D fall through to the
-        # same replacement output path.
-        use_replacement = replacement is not None and (
-            status == "M" or (status == "3" and not std3_rules) or (status == "D" and transitional)
-        )
-
-        if keep_as_is:
-            output += char
-        elif use_replacement:
-            assert replacement is not None  # narrowed by use_replacement
-            output += replacement
-        elif status == "I":
+        # 3 is disallowed-STD3 (kept unmapped if std3_rules is off and no mapping),
+        # M is mapped, I is ignored, anything else is disallowed.
+        if status == _STATUS_VALID:
             continue
+        if status == _STATUS_MAPPED:
+            replacement = uts46_replacements[i]
+        elif status == _STATUS_DEVIATION:
+            if not transitional:
+                continue
+            replacement = uts46_replacements[i]
+        elif status == _STATUS_IGNORED:
+            replacement = None
+        elif status == _STATUS_DISALLOWED_STD3 and not std3_rules:
+            replacement = uts46_replacements[i]
+            if replacement is None:
+                continue
         else:
             raise InvalidCodepoint(f"Codepoint {_unot(code_point)} not allowed at position {pos + 1} in {domain!r}")
+        if start < pos:
+            output.append(domain[start:pos])
+        if replacement:
+            output.append(replacement)
+        start = pos + 1
 
-    return unicodedata.normalize("NFC", output)
+    if start == 0:
+        return unicodedata.normalize("NFC", domain)
+    output.append(domain[start:])
+    return unicodedata.normalize("NFC", "".join(output))
 
 
 def encode(
