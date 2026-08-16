@@ -1,0 +1,103 @@
+# Watches for a new Unicode release and opens an issue when the tables pinned
+# in tools/idna-data fall behind. Deliberately opens an issue rather than a
+# pull request: a Unicode update warrants human review of the table diff and
+# the regenerated UTS #46 conformance tests.
+
+name: Check for new Unicode version
+
+on:
+  schedule:
+    - cron: '0 6 1 * *'   # monthly, 06:00 UTC on the 1st
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Compare latest Unicode release against pinned version
+        id: compare
+        run: |
+          pinned=$(sed -n 's/^PREFERRED_VERSION = "\(.*\)"$/\1/p' tools/idna-data)
+          latest=$(curl -fsSL https://www.unicode.org/Public/UCD/latest/ReadMe.txt \
+            | sed -n 's/.*Version \([0-9][0-9.]*\) of the Unicode Standard.*/\1/p' | head -1)
+          echo "pinned=$pinned latest=$latest"
+          if [ -z "$latest" ]; then
+            echo "::error::Could not determine the latest Unicode version"
+            exit 1
+          fi
+          echo "pinned=$pinned" >> "$GITHUB_OUTPUT"
+          echo "latest=$latest" >> "$GITHUB_OUTPUT"
+          if [ "$pinned" = "$latest" ]; then
+            echo "Tables are current."
+          elif [ "$(curl -sSI -o /dev/null -w '%{http_code}' "https://www.unicode.org/Public/${latest}/idna/IdnaMappingTable.txt")" = "200" ]; then
+            # The generator also needs the UTS #46 files, which normally publish
+            # alongside the UCD but are checked separately to be safe. Redirects
+            # are not followed: unreleased version paths 302 to /Public/draft/.
+            echo "update=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "UTS #46 data for ${latest} is not published yet; will check again next run."
+          fi
+
+      - name: Set up Python
+        if: steps.compare.outputs.update == 'true'
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.14'
+
+      - name: Preview table changes for the new version
+        if: steps.compare.outputs.update == 'true'
+        id: preview
+        env:
+          LATEST: ${{ steps.compare.outputs.latest }}
+        run: |
+          if python tools/idna-data make-libdata --version "$LATEST" --dir idna --test-dir tests; then
+            summary=$(git diff --stat -- idna/idnadata.py idna/uts46data.py tests/test_idna_uts46.py)
+          else
+            summary="(tools/idna-data failed against ${LATEST}; the generator may need updating for this release)"
+          fi
+          {
+            echo 'summary<<EOF'
+            echo "$summary"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Open tracking issue
+        if: steps.compare.outputs.update == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PINNED: ${{ steps.compare.outputs.pinned }}
+          LATEST: ${{ steps.compare.outputs.latest }}
+          SUMMARY: ${{ steps.preview.outputs.summary }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          existing=$(gh issue list --state all --search "Unicode ${LATEST} in:title" --json number --jq length)
+          if [ "$existing" != "0" ]; then
+            echo "An issue for Unicode ${LATEST} already exists; nothing to do."
+            exit 0
+          fi
+          cat > body.md <<EOF
+          Unicode ${LATEST} has been released; the tables in this repository are generated from ${PINNED}.
+
+          To update:
+
+          1. Set \`PREFERRED_VERSION = "${LATEST}"\` in \`tools/idna-data\`.
+          2. Run \`tools/idna-data make-libdata --dir idna --test-dir tests\` to regenerate \`idna/idnadata.py\`, \`idna/uts46data.py\` and \`tests/test_idna_uts46.py\`.
+          3. Review the diff and run the test suite; new IdnaTestV2 vectors sometimes need entries in the generator's skip list.
+
+          Preview of the regenerated files against ${LATEST}:
+
+          \`\`\`
+          ${SUMMARY}
+          \`\`\`
+
+          Opened automatically by [the Unicode version check workflow](${RUN_URL}).
+          EOF
+          gh issue create --title "Unicode ${LATEST} data available" --body-file body.md
