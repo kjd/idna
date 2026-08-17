@@ -826,44 +826,6 @@ def uts46_tests(ucdata):
         yield ""
 
 
-"""
-    try:
-            output = idna.decode(source, uts46=True, strict=True)
-            if to_unicode_status != "[]":
-                self.fail("decode() did not emit required error {} for {}".format(to_unicode, repr(source)))
-            self.assertEqual(output, to_unicode, "unexpected decode() output")
-        except (idna.IDNAError, UnicodeError, ValueError) as exc:
-            if str(exc).startswith("Unknown"):
-                raise unittest.SkipTest("Test requires support for a newer version of Unicode than this Python supports")
-            if to_unicode_status == "[]":
-                raise
-
-        try:
-            output = idna.encode(source, uts46=True, strict=True).decode("ascii")
-            if to_ascii_status != "[]":
-                self.fail("encode() did not emit required error {} for {}".format(to_ascii_status, repr(source)))
-            self.assertEqual(output, to_ascii, "unexpected encode() output")
-        except (idna.IDNAError, UnicodeError, ValueError) as exc:
-            if str(exc).startswith("Unknown"):
-                raise unittest.SkipTest("Test requires support for a newer version of Unicode than this Python supports")
-            if to_ascii_status == "[]":
-                raise
-
-        try:
-            output = idna.encode(source, uts46=True, strict=True, transitional=True).decode("ascii")
-            if to_ascii_t_status != "[]":
-                self.fail(
-                    "encode(transitional=True) did not emit required error {} for {}".format(to_ascii_t_status, repr(source))
-                )
-            self.assertEqual(output, to_ascii_t, "unexpected encode() output")
-        except (idna.IDNAError, UnicodeError, ValueError) as exc:
-            if str(exc).startswith("Unknown"):
-                raise unittest.SkipTest("Test requires support for a newer version of Unicode than this Python supports")
-            if to_ascii_t_status == "[]":
-                raise
-"""
-
-
 def make_libdata(args, ucdata):
     dest_dir = args.dir or "."
     test_dir = args.test_dir or dest_dir
@@ -902,11 +864,6 @@ def main():
     parser.add_argument("--test-dir", type=str, default=None, help="Where to export test files (defaults to --dir)")
     parser.add_argument("--cache", type=str, default=None, help="Where to cache Unicode data")
     parser.add_argument("--no-cache", action="store_true", help="Don't cache Unicode data")
-    libdata = parser.add_argument_group("make-libdata", "Make module data for Python IDNA library")
-
-    tables = parser.add_argument_group("make-table", "Make IANA-style reference table")
-
-    codepoint = parser.add_argument_group("codepoint", "Display related data for given codepoint (e.g. U+0061)")
 
     args = parser.parse_args()
 

@@ -138,7 +138,6 @@ class IDNATests(unittest.TestCase):
 
         # RFC 5893 Rule 2
         self.assertTrue(idna.check_bidi(r + al))
-        self.assertTrue(idna.check_bidi(r + al))
         self.assertTrue(idna.check_bidi(r + an))
         self.assertTrue(idna.check_bidi(r + en))
         self.assertTrue(idna.check_bidi(r + es + al))
