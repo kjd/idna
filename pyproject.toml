@@ -55,6 +55,12 @@ all = [
     "hypothesis >= 6.141.1",
 ]
 
+[tool.coverage.run]
+source = ["idna"]
+[tool.coverage.report]
+show_missing = true
+fail_under = 95
+
 [tool.ruff]
 line-length = 127
 [tool.ruff.lint]

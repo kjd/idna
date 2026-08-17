@@ -8,6 +8,10 @@
   containing non-LDH ASCII characters rejected again.
 - Performance improvements to UTS #46 mapping, particularly for
   ASCII-only domains.
+- Test on free-threaded CPython with the GIL disabled and document
+  thread safety.
+- Expose the Unicode version of the generated tables as
+  `idna.unicode_version`, and show it in `idna --version`.
 - Add `code`, `text`, `codepoint` and `position` attributes to
   `IDNAError` so that the failed rule and the offending character can
   be identified without parsing the exception message.
@@ -20,8 +24,9 @@
   `InvalidCodepointContext`.
 - Consistently raise `IDNAError` for empty labels and non-ASCII bytes
   passed to label helper functions and the incremental codec.
-- Add property-based tests, extended fuzzing targets, and CI checks
-  that the data tables match the generator output.
+- Add property-based tests, extended fuzzing targets, coverage
+  measurement, and CI checks that the data tables match the generator
+  output.
 - Various code quality and tooling improvements.
 
 Thanks to stefan6419846, LouieLuNZ, and Salvatore Corvaglia for

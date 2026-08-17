@@ -5,7 +5,7 @@ import unittest
 from contextlib import contextmanager, redirect_stderr, redirect_stdout
 from unittest import mock
 
-from idna import cli
+from idna import cli, unicode_version
 from idna.package_data import __version__
 
 
@@ -160,6 +160,7 @@ class CLIVersionTests(unittest.TestCase):
             cli.main(["--version"])
         self.assertEqual(ctx.exception.code, 0)
         self.assertIn(__version__, buf.getvalue())
+        self.assertIn(f"Unicode {unicode_version}", buf.getvalue())
 
 
 class CLIMultipleDomainsTests(unittest.TestCase):
