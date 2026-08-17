@@ -365,6 +365,18 @@ class IDNATests(unittest.TestCase):
             self.assertTrue(issubclass(w[0].category, DeprecationWarning))
             self.assertIn("transitional", str(w[0].message).lower())
 
+    def test_uts46_remap_transitional_deprecation_warning(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            idna.uts46_remap("example.com", transitional=True)
+            self.assertEqual(len(w), 1)
+            self.assertTrue(issubclass(w[0].category, DeprecationWarning))
+            self.assertIn("transitional", str(w[0].message).lower())
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            idna.uts46_remap("example.com")
+            self.assertEqual(len(w), 0)
+
     def test_encode_no_transitional_no_warning(self):
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
@@ -393,13 +405,17 @@ class IDNATests(unittest.TestCase):
         self.assertEqual(remap("a\u3002b\uff0ec\uff61d"), "a.b.c.d")
         # Ignored (I) characters are dropped, wherever they fall.
         self.assertEqual(remap("\u00ada\u00adb\u00ad"), "ab")
-        # Deviation (D) characters are kept unless transitional processing is
-        # requested; ZWNJ maps to nothing under transitional processing.
+        # Deviation (D) characters are kept. Transitional processing, which
+        # mapped them, is deprecated in UTS #46 and the flag has no effect.
         self.assertEqual(remap("a\u00dfb"), "a\u00dfb")
+        self.assertEqual(remap("a\u03c2b"), "a\u03c2b")
+        self.assertEqual(remap("a\u200cb"), "a\u200cb")
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", DeprecationWarning)
-            self.assertEqual(remap("a\u00dfb", transitional=True), "assb")
-            self.assertEqual(remap("a\u200cb", transitional=True), "ab")
+            self.assertEqual(remap("a\u00dfb", transitional=True), "a\u00dfb")
+            self.assertEqual(remap("a\u03c2b", transitional=True), "a\u03c2b")
+            self.assertEqual(remap("a\u200cb", transitional=True), "a\u200cb")
+            self.assertEqual(remap("\u1e9e", transitional=True), "\u00df")
         # Output is NFC even when the input is not.
         self.assertEqual(remap("e\u0301"), "\u00e9")
         # Disallowed (X) characters raise, reporting the 1-based position in
@@ -483,6 +499,28 @@ class IDNATests(unittest.TestCase):
         self.assertRaises(idna.IDNAError, idna.ulabel, b"\xc3\x9f")  # valid UTF-8 for U+00DF, still not ASCII
         self.assertRaises(idna.IDNAError, idna.ulabel, bytearray(b"xn--\xff"))
         self.assertEqual(idna.ulabel(b"xn--e1afmkfd"), "\u043f\u0440\u0438\u043c\u0435\u0440")
+
+    def test_non_canonical_alabel(self):
+        # RFC 5891 §5.3: an A-label must re-encode to itself. "xn---bbk" is
+        # a non-canonical Punycode spelling of "xn--bbk" (RFC 3492 permits
+        # a delimiter before an empty basic-code-point run, so both decode
+        # to the same U-label); accepting it would let two different
+        # wire-format names display identically.
+        self.assertEqual(idna.ulabel("xn--bbk"), "\u307e")
+        self.assertEqual(idna.encode("xn--bbk"), b"xn--bbk")
+        for label in ("xn---bbk", b"xn---bbk", "XN---BBK"):
+            with self.subTest(label=label):
+                with self.assertRaises(idna.IDNAError) as ctx:
+                    idna.ulabel(label)
+                self.assertEqual(ctx.exception.code, "non_canonical_alabel")
+        self.assertRaises(idna.IDNAError, idna.alabel, "xn---bbk")
+        self.assertRaises(idna.IDNAError, idna.encode, "xn---bbk.example")
+        self.assertRaises(idna.IDNAError, idna.decode, "xn---bbk.example")
+        # display decoding keeps the wire form rather than the misleading U-label
+        self.assertEqual(idna.decode("XN---BBK.example", display=True), "xn---bbk.example")
+        # ASCII case in the input is not a canonicality violation
+        self.assertEqual(idna.ulabel("XN--MNCHEN-3YA"), "m\xfcnchen")
+        self.assertEqual(idna.ulabel("xn--Mnchen-3ya"), "m\xfcnchen")
 
     def test_decode_display(self):
         # A label whose Punycode decode succeeds but contains disallowed

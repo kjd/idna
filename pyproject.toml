@@ -50,7 +50,9 @@ include = ["tests", "tools", "HISTORY.md"]
 all = [
     "ruff >= 0.16.0",
     "mypy >= 1.11.2",
+    "ty >= 0.0.37",
     "pytest >= 8.3.2",
+    "hypothesis >= 6.141.1",
 ]
 
 [tool.ruff]

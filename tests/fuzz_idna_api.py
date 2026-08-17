@@ -57,7 +57,20 @@ def fuzz_encode(fdp):
 def fuzz_decode(fdp):
     strict, uts46, std3, display = fdp.ConsumeBool(), fdp.ConsumeBool(), fdp.ConsumeBool(), fdp.ConsumeBool()
     data = fdp.ConsumeUnicode(MAX_INPUT) if fdp.ConsumeBool() else fdp.ConsumeBytes(MAX_INPUT)
-    _only_idnaerror(idna.decode, data, strict=strict, uts46=uts46, std3_rules=std3, display=display)
+    decoded = _only_idnaerror(idna.decode, data, strict=strict, uts46=uts46, std3_rules=std3, display=display)
+    if decoded is None or not strict or uts46 or display:
+        return
+    # RFC 5891 §5.3: an A-label that decodes must re-encode to itself, so
+    # under strict non-UTS46 processing any ASCII input that decodes is (up
+    # to case) its own encoding. decode() does not enforce the 63-octet
+    # label limit (nor does UTS #46 ToUnicode) but encode() does, so skip
+    # overlong labels.
+    if isinstance(data, str):
+        if not data.isascii():
+            return
+        data = data.encode("ascii")
+    if all(len(label) <= 63 for label in data.split(b".")):
+        assert idna.encode(decoded, strict=True) == data.lower(), (data, decoded)
 
 
 def fuzz_uts46_remap(fdp):

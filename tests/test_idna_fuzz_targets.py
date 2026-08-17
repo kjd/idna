@@ -40,6 +40,8 @@ SEEDS = [
     b"xn--.example",
     b"-hyphen.example",
     b"xn--80ak6aa92e.com",
+    b"xn---bbk.example",  # non-canonical spelling of xn--bbk
+    b"XN--MNCHEN-3YA.example",
 ]
 
 

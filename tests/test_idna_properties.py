@@ -19,7 +19,7 @@ import unittest
 import warnings
 from typing import Any, Callable
 
-from hypothesis import HealthCheck, given, settings
+from hypothesis import HealthCheck, example, given, settings
 from hypothesis import strategies as st
 
 import idna
@@ -138,7 +138,8 @@ class OutputShapeTests(unittest.TestCase):
         if err is not None:
             return
         self.assertTrue(unicodedata.is_normalized("NFC", out))
-        self.assertEqual(idna.uts46_remap(out, std3_rules=std3_rules, transitional=transitional), out)
+        again, _ = _run(idna.uts46_remap, out, std3_rules=std3_rules, transitional=transitional)
+        self.assertEqual(again, out)
         if std3_rules:
             # UTS #46 §4.1 UseSTD3ASCIIRules: only LDH ASCII (plus the label
             # separator) may survive mapping.
@@ -162,6 +163,21 @@ class RoundTripTests(unittest.TestCase):
         # display=True only changes behaviour for labels that fail to decode
         self.assertEqual(idna.decode(encoded, display=True), decoded)
 
+    @given(ascii_domains)
+    @example("xn---bbk.example")
+    @example("a" * 64)
+    def test_decode_encode(self, s: str) -> None:
+        # RFC 5891 §5.3: an A-label that decodes must re-encode to itself, so
+        # any ASCII input that decodes is (up to case) its own encoding.
+        # Restricted to strict, non-UTS46 processing since other modes may
+        # legitimately rewrite the input, and to labels within the DNS
+        # length limit, which decode() (like UTS #46 ToUnicode) does not
+        # enforce but encode() does.
+        decoded, err = _run(idna.decode, s, strict=True)
+        if err is not None or any(len(label) > 63 for label in s.split(".")):
+            return
+        self.assertEqual(idna.encode(decoded, strict=True), s.lower().encode("ascii"))
+
     @given(labels)
     def test_alabel_ulabel(self, label: str) -> None:
         encoded, err = _run(idna.alabel, label)
@@ -178,6 +194,22 @@ class DifferentialTests(unittest.TestCase):
         (a_result, a_err), (b_result, b_err) = a, b
         test.assertEqual(a_err is None, b_err is None, f"{a_err!r} vs {b_err!r}")
         test.assertEqual(a_result, b_result)
+
+    @given(domains, flags)
+    def test_transitional_has_no_effect(self, s: str, std3_rules: bool) -> None:
+        # UTS #46 deprecated transitional processing; the flag is accepted
+        # for backwards compatibility but deviation characters are kept
+        # either way.
+        self._assert_same_outcome(
+            self,
+            _run(idna.uts46_remap, s, std3_rules=std3_rules, transitional=True),
+            _run(idna.uts46_remap, s, std3_rules=std3_rules),
+        )
+        self._assert_same_outcome(
+            self,
+            _run(idna.encode, s, uts46=True, std3_rules=std3_rules, transitional=True),
+            _run(idna.encode, s, uts46=True, std3_rules=std3_rules),
+        )
 
     @given(ascii_domains)
     def test_strict_is_irrelevant_for_ascii(self, s: str) -> None:
