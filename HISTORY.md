@@ -11,6 +11,9 @@
 - Add `code`, `text`, `codepoint` and `position` attributes to
   `IDNAError` so that the failed rule and the offending character can
   be identified without parsing the exception message.
+- The deprecated `transitional` argument to `encode()` and
+  `uts46_remap()` is now completely ignored, and gives a deprecation warning
+  for the latter.
 - Reject A-labels that are not the canonical Punycode encoding of
   their U-label.
 - Fix CONTEXTJ violations raising `IDNAError` instead of

@@ -138,12 +138,8 @@ class OutputShapeTests(unittest.TestCase):
         if err is not None:
             return
         self.assertTrue(unicodedata.is_normalized("NFC", out))
-        # Non-transitional mapping is idempotent. Transitional mapping is
-        # not: deviation handling applies to the input, not to mapping
-        # output, so e.g. U+1E9E maps to U+00DF which a second transitional
-        # pass would turn into "ss". A non-transitional pass over
-        # transitional output must still be a fixed point.
-        self.assertEqual(idna.uts46_remap(out, std3_rules=std3_rules, transitional=False), out)
+        again, _ = _run(idna.uts46_remap, out, std3_rules=std3_rules, transitional=transitional)
+        self.assertEqual(again, out)
         if std3_rules:
             # UTS #46 §4.1 UseSTD3ASCIIRules: only LDH ASCII (plus the label
             # separator) may survive mapping.
@@ -198,6 +194,22 @@ class DifferentialTests(unittest.TestCase):
         (a_result, a_err), (b_result, b_err) = a, b
         test.assertEqual(a_err is None, b_err is None, f"{a_err!r} vs {b_err!r}")
         test.assertEqual(a_result, b_result)
+
+    @given(domains, flags)
+    def test_transitional_has_no_effect(self, s: str, std3_rules: bool) -> None:
+        # UTS #46 deprecated transitional processing; the flag is accepted
+        # for backwards compatibility but deviation characters are kept
+        # either way.
+        self._assert_same_outcome(
+            self,
+            _run(idna.uts46_remap, s, std3_rules=std3_rules, transitional=True),
+            _run(idna.uts46_remap, s, std3_rules=std3_rules),
+        )
+        self._assert_same_outcome(
+            self,
+            _run(idna.encode, s, uts46=True, std3_rules=std3_rules, transitional=True),
+            _run(idna.encode, s, uts46=True, std3_rules=std3_rules),
+        )
 
     @given(ascii_domains)
     def test_strict_is_irrelevant_for_ascii(self, s: str) -> None:

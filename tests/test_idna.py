@@ -365,6 +365,18 @@ class IDNATests(unittest.TestCase):
             self.assertTrue(issubclass(w[0].category, DeprecationWarning))
             self.assertIn("transitional", str(w[0].message).lower())
 
+    def test_uts46_remap_transitional_deprecation_warning(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            idna.uts46_remap("example.com", transitional=True)
+            self.assertEqual(len(w), 1)
+            self.assertTrue(issubclass(w[0].category, DeprecationWarning))
+            self.assertIn("transitional", str(w[0].message).lower())
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            idna.uts46_remap("example.com")
+            self.assertEqual(len(w), 0)
+
     def test_encode_no_transitional_no_warning(self):
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
@@ -393,13 +405,17 @@ class IDNATests(unittest.TestCase):
         self.assertEqual(remap("a\u3002b\uff0ec\uff61d"), "a.b.c.d")
         # Ignored (I) characters are dropped, wherever they fall.
         self.assertEqual(remap("\u00ada\u00adb\u00ad"), "ab")
-        # Deviation (D) characters are kept unless transitional processing is
-        # requested; ZWNJ maps to nothing under transitional processing.
+        # Deviation (D) characters are kept. Transitional processing, which
+        # mapped them, is deprecated in UTS #46 and the flag has no effect.
         self.assertEqual(remap("a\u00dfb"), "a\u00dfb")
+        self.assertEqual(remap("a\u03c2b"), "a\u03c2b")
+        self.assertEqual(remap("a\u200cb"), "a\u200cb")
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", DeprecationWarning)
-            self.assertEqual(remap("a\u00dfb", transitional=True), "assb")
-            self.assertEqual(remap("a\u200cb", transitional=True), "ab")
+            self.assertEqual(remap("a\u00dfb", transitional=True), "a\u00dfb")
+            self.assertEqual(remap("a\u03c2b", transitional=True), "a\u03c2b")
+            self.assertEqual(remap("a\u200cb", transitional=True), "a\u200cb")
+            self.assertEqual(remap("\u1e9e", transitional=True), "\u00df")
         # Output is NFC even when the input is not.
         self.assertEqual(remap("e\u0301"), "\u00e9")
         # Disallowed (X) characters raise, reporting the 1-based position in

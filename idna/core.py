@@ -631,6 +631,15 @@ def _check_std3(text: str, domain: str, offset: int) -> None:
         )
 
 
+def _warn_transitional() -> None:
+    warnings.warn(
+        "Transitional processing is deprecated in UTS #46 and has no effect. "
+        "The transitional argument will be removed in a future version.",
+        DeprecationWarning,
+        stacklevel=3,
+    )
+
+
 def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False) -> str:
     """Apply the UTS #46 character mapping to a domain string.
 
@@ -646,15 +655,18 @@ def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False
         appeared in the input or was produced by a mapping (e.g. U+FF01
         FULLWIDTH EXCLAMATION MARK maps to ``!``). If ``False``, such
         characters are passed through.
-    :param transitional: If ``True``, use transitional processing (status
-        ``D`` codepoints are mapped instead of kept). Transitional
-        processing has been removed from UTS #46 and this option is
-        retained only for backwards compatibility.
+    :param transitional: Deprecated and ignored. UTS #46 deprecated
+        transitional processing in Unicode 15.1 and deviation (status
+        ``D``) codepoints are now always kept, so this has no effect
+        beyond emitting a :class:`DeprecationWarning`. It will be removed
+        in a future version.
     :returns: The remapped domain, in Normalisation Form C.
     :raises InvalidCodepoint: If the domain contains a disallowed
         codepoint under the chosen rules.
     :raises IDNAError: If ``domain`` exceeds the defensive input length limit.
     """
+    if transitional:
+        _warn_transitional()
     if len(domain) > _max_input_length:
         raise IDNAError("Domain too long", code="input_too_long")
     if domain.isascii():
@@ -680,16 +692,15 @@ def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False
         code_point = ord(char)
         i = code_point if code_point < 256 else bisect.bisect_right(uts46_starts, code_point) - 1
         status = uts46_statuses[i]
-        # UTS #46 §4: V is always valid, D is deviation (kept unless transitional),
-        # M is mapped, I is ignored, anything else is disallowed.
+        # UTS #46 §4: V is always valid, D is deviation (kept: transitional
+        # processing, which mapped it, is deprecated), M is mapped, I is
+        # ignored, anything else is disallowed.
         if status == _STATUS_VALID:
             continue
         if status == _STATUS_MAPPED:
             replacement = uts46_replacements[i]
         elif status == _STATUS_DEVIATION:
-            if not transitional:
-                continue
-            replacement = uts46_replacements[i]
+            continue
         elif status == _STATUS_IGNORED:
             replacement = None
         else:
@@ -749,20 +760,15 @@ def encode(
     :param uts46: If ``True``, apply UTS #46 mapping before encoding.
     :param std3_rules: Forwarded to :func:`uts46_remap` when ``uts46`` is
         ``True``.
-    :param transitional: Forwarded to :func:`uts46_remap` when ``uts46``
-        is ``True``. Deprecated: emits a :class:`DeprecationWarning` and
-        will be removed in a future version.
+    :param transitional: Deprecated and ignored (see :func:`uts46_remap`):
+        emits a :class:`DeprecationWarning` and will be removed in a
+        future version.
     :returns: The encoded domain as ASCII :class:`bytes`.
     :raises IDNAError: If the domain is empty, contains an invalid label,
         or exceeds the maximum domain length.
     """
     if transitional:
-        warnings.warn(
-            "Transitional processing has been removed from UTS #46. "
-            "The transitional argument will be removed in a future version.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
+        _warn_transitional()
     if not isinstance(s, str):
         try:
             s = str(s, "ascii")
@@ -773,7 +779,7 @@ def encode(
     if len(s) > _max_input_length:
         raise IDNAError("Domain too long", code="input_too_long")
     if uts46:
-        s = uts46_remap(s, std3_rules, transitional)
+        s = uts46_remap(s, std3_rules)
 
     # Reject inputs that exceed the maximum DNS domain length up-front
     # to avoid expensive computation on long inputs.
