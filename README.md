@@ -146,26 +146,18 @@ the tool exits with a non-zero status if any conversion failed.
 
 ## Additional Notes
 
-* **Version support**. This library supports Python 3.9 and higher.
+* **Python version support**. This library supports Python 3.9 and higher.
   As this library serves as a low-level toolkit for a variety of
   applications, we strive to support all versions of Python that are
-  not beyond end-of-life.
+  not beyond end-of-life. Free-threaded Python is also supported,
+  as the library holds no mutable global state the functions can be
+  called concurrently from multiple threads.
 
 * **Unicode version**. The IDNA and UTS #46 lookup tables are generated
-  from a specific Unicode release, available as `idna.unicode_version`
-  (and shown by `idna --version`). Some checks — NFC normalisation,
-  bidirectional classes and combining classes — still come from the
+  from a specific Unicode release. Some Unicode data depends on the
   running Python's `unicodedata` module, so on an older Python a
-  character new to Unicode may be rejected (typically with the
-  `unknown_codepoint` or `bidi_unknown_direction` error codes) even
-  though the tables know about it.
-
-* **Thread safety and free-threaded Python**. The library holds no
-  mutable global state — the lookup tables are read-only — so all
-  functions may be called concurrently from multiple threads, and the
-  incremental codec classes keep their state per instance. The test
-  suite runs on free-threaded CPython builds (`3.14t`) with the GIL
-  disabled and includes a concurrency test.
+  character new to Unicode may be rejected as unknown even if this
+  library knows about it.
 
 * **Emoji**. It is an occasional request to support emoji domains in
   this library. Encoding of symbols like emoji is expressly prohibited by
