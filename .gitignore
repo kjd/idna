@@ -19,3 +19,5 @@ lib64
 .hypothesis/
 .coverage
 htmlcov/
+.DS_Store
+uv.lock
