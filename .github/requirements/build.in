@@ -1,3 +1,0 @@
-build
-flit_core>=3.11,<5
-twine
