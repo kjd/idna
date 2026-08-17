@@ -6,6 +6,14 @@ import idna.codec
 
 CODEC_NAME = "idna2008"
 
+# (decoded, encoded) pairs derived from CPython's Lib/test/test_codecs.py
+INCREMENTAL_TESTS = (
+    ("python.org", b"python.org"),
+    ("python.org.", b"python.org."),
+    ("pyth\xf6n.org", b"xn--pythn-mua.org"),
+    ("pyth\xf6n.org.", b"xn--pythn-mua.org."),
+)
+
 
 class IDNACodecTests(unittest.TestCase):
     def setUp(self):
@@ -58,16 +66,7 @@ class IDNACodecTests(unittest.TestCase):
         return self.idnatests.test_encode(encode=encode)
 
     def testIncrementalDecoder(self):
-        # Tests derived from Python standard library test/test_codecs.py
-
-        incremental_tests = (
-            ("python.org", b"python.org"),
-            ("python.org.", b"python.org."),
-            ("pyth\xf6n.org", b"xn--pythn-mua.org"),
-            ("pyth\xf6n.org.", b"xn--pythn-mua.org."),
-        )
-
-        for decoded, encoded in incremental_tests:
+        for decoded, encoded in INCREMENTAL_TESTS:
             self.assertEqual(
                 "".join(codecs.iterdecode((bytes([c]) for c in encoded), CODEC_NAME)),
                 decoded,
@@ -106,15 +105,7 @@ class IDNACodecTests(unittest.TestCase):
         self.assertEqual(decoder.decode(b"", True), "")
 
     def testIncrementalEncoder(self):
-        # Tests derived from Python standard library test/test_codecs.py
-
-        incremental_tests = (
-            ("python.org", b"python.org"),
-            ("python.org.", b"python.org."),
-            ("pyth\xf6n.org", b"xn--pythn-mua.org"),
-            ("pyth\xf6n.org.", b"xn--pythn-mua.org."),
-        )
-        for decoded, encoded in incremental_tests:
+        for decoded, encoded in INCREMENTAL_TESTS:
             self.assertEqual(b"".join(codecs.iterencode(decoded, CODEC_NAME)), encoded)
 
         encoder = codecs.getincrementalencoder(CODEC_NAME)()

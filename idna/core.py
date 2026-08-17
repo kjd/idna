@@ -466,8 +466,9 @@ def check_label(label: str | bytes | bytearray) -> None:
     if len(label) == 0:
         raise IDNAError("Empty Label", code="empty_label")
 
-    # Reject on domain length rather than label length so support some UTS 46
-    # use cases, still reducing processing of label contextual rules
+    # Check against the domain length rather than the label length to
+    # support some UTS #46 use cases, while still bounding the work done
+    # by the label contextual rules below.
     if not valid_string_length(label, trailing_dot=True):
         raise IDNAError("Label too long", code="label_too_long")
 

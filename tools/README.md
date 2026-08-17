@@ -1,6 +1,6 @@
 # idna-data
 
-The IDNA and UTS 46 functionality in this library relies upon
+The IDNA and UTS #46 functionality in this library relies upon
 pre-calculated lookup tables for performance. These tables are derived
 from computing against eligibility criteria in the respective standards
 using the command-line script `idna-data` in this directory.
@@ -11,7 +11,7 @@ three main modes:
 
 * `idna-data make-libdata`. Generates `idnadata.py` and
   `uts46data.py`, the pre-calculated lookup tables used for IDNA and
-  UTS 46 conversions. Implementers who wish to track this library against
+  UTS #46 conversions. Implementers who wish to track this library against
   a different Unicode version may use this tool to manually generate a
   different version of the `idnadata.py` and `uts46data.py` files.
 
@@ -21,7 +21,7 @@ three main modes:
 
 * `idna-data U+0061`. Prints debugging output on the various
   properties associated with an individual Unicode codepoint (in this
-  case, U+0061), that are used to assess the IDNA and UTS 46 status of a
+  case, U+0061), that are used to assess the IDNA and UTS #46 status of a
   codepoint. This is helpful in debugging or analysis.
 
 The tool accepts a number of arguments, described using `idna-data -h`.

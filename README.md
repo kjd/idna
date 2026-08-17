@@ -40,7 +40,7 @@ specification to be a local user-interface issue distinct from IDNA
 conversion functionality.
 
 For example, "Königsgäßchen" is not a permissible label as capital letters
-are not allowed. UTS 46 will convert this into lower case prior to applying
+are not allowed. UTS #46 will convert this into lower case prior to applying
 the IDNA conversion.
 
 ```pycon
@@ -78,7 +78,7 @@ Exceptions carry machine-readable attributes so that applications
 do not need to parse the message: `code` is a short, stable identifier
 for the rule that failed (listed below); and, when the failure can be
 attributed to a particular character, `text` (the label, or domain for
-UTS 46 processing, being validated), `codepoint` (the offending
+UTS #46 processing, being validated), `codepoint` (the offending
 codepoint as an integer) and `position` (its 1-based index within
 `text`, as quoted in the message) are set. Each is `None` when it does
 not apply. Message wording is not part of the API and may change.
@@ -112,8 +112,8 @@ disallowed_codepoint 75 1 Königsgäßchen
 | `non_canonical_alabel` | An `xn--` label is not the canonical Punycode encoding of its U-label (a "fake A-label") |
 | `invalid_ascii` | Byte input is not ASCII |
 | `invalid_utf8` | Byte input is not UTF-8 |
-| `uts46_disallowed` | A codepoint is disallowed by the UTS 46 mapping table |
-| `uts46_std3` | An ASCII character is rejected by the UTS 46 STD3 rules |
+| `uts46_disallowed` | A codepoint is disallowed by the UTS #46 mapping table |
+| `uts46_std3` | An ASCII character is rejected by the UTS #46 STD3 rules |
 | `unsupported_errors` | The codec was given an `errors` handler other than `strict` |
 
 
@@ -164,6 +164,6 @@ the tool exits with a non-zero status if any conversion failed.
   the IDNA technical standard, and emoji domains are broadly phased
   out across the domain industry due to associated security risks.
 
-* **Regenerating lookup tables**. The IDNA and UTS 46 functionality
+* **Regenerating lookup tables**. The IDNA and UTS #46 functionality
   relies upon pre-calculated lookup tables, generated using the
   `idna-data` script in [`tools/`](tools/README.md).
