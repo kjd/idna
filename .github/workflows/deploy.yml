@@ -35,8 +35,11 @@ jobs:
       # Run from outside the checkout with --import-mode=importlib so that
       # ``import idna`` resolves to the installed wheel, not the source tree:
       # only an artifact that passes the suite gets published.
+      # --force-reinstall because twine (via requests) has already pulled
+      # the released idna from PyPI, and pip would otherwise skip our wheel
+      # as "already installed" whenever the version numbers coincide.
       run: |
-        python -m pip install --no-deps dist/*.whl
+        python -m pip install --no-deps --force-reinstall dist/*.whl
         cd "$RUNNER_TEMP"
         python -c 'import idna, sys; assert "site-packages" in idna.__file__, idna.__file__; print(idna.__version__, idna.__file__)'
         pytest -q --import-mode=importlib -p no:cacheprovider "$GITHUB_WORKSPACE/tests"
