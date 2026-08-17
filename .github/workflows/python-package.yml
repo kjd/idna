@@ -88,5 +88,12 @@ jobs:
     - name: Test with pytest
       env:
         PYTHON_GIL: ${{ matrix.gil }}
+      # Measured under coverage on CPython; PyPy runs the suite plain since
+      # tracing there is an order of magnitude slower.
       run: |
-        pytest
+        if [[ "${{ matrix.python-version }}" == pypy* ]]; then
+          pytest
+        else
+          coverage run -m pytest
+          coverage report
+        fi
