@@ -80,6 +80,7 @@ class ErrorAttributeTests(unittest.TestCase):
             "bidi_rule_6": lambda: idna.check_bidi("a-", check_ltr=True),
             "bidi_unknown_direction": lambda: self._unknown_direction("ab"),
             "invalid_alabel": lambda: idna.ulabel("xn--"),
+            "non_canonical_alabel": lambda: idna.ulabel("xn---bbk"),
             "invalid_ascii": lambda: idna.encode(b"\xff"),
             "invalid_utf8": lambda: idna.check_label(b"\xff"),
             "uts46_disallowed": lambda: idna.uts46_remap("a\x80"),

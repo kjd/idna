@@ -19,7 +19,7 @@ import unittest
 import warnings
 from typing import Any, Callable
 
-from hypothesis import HealthCheck, given, settings
+from hypothesis import HealthCheck, example, given, settings
 from hypothesis import strategies as st
 
 import idna
@@ -166,6 +166,21 @@ class RoundTripTests(unittest.TestCase):
         self.assertEqual(idna.encode(decoded), encoded.lower())
         # display=True only changes behaviour for labels that fail to decode
         self.assertEqual(idna.decode(encoded, display=True), decoded)
+
+    @given(ascii_domains)
+    @example("xn---bbk.example")
+    @example("a" * 64)
+    def test_decode_encode(self, s: str) -> None:
+        # RFC 5891 §5.3: an A-label that decodes must re-encode to itself, so
+        # any ASCII input that decodes is (up to case) its own encoding.
+        # Restricted to strict, non-UTS46 processing since other modes may
+        # legitimately rewrite the input, and to labels within the DNS
+        # length limit, which decode() (like UTS #46 ToUnicode) does not
+        # enforce but encode() does.
+        decoded, err = _run(idna.decode, s, strict=True)
+        if err is not None or any(len(label) > 63 for label in s.split(".")):
+            return
+        self.assertEqual(idna.encode(decoded, strict=True), s.lower().encode("ascii"))
 
     @given(labels)
     def test_alabel_ulabel(self, label: str) -> None:

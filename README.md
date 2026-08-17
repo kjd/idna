@@ -109,6 +109,7 @@ disallowed_codepoint 75 1 Königsgäßchen
 | `bidi_rule_1` … `bidi_rule_6` | The corresponding rule of RFC 5893 (the Bidi Rule) is violated |
 | `bidi_unknown_direction` | A codepoint's directionality is unknown to this Python's Unicode database |
 | `invalid_alabel` | An `xn--` label is malformed or is not valid Punycode |
+| `non_canonical_alabel` | An `xn--` label is not the canonical Punycode encoding of its U-label (a "fake A-label") |
 | `invalid_ascii` | Byte input is not ASCII |
 | `invalid_utf8` | Byte input is not UTF-8 |
 | `uts46_disallowed` | A codepoint is disallowed by the UTS 46 mapping table |

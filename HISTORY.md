@@ -11,6 +11,8 @@
 - Add `code`, `text`, `codepoint` and `position` attributes to
   `IDNAError` so that the failed rule and the offending character can
   be identified without parsing the exception message.
+- Reject A-labels that are not the canonical Punycode encoding of
+  their U-label.
 - Fix CONTEXTJ violations raising `IDNAError` instead of
   `InvalidCodepointContext`.
 - Consistently raise `IDNAError` for empty labels and non-ASCII bytes

@@ -65,6 +65,7 @@ _ErrorCode = Literal[
     "bidi_rule_6",
     "bidi_unknown_direction",
     "invalid_alabel",
+    "non_canonical_alabel",
     "invalid_ascii",
     "invalid_utf8",
     "uts46_disallowed",
@@ -564,9 +565,10 @@ def ulabel(label: str | bytes | bytearray) -> str:
     """Convert a single A-label into its U-label form.
 
     Performs the inverse of :func:`alabel`: an ``xn--``-prefixed label is
-    Punycode-decoded and validated. Labels that are already Unicode (or
-    plain ASCII without the ACE prefix) are validated and returned as a
-    Unicode string.
+    Punycode-decoded and validated, and is rejected unless it is the
+    canonical A-label for the decoded U-label (:rfc:`5891` §5.3). Labels
+    that are already Unicode (or plain ASCII without the ACE prefix) are
+    validated and returned as a Unicode string.
 
     :param label: The label to convert. ``bytes`` or ``bytearray`` input
         is treated as ASCII.
@@ -601,6 +603,13 @@ def ulabel(label: str | bytes | bytearray) -> str:
         label = label_bytes.decode("punycode")
     except UnicodeError as err:
         raise IDNAError("Invalid A-label", code="invalid_alabel") from err
+    # RFC 5891 §5.3: the label is rejected unless re-encoding the decoded
+    # form reproduces the (lowercased) input. This catches "fake A-labels"
+    # (RFC 5890 §2.3.2.1) such as ``xn---bbk``, a non-canonical Punycode
+    # spelling of ``xn--bbk`` that would otherwise decode to the same
+    # U-label and so display identically to a different wire-format name.
+    if _punycode(label) != label_bytes:
+        raise IDNAError("A-label is not the canonical Punycode encoding of its U-label", code="non_canonical_alabel")
     check_label(label)
     return label
 
