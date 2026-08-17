@@ -69,7 +69,11 @@ class ConcurrencyTests(unittest.TestCase):
         "only meaningful when PYTHON_GIL=0 is set on a free-threaded build",
     )
     def test_gil_stays_disabled_when_requested(self):
-        self.assertFalse(sys._is_gil_enabled())
+        # getattr rather than direct access: the attribute only exists from
+        # 3.13, and the type checkers evaluate against requires-python.
+        is_gil_enabled = getattr(sys, "_is_gil_enabled", None)
+        assert is_gil_enabled is not None
+        self.assertFalse(is_gil_enabled())
 
 
 if __name__ == "__main__":
