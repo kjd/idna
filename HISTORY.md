@@ -8,6 +8,8 @@
   containing non-LDH ASCII characters rejected again.
 - Performance improvements to UTS #46 mapping, particularly for
   ASCII-only domains.
+- Test on free-threaded CPython with the GIL disabled and document
+  thread safety.
 - Expose the Unicode version of the generated tables as
   `idna.unicode_version`, and show it in `idna --version`.
 - Add `code`, `text`, `codepoint` and `position` attributes to

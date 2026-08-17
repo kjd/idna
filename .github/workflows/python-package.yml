@@ -67,6 +67,14 @@ jobs:
           - '3.14'
           - '3.15-dev'
           - 'pypy-3.11'
+        include:
+          # Free-threaded builds, run with the GIL disabled; the suite checks
+          # that it stays off. (PYTHON_GIL=0 is a fatal error on other builds,
+          # so it is only set here.)
+          - python-version: '3.14t'
+            gil: '0'
+          - python-version: '3.15t-dev'
+            gil: '0'
     runs-on: ${{ matrix.os || 'ubuntu-latest' }}
     steps:
     - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -78,5 +86,7 @@ jobs:
     - name: Install dependencies
       run: python -m pip install --require-hashes -r .github/requirements/test.txt
     - name: Test with pytest
+      env:
+        PYTHON_GIL: ${{ matrix.gil }}
       run: |
         pytest

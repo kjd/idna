@@ -160,6 +160,13 @@ the tool exits with a non-zero status if any conversion failed.
   `unknown_codepoint` or `bidi_unknown_direction` error codes) even
   though the tables know about it.
 
+* **Thread safety and free-threaded Python**. The library holds no
+  mutable global state — the lookup tables are read-only — so all
+  functions may be called concurrently from multiple threads, and the
+  incremental codec classes keep their state per instance. The test
+  suite runs on free-threaded CPython builds (`3.14t`) with the GIL
+  disabled and includes a concurrency test.
+
 * **Emoji**. It is an occasional request to support emoji domains in
   this library. Encoding of symbols like emoji is expressly prohibited by
   the IDNA technical standard, and emoji domains are broadly phased
