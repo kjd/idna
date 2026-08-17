@@ -10,7 +10,7 @@ import sys
 from itertools import chain
 from typing import IO, TYPE_CHECKING
 
-from . import IDNAError, decode, encode
+from . import IDNAError, decode, encode, unicode_version
 from .core import _alabel_prefix, _unicode_dots_re
 from .package_data import __version__
 
@@ -64,7 +64,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--version",
         action="version",
-        version=f"idna {__version__}",
+        version=f"idna {__version__} (Unicode {unicode_version})",
     )
     parser.add_argument(
         "domain",

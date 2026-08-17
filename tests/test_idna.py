@@ -578,5 +578,17 @@ class IDNATests(unittest.TestCase):
         )
 
 
+class UnicodeVersionTests(unittest.TestCase):
+    def test_unicode_version_is_exported_and_consistent(self):
+        import idna.idnadata
+        import idna.uts46data
+
+        self.assertIn("unicode_version", idna.__all__)
+        self.assertRegex(idna.unicode_version, r"^\d+\.\d+\.\d+$")
+        # The two generated tables must always be regenerated together.
+        self.assertEqual(idna.unicode_version, idna.idnadata.__version__)
+        self.assertEqual(idna.unicode_version, idna.uts46data.__version__)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -151,6 +151,15 @@ the tool exits with a non-zero status if any conversion failed.
   applications, we strive to support all versions of Python that are
   not beyond end-of-life.
 
+* **Unicode version**. The IDNA and UTS #46 lookup tables are generated
+  from a specific Unicode release, available as `idna.unicode_version`
+  (and shown by `idna --version`). Some checks — NFC normalisation,
+  bidirectional classes and combining classes — still come from the
+  running Python's `unicodedata` module, so on an older Python a
+  character new to Unicode may be rejected (typically with the
+  `unknown_codepoint` or `bidi_unknown_direction` error codes) even
+  though the tables know about it.
+
 * **Emoji**. It is an occasional request to support emoji domains in
   this library. Encoding of symbols like emoji is expressly prohibited by
   the IDNA technical standard, and emoji domains are broadly phased

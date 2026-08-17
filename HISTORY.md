@@ -8,6 +8,8 @@
   containing non-LDH ASCII characters rejected again.
 - Performance improvements to UTS #46 mapping, particularly for
   ASCII-only domains.
+- Expose the Unicode version of the generated tables as
+  `idna.unicode_version`, and show it in `idna --version`.
 - Add `code`, `text`, `codepoint` and `position` attributes to
   `IDNAError` so that the failed rule and the offending character can
   be identified without parsing the exception message.
