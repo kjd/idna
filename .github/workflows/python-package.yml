@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   lint:
+    name: Lint and type check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -52,7 +53,8 @@ jobs:
       - name: Verify checked-in files match generator output
         run: git diff --exit-code -- idna/idnadata.py idna/uts46data.py tests/test_idna_uts46.py
 
-  build:
+  test:
+    name: Test on Python ${{ matrix.python-version }}
     strategy:
       fail-fast: false
       matrix:
