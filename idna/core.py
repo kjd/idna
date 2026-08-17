@@ -12,17 +12,9 @@ from .intranges import intranges_contain
 _virama_combining_class = 9
 _alabel_prefix = b"xn--"
 _max_input_length = 1024
-
-# UTS #46 status codes as stored in ``uts46data.uts46_statuses``.
 _STATUS_VALID, _STATUS_MAPPED, _STATUS_DEVIATION, _STATUS_IGNORED = b"VMDI"
 _unicode_dots_re = re.compile("[\u002e\u3002\uff0e\uff61]")
-# ASCII codepoints other than the label separator and the STD3 set
-# (lowercase letters, digits, hyphen) permitted by UTS #46 §4.1 when
-# UseSTD3ASCIIRules is on.
 _std3_disallowed_re = re.compile("[\x00-\x2c\x2f\x3a-\x60\x7b-\x7f]")
-
-
-# Bidi category sets from RFC 5893, hoisted out of the per-codepoint loop
 _bidi_rtl_first = frozenset({"R", "AL"})
 _bidi_rtl_categories = frozenset({"R", "AL", "AN"})
 _bidi_rtl_allowed = frozenset({"R", "AL", "AN", "EN", "ES", "CS", "ET", "ON", "BN", "NSM"})
