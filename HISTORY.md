@@ -1,6 +1,6 @@
 # History
 
-## 3.19 (2026-08-XX)
+## 3.19 (2026-08-18)
 
 - Restore the `std3_rules` option, which had no effect since changes
   to UTS #46 processing in Unicode 16. Note that `uts46_remap()`
