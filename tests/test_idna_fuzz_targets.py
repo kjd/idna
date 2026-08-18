@@ -42,6 +42,8 @@ SEEDS = [
     b"xn--80ak6aa92e.com",
     b"xn---bbk.example",  # non-canonical spelling of xn--bbk
     b"XN--MNCHEN-3YA.example",
+    b"a." * 200,  # every label valid, but past the 253-octet domain limit
+    ("\ufdfa" * 100).encode(),  # UTS #46 maps each to 18 characters, past the input cap
 ]
 
 
