@@ -466,8 +466,9 @@ def check_label(label: str | bytes | bytearray) -> None:
     if len(label) == 0:
         raise IDNAError("Empty Label", code="empty_label")
 
-    # Reject on domain length rather than label length so support some UTS 46
-    # use cases, still reducing processing of label contextual rules
+    # Check against the domain length rather than the label length to
+    # support some UTS #46 use cases, while still bounding the work done
+    # by the label contextual rules below.
     if not valid_string_length(label, trailing_dot=True):
         raise IDNAError("Label too long", code="label_too_long")
 
@@ -662,9 +663,8 @@ def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False
     if len(domain) > _max_input_length:
         raise IDNAError("Domain too long", code="input_too_long")
     if domain.isascii():
-        # The only ASCII mapping in UTS #46 is upper- to lowercase; every
-        # other ASCII codepoint has status V (tests pin this against the
-        # table). ASCII is invariant under NFC, so this is the whole job.
+        # The only ASCII mapping in UTS #46 is upper- to lowercase, and
+        # ASCII is invariant under NFC, so lowercasing is the whole job.
         result = domain.lower()
         if std3_rules:
             _check_std3(result, domain, 0)
@@ -672,21 +672,18 @@ def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False
 
     from .uts46data import uts46_replacements, uts46_starts, uts46_statuses
 
-    # Characters that pass through unchanged are not copied one at a time:
-    # ``start`` marks the beginning of the current run of unchanged input,
-    # and a run is only sliced out when a character has to be replaced or
-    # dropped. For the common case where nothing changes no copy is made.
-    # The STD3 check is applied to each piece of output as it is produced,
-    # so that a violation is reported at its position in the input.
+    # ``start`` marks the run of unchanged input not yet copied; a run is
+    # only sliced out when a character must be replaced or dropped, so the
+    # common no-change case makes no copy. STD3 is checked per output piece
+    # to report a violation at its input position.
     output: list[str] = []
     start = 0
     for pos, char in enumerate(domain):
         code_point = ord(char)
         i = code_point if code_point < 256 else bisect.bisect_right(uts46_starts, code_point) - 1
         status = uts46_statuses[i]
-        # UTS #46 §4: V is always valid, D is deviation (kept: transitional
-        # processing, which mapped it, is deprecated), M is mapped, I is
-        # ignored, anything else is disallowed.
+        # UTS #46 §4: V valid, D deviation (kept), M mapped, I ignored,
+        # anything else disallowed.
         if status == _STATUS_VALID:
             continue
         if status == _STATUS_MAPPED:
@@ -773,8 +770,6 @@ def encode(
     if uts46:
         s = uts46_remap(s, std3_rules)
 
-    # Reject inputs that exceed the maximum DNS domain length up-front
-    # to avoid expensive computation on long inputs.
     if not valid_string_length(s, trailing_dot=True):
         raise IDNAError("Domain too long", code="domain_too_long")
 
@@ -840,8 +835,6 @@ def decode(
         raise IDNAError("Domain too long", code="input_too_long")
     if uts46:
         s = uts46_remap(s, std3_rules, False)
-    # Reject inputs that exceed the maximum DNS domain length up-front
-    # to avoid expensive computation on long inputs.
     if not valid_string_length(s, trailing_dot=True):
         raise IDNAError("Domain too long", code="domain_too_long")
     trailing_dot = False

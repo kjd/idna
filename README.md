@@ -40,7 +40,7 @@ specification to be a local user-interface issue distinct from IDNA
 conversion functionality.
 
 For example, "Königsgäßchen" is not a permissible label as capital letters
-are not allowed. UTS 46 will convert this into lower case prior to applying
+are not allowed. UTS #46 will convert this into lower case prior to applying
 the IDNA conversion.
 
 ```pycon
@@ -78,7 +78,7 @@ Exceptions carry machine-readable attributes so that applications
 do not need to parse the message: `code` is a short, stable identifier
 for the rule that failed (listed below); and, when the failure can be
 attributed to a particular character, `text` (the label, or domain for
-UTS 46 processing, being validated), `codepoint` (the offending
+UTS #46 processing, being validated), `codepoint` (the offending
 codepoint as an integer) and `position` (its 1-based index within
 `text`, as quoted in the message) are set. Each is `None` when it does
 not apply. Message wording is not part of the API and may change.
@@ -112,8 +112,8 @@ disallowed_codepoint 75 1 Königsgäßchen
 | `non_canonical_alabel` | An `xn--` label is not the canonical Punycode encoding of its U-label (a "fake A-label") |
 | `invalid_ascii` | Byte input is not ASCII |
 | `invalid_utf8` | Byte input is not UTF-8 |
-| `uts46_disallowed` | A codepoint is disallowed by the UTS 46 mapping table |
-| `uts46_std3` | An ASCII character is rejected by the UTS 46 STD3 rules |
+| `uts46_disallowed` | A codepoint is disallowed by the UTS #46 mapping table |
+| `uts46_std3` | An ASCII character is rejected by the UTS #46 STD3 rules |
 | `unsupported_errors` | The codec was given an `errors` handler other than `strict` |
 
 
@@ -146,32 +146,24 @@ the tool exits with a non-zero status if any conversion failed.
 
 ## Additional Notes
 
-* **Version support**. This library supports Python 3.9 and higher.
+* **Python version support**. This library supports Python 3.9 and higher.
   As this library serves as a low-level toolkit for a variety of
   applications, we strive to support all versions of Python that are
-  not beyond end-of-life.
+  not beyond end-of-life. Free-threaded Python is also supported,
+  as the library holds no mutable global state the functions can be
+  called concurrently from multiple threads.
 
 * **Unicode version**. The IDNA and UTS #46 lookup tables are generated
-  from a specific Unicode release, available as `idna.unicode_version`
-  (and shown by `idna --version`). Some checks — NFC normalisation,
-  bidirectional classes and combining classes — still come from the
+  from a specific Unicode release. Some Unicode data depends on the
   running Python's `unicodedata` module, so on an older Python a
-  character new to Unicode may be rejected (typically with the
-  `unknown_codepoint` or `bidi_unknown_direction` error codes) even
-  though the tables know about it.
-
-* **Thread safety and free-threaded Python**. The library holds no
-  mutable global state — the lookup tables are read-only — so all
-  functions may be called concurrently from multiple threads, and the
-  incremental codec classes keep their state per instance. The test
-  suite runs on free-threaded CPython builds (`3.14t`) with the GIL
-  disabled and includes a concurrency test.
+  character new to Unicode may be rejected as unknown even if this
+  library knows about it.
 
 * **Emoji**. It is an occasional request to support emoji domains in
   this library. Encoding of symbols like emoji is expressly prohibited by
   the IDNA technical standard, and emoji domains are broadly phased
   out across the domain industry due to associated security risks.
 
-* **Regenerating lookup tables**. The IDNA and UTS 46 functionality
+* **Regenerating lookup tables**. The IDNA and UTS #46 functionality
   relies upon pre-calculated lookup tables, generated using the
   `idna-data` script in [`tools/`](tools/README.md).

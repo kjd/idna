@@ -53,6 +53,7 @@ all = [
     "ty >= 0.0.37",
     "pytest >= 8.3.2",
     "hypothesis >= 6.141.1",
+    "coverage >= 7.10.0",
 ]
 
 [tool.coverage.run]

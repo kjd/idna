@@ -15,5 +15,5 @@ Please disclose your issue through Github's
 [security advisory facility](https://github.com/kjd/idna/security/advisories/new).
 
 We will endeavor to prioritize review, remediation and disclosure of
-vulnerabilites. However, be mindful that this project is maintained by a
+vulnerabilities. However, be mindful that this project is maintained by a
 team of volunteers who work on a best effort basis.

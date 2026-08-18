@@ -75,7 +75,6 @@ class IncrementalEncoder(codecs.BufferedIncrementalEncoder):
                 size += 1
             size += len(label)
 
-        # Join with U+002E
         result_bytes = b".".join(result) + trailing_dot
         size += len(trailing_dot)
         return result_bytes, size
