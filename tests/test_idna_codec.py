@@ -118,6 +118,66 @@ class IDNACodecTests(unittest.TestCase):
         self.assertEqual(encoder.encode("ample.org."), b"xn--xample-9ta.org.")
         self.assertEqual(encoder.encode("", True), b"")
 
+    def testIncrementalEncoderDomainLength(self):
+        # The whole-domain limit applies to the accumulated output just as
+        # idna.encode() applies it: 253 octets, or 254 with a trailing dot.
+        for domain in ("a." * 126 + "a", "a." * 127, "\xe4." * 30 + "\xe4"):
+            self.assertEqual(b"".join(codecs.iterencode(domain, CODEC_NAME)), idna.encode(domain))
+        for domain in ("a." * 126 + "aa", "a." * 127 + "a", "\xe4." * 32):
+            with self.assertRaises(idna.IDNAError):
+                idna.encode(domain)
+            with self.assertRaises(idna.IDNAError):
+                b"".join(codecs.iterencode(domain, CODEC_NAME))
+
+        # 254 octets is only acceptable if the trailing dot has arrived by
+        # the time the input is final.
+        encoder = codecs.getincrementalencoder(CODEC_NAME)()
+        self.assertEqual(encoder.encode("a." * 126 + "aa"), b"a." * 126)
+        with self.assertRaises(idna.IDNAError):
+            encoder.encode("", True)
+        encoder.reset()
+        self.assertEqual(encoder.encode("a." * 126 + "a"), b"a." * 126)
+        self.assertEqual(encoder.encode(".", True), b"a.")
+
+    def testIncrementalDecoderDomainLength(self):
+        for domain in (b"a." * 126 + b"a", b"a." * 127):
+            self.assertEqual("".join(codecs.iterdecode((bytes([c]) for c in domain), CODEC_NAME)), idna.decode(domain))
+        for domain in (b"a." * 127 + b"a", b"a." * 200):
+            with self.assertRaises(idna.IDNAError):
+                idna.decode(domain)
+            with self.assertRaises(idna.IDNAError):
+                "".join(codecs.iterdecode((bytes([c]) for c in domain), CODEC_NAME))
+        decoder = codecs.getincrementaldecoder(CODEC_NAME)()
+        with self.assertRaises(idna.IDNAError):
+            decoder.decode(b"a." * 200)
+        decoder.reset()
+        self.assertEqual(decoder.decode(b"a." * 127, True), "a." * 127)
+
+    def testIncrementalStateRoundTrip(self):
+        # getstate()/setstate() carry the length accounting along with the
+        # buffered partial label.
+        encoder = codecs.getincrementalencoder(CODEC_NAME)()
+        self.assertEqual(encoder.getstate(), 0)
+        encoder.encode("a." * 126 + "a")
+        state = encoder.getstate()
+        encoder.reset()
+        self.assertEqual(encoder.encode("", True), b"")
+        encoder.setstate(state)
+        with self.assertRaises(idna.IDNAError):
+            encoder.encode("a", True)
+        encoder.setstate(0)
+        self.assertEqual(encoder.encode("a", True), b"a")
+
+        decoder = codecs.getincrementaldecoder(CODEC_NAME)()
+        self.assertEqual(decoder.getstate(), (b"", 0))
+        decoder.decode(b"a." * 126 + b"a")
+        state = decoder.getstate()
+        decoder.reset()
+        self.assertEqual(decoder.decode(b"", True), "")
+        decoder.setstate(state)
+        with self.assertRaises(idna.IDNAError):
+            decoder.decode(b"aa", True)
+
 
 if __name__ == "__main__":
     unittest.main()
