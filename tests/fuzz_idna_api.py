@@ -80,7 +80,11 @@ def fuzz_uts46_remap(fdp):
     if out is None:
         return
     assert unicodedata.is_normalized("NFC", out), out
-    assert idna.uts46_remap(out, std3_rules=std3) == out, out
+    # Mapping can expand the input (U+FDFA maps to 18 characters), so the
+    # output may exceed the defensive input-length cap that a second pass
+    # would reject; idempotency only holds for output within the cap.
+    if len(out) <= idna.core._max_input_length:
+        assert idna.uts46_remap(out, std3_rules=std3) == out, out
     if std3:  # UTS #46 §4.1 UseSTD3ASCIIRules
         assert all(c in STD3_ASCII for c in out if c.isascii()), out
 
