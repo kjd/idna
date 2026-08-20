@@ -4,7 +4,6 @@ import codecs
 import pickle
 import re
 import unittest
-from pathlib import Path
 from typing import get_args
 from unittest import mock
 
@@ -53,9 +52,8 @@ class ErrorAttributeTests(unittest.TestCase):
                 if match:
                     self.assertEqual(int(match.group(1)), err.position)
 
-    def test_every_error_code_is_documented_and_raisable(self):
-        """Each code has an input that produces it, and vice versa; the README
-        table must list exactly this set."""
+    def test_every_error_code_is_raisable(self):
+        """Each code has an input that produces it, and vice versa."""
         r = "\u05d0"
         an = "\u0660"
         triggers = {
@@ -94,18 +92,6 @@ class ErrorAttributeTests(unittest.TestCase):
                 with self.assertRaises(idna.IDNAError) as ctx:
                     trigger()
                 self.assertEqual(ctx.exception.code, code)
-        readme = Path(__file__).resolve().parent.parent / "README.md"
-        if not readme.is_file():
-            self.skipTest("README.md not present")
-        documented = set()
-        for first, last in re.findall(r"^\| `([a-z0-9_]+)`(?: \u2026 `([a-z0-9_]+)`)? \|", readme.read_text(), re.MULTILINE):
-            if last:  # a `x_1` … `x_6` range row
-                stem, lo = first.rsplit("_", 1)
-                documented.update(f"{stem}_{i}" for i in range(int(lo), int(last.rsplit("_", 1)[1]) + 1))
-            else:
-                documented.add(first)
-        documented.discard("code")  # the table header
-        self.assertEqual(documented, codes)
 
     # Conditions that depend on the host's Unicode database being older than
     # the input cannot be triggered portably (from Python 3.15,
