@@ -1,5 +1,10 @@
 # History
 
+## 3.20 (2026-XX-XX)
+
+- Better enforcement of the domain length limit in the incremental
+  codec.
+
 ## 3.19 (2026-08-18)
 
 - Restore the `std3_rules` option, which had no effect since changes
