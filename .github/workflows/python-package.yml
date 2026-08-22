@@ -70,7 +70,7 @@ jobs:
           - '3.12'
           - '3.13'
           - '3.14'
-          - '3.15-dev'
+          - '3.15'
           - 'pypy-3.11'
         include:
           # Free-threaded builds, run with the GIL disabled; the suite checks
@@ -78,7 +78,7 @@ jobs:
           # so it is only set here.)
           - python-version: '3.14t'
             gil: '0'
-          - python-version: '3.15t-dev'
+          - python-version: '3.15t'
             gil: '0'
     runs-on: ubuntu-latest
     steps:
