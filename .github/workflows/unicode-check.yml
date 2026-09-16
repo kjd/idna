@@ -26,8 +26,10 @@ jobs:
         id: compare
         run: |
           pinned=$(sed -n 's/^PREFERRED_VERSION = "\(.*\)"$/\1/p' tools/idna-data)
-          latest=$(curl -fsSL https://www.unicode.org/Public/UCD/latest/ReadMe.txt \
-            | sed -n 's/.*Version \([0-9][0-9.]*\) of the Unicode Standard.*/\1/p' | head -1)
+          # Read the version from a UCD data file header ("# DerivedAge-18.0.0.txt")
+          # rather than the prose ReadMe, whose wording changes between releases.
+          latest=$(curl -fsSL https://www.unicode.org/Public/UCD/latest/ucd/DerivedAge.txt \
+            | sed -n '1s/^# DerivedAge-\([0-9][0-9.]*\)\.txt$/\1/p')
           echo "pinned=$pinned latest=$latest"
           if [ -z "$latest" ]; then
             echo "::error::Could not determine the latest Unicode version"
