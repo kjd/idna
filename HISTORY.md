@@ -5,6 +5,7 @@
 - Update to Unicode 18.0.0.
 - Better enforcement of the domain length limit in the incremental
   codec.
+- Add support for Python 3.15.
 
 ## 3.19 (2026-08-18)
 
