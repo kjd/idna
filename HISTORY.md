@@ -2,6 +2,7 @@
 
 ## 3.20 (2026-XX-XX)
 
+- Update to Unicode 18.0.0.
 - Better enforcement of the domain length limit in the incremental
   codec.
 

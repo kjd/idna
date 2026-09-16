@@ -79,6 +79,18 @@ class IDNATests(unittest.TestCase):
         self.assertFalse(idna.valid_label_length("a" * 64))
         self.assertRaises(idna.IDNAError, idna.encode, "a" * 64)
 
+    def test_decode_domain_length_leniency(self):
+        # UTS #46 ToUnicode checks no lengths, so decode()'s whole-domain
+        # bound is a lenient pre-filter that always allows the trailing-dot
+        # octet, while encode() enforces the exact RFC 1035 limit: a
+        # 254-octet domain without a trailing dot decodes but does not
+        # re-encode (OSS-Fuzz 4694619275984896), and with one it round-trips.
+        domain = b"aaa." * 63 + b"aa"  # 254 octets, every label within limits
+        decoded = idna.decode(domain, strict=True)
+        self.assertRaises(idna.IDNAError, idna.encode, decoded, strict=True)
+        dotted = domain[:-1] + b"."
+        self.assertEqual(idna.encode(idna.decode(dotted, strict=True), strict=True), dotted)
+
     def test_oversized_input_rejected_promptly(self):
         # GHSA-65pc-fj4g-8rjx: encode/decode must reject inputs that
         # exceed the maximum DNS domain length before per-codepoint

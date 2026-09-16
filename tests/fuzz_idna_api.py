@@ -62,14 +62,16 @@ def fuzz_decode(fdp):
         return
     # RFC 5891 §5.3: an A-label that decodes must re-encode to itself, so
     # under strict non-UTS46 processing any ASCII input that decodes is (up
-    # to case) its own encoding. decode() does not enforce the 63-octet
-    # label limit (nor does UTS #46 ToUnicode) but encode() does, so skip
-    # overlong labels.
+    # to case) its own encoding. decode()'s length checks are deliberately
+    # lenient (no 63-octet label limit, and the whole-domain limit allows
+    # the trailing-dot octet whether or not one is present, as UTS #46
+    # ToUnicode checks no lengths at all) while encode() enforces both
+    # exactly, so skip inputs past either limit.
     if isinstance(data, str):
         if not data.isascii():
             return
         data = data.encode("ascii")
-    if all(len(label) <= 63 for label in data.split(b".")):
+    if idna.valid_string_length(data, data.endswith(b".")) and all(len(label) <= 63 for label in data.split(b".")):
         assert idna.encode(decoded, strict=True) == data.lower(), (data, decoded)
 
 
