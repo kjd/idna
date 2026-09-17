@@ -1,6 +1,6 @@
 # History
 
-## 3.20 (2026-XX-XX)
+## 3.20 (2026-09-17)
 
 - Update to Unicode 18.0.0.
 - Better enforcement of the domain length limit in the incremental
