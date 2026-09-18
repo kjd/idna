@@ -759,13 +759,21 @@ def encode(
     """
     if transitional:
         _warn_transitional()
-    if not isinstance(s, str):
+    if isinstance(s, str):
+        pass
+    elif isinstance(s, (bytes, bytearray)):
         try:
             s = str(s, "ascii")
-        except (UnicodeDecodeError, TypeError) as err:
+        except UnicodeDecodeError as err:
             raise IDNAError(
-                "should pass a unicode string to the function rather than a byte string.", code="invalid_ascii"
+                "should pass a unicode string to the function rather than a byte string.",
+                code="invalid_ascii",
             ) from err
+    else:
+        raise IDNAError(
+            f"should pass a unicode string to the function, not {type(s).__name__}.",
+            code="invalid_ascii",
+        )
     if len(s) > _max_input_length:
         raise IDNAError("Domain too long", code="input_too_long")
     if uts46:
@@ -827,11 +835,18 @@ def decode(
     :raises IDNAError: If the input is not valid ASCII, contains an
         invalid label, or is empty.
     """
-    if not isinstance(s, str):
+    if isinstance(s, str):
+        pass
+    elif isinstance(s, (bytes, bytearray)):
         try:
             s = str(s, "ascii")
-        except (UnicodeDecodeError, TypeError) as err:
+        except UnicodeDecodeError as err:
             raise IDNAError("Invalid ASCII in A-label", code="invalid_ascii") from err
+    else:
+        raise IDNAError(
+            f"should pass a unicode string or ASCII bytes to the function, not {type(s).__name__}.",
+            code="invalid_ascii",
+        )
     if len(s) > _max_input_length:
         raise IDNAError("Domain too long", code="input_too_long")
     if uts46:

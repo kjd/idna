@@ -155,6 +155,22 @@ class ErrorAttributeTests(unittest.TestCase):
         self.assertEqual(err.code, "disallowed_codepoint")
         self.assertEqual((err.text, err.codepoint, err.position), ("abc\u0141", 0x141, 4))
 
+    def test_encode_rejects_non_text_types(self):
+        for bad in (None, 123, ["example.com"]):
+            with self.assertRaises(idna.IDNAError) as ctx:
+                idna.encode(bad)
+            self.assertEqual(ctx.exception.code, "invalid_ascii")
+            self.assertNotIn("byte string", str(ctx.exception))
+            self.assertIn(type(bad).__name__, str(ctx.exception))
+
+    def test_decode_rejects_non_text_types(self):
+        for bad in (None, 123, ["example.com"]):
+            with self.assertRaises(idna.IDNAError) as ctx:
+                idna.decode(bad)
+            self.assertEqual(ctx.exception.code, "invalid_ascii")
+            self.assertIn(type(bad).__name__, str(ctx.exception))
+
+
 
 if __name__ == "__main__":
     unittest.main()
