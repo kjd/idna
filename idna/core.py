@@ -439,7 +439,7 @@ def valid_contexto(label: str, pos: int, exception: bool = False) -> bool:
     return False
 
 
-def check_label(label: str | bytes | bytearray) -> None:
+def check_label(label: str | bytes | bytearray | memoryview) -> None:
     """Run the full set of IDNA 2008 validity checks on a single label.
 
     Applies, in order: NFC normalisation (:func:`check_nfc`), hyphen
@@ -555,7 +555,7 @@ def alabel(label: str) -> bytes:
     return label_bytes
 
 
-def ulabel(label: str | bytes | bytearray) -> str:
+def ulabel(label: str | bytes | bytearray | memoryview) -> str:
     """Convert a single A-label into its U-label form.
 
     Performs the inverse of :func:`alabel`: an ``xn--``-prefixed label is
@@ -730,7 +730,7 @@ def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False
 
 
 def encode(
-    s: str | bytes | bytearray,
+    s: str | bytes | bytearray | memoryview,
     strict: bool = False,
     uts46: bool = False,
     std3_rules: bool = False,
@@ -761,9 +761,9 @@ def encode(
         _warn_transitional()
     if isinstance(s, str):
         pass
-    elif isinstance(s, (bytes, bytearray)):
+    elif isinstance(s, (bytes, bytearray, memoryview)):
         try:
-            s = str(s, "ascii")
+            s = str(bytes(s), "ascii")
         except UnicodeDecodeError as err:
             raise IDNAError(
                 "should pass a unicode string to the function rather than a byte string.",
@@ -805,7 +805,7 @@ def encode(
 
 
 def decode(
-    s: str | bytes | bytearray,
+    s: str | bytes | bytearray | memoryview,
     strict: bool = False,
     uts46: bool = False,
     std3_rules: bool = False,
@@ -837,9 +837,9 @@ def decode(
     """
     if isinstance(s, str):
         pass
-    elif isinstance(s, (bytes, bytearray)):
+    elif isinstance(s, (bytes, bytearray, memoryview)):
         try:
-            s = str(s, "ascii")
+            s = str(bytes(s), "ascii")
         except UnicodeDecodeError as err:
             raise IDNAError("Invalid ASCII in A-label", code="invalid_ascii") from err
     else:
