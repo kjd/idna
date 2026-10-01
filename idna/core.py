@@ -541,6 +541,17 @@ def alabel(label: str) -> bytes:
     except UnicodeEncodeError:
         pass
     else:
+        # For non-ACE LDH labels, ulabel() would lowercase before running
+        # check_label(). Lowercased ASCII LDH codepoints are PVALID, ASCII is
+        # NFC-stable, and none can trigger CONTEXTJ/CONTEXTO or the Bidi rule.
+        # Preserve the historical length and hyphen checks, then return early.
+        if label_bytes[:4].lower() != _alabel_prefix and label_bytes.replace(b"-", b"").isalnum():
+            if not valid_string_length(label, trailing_dot=True):
+                raise IDNAError("Label too long", code="label_too_long")
+            check_hyphen_ok(label)
+            if not valid_label_length(label_bytes):
+                raise IDNAError("Label too long", code="label_too_long")
+            return label_bytes
         ulabel(label_bytes)
         if not valid_label_length(label_bytes):
             raise IDNAError("Label too long", code="label_too_long")
