@@ -209,6 +209,62 @@ class IDNATests(unittest.TestCase):
         self.assertRaises(idna.IDNAError, idna.check_hyphen_ok, "-")
         self.assertTrue(idna.check_hyphen_ok(""))
 
+    def test_alabel_ascii_ldh_fast_path_semantics(self):
+        self.assertEqual(idna.alabel("example"), b"example")
+        self.assertEqual(idna.alabel("EXAMPLE"), b"EXAMPLE")
+        self.assertEqual(idna.alabel("api-v2"), b"api-v2")
+        self.assertEqual(idna.alabel("123"), b"123")
+
+        with self.assertRaises(idna.IDNAError) as context:
+            idna.alabel("-example")
+        self.assertEqual(context.exception.code, "hyphen_start_end")
+
+        with self.assertRaises(idna.IDNAError) as context:
+            idna.alabel("ab--cd")
+        self.assertEqual(context.exception.code, "hyphen_3_4")
+
+        with self.assertRaises(idna.IDNAError):
+            idna.alabel("bad_label")
+
+        with self.assertRaises(idna.IDNAError) as context:
+            idna.alabel("a" * 64)
+        self.assertEqual(context.exception.code, "label_too_long")
+
+        # Preserve the historical failure ordering for oversized malformed
+        # ASCII labels: the domain-length guard fires before hyphen checks.
+        with self.assertRaises(idna.IDNAError) as context:
+            idna.alabel("-" + "a" * 254)
+        self.assertEqual(context.exception.code, "label_too_long")
+
+        # ACE labels must continue through the existing Punycode/canonicality
+        # validation path rather than being accepted as ordinary LDH labels.
+        self.assertEqual(idna.alabel("xn--zckzah"), b"xn--zckzah")
+        with self.assertRaises(idna.IDNAError):
+            idna.alabel("xn---bbk")
+
+    def test_alabel_ascii_ldh_fast_path_invariant(self):
+        import string
+        import unicodedata
+
+        from idna import idnadata
+        from idna.intranges import intranges_contain
+
+        pvalid = idnadata.codepoint_classes["PVALID"]
+        contextj = idnadata.codepoint_classes["CONTEXTJ"]
+        contexto = idnadata.codepoint_classes["CONTEXTO"]
+
+        # ulabel() lowercases ASCII before validation. Every codepoint the
+        # fast path can admit is therefore PVALID after lowercasing, stable
+        # under NFC, and cannot trigger contextual or RTL processing.
+        for char in string.ascii_letters + string.digits + "-":
+            char = char.lower()
+            cp = ord(char)
+            self.assertTrue(intranges_contain(cp, pvalid), char)
+            self.assertFalse(intranges_contain(cp, contextj), char)
+            self.assertFalse(intranges_contain(cp, contexto), char)
+            self.assertEqual(unicodedata.normalize("NFC", char), char)
+            self.assertNotIn(unicodedata.bidirectional(char), {"R", "AL", "AN"})
+
     def test_valid_contextj(self):
         zwnj = "\u200c"
         zwj = "\u200d"
