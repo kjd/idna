@@ -439,7 +439,7 @@ def valid_contexto(label: str, pos: int, exception: bool = False) -> bool:
     return False
 
 
-def check_label(label: str | bytes | bytearray | memoryview) -> None:
+def check_label(label: str | bytes | bytearray) -> None:
     """Run the full set of IDNA 2008 validity checks on a single label.
 
     Applies, in order: NFC normalisation (:func:`check_nfc`), hyphen
@@ -555,7 +555,7 @@ def alabel(label: str) -> bytes:
     return label_bytes
 
 
-def ulabel(label: str | bytes | bytearray | memoryview) -> str:
+def ulabel(label: str | bytes | bytearray) -> str:
     """Convert a single A-label into its U-label form.
 
     Performs the inverse of :func:`alabel`: an ``xn--``-prefixed label is
@@ -730,7 +730,7 @@ def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False
 
 
 def encode(
-    s: str | bytes | bytearray | memoryview,
+    s: str | bytes | bytearray,
     strict: bool = False,
     uts46: bool = False,
     std3_rules: bool = False,
@@ -759,21 +759,15 @@ def encode(
     """
     if transitional:
         _warn_transitional()
-    if isinstance(s, str):
-        pass
-    elif isinstance(s, (bytes, bytearray, memoryview)):
+    if not isinstance(s, str):
         try:
-            s = str(bytes(s), "ascii")
+            s = str(s, "ascii")
         except UnicodeDecodeError as err:
             raise IDNAError(
-                "should pass a unicode string to the function rather than a byte string.",
-                code="invalid_ascii",
+                "should pass a unicode string to the function rather than a byte string.", code="invalid_ascii"
             ) from err
-    else:
-        raise IDNAError(
-            f"should pass a unicode string to the function, not {type(s).__name__}.",
-            code="invalid_ascii",
-        )
+        except TypeError as err:
+            raise IDNAError(f"Expected str or bytes, not {type(s).__name__}", code="invalid_ascii") from err
     if len(s) > _max_input_length:
         raise IDNAError("Domain too long", code="input_too_long")
     if uts46:
@@ -805,7 +799,7 @@ def encode(
 
 
 def decode(
-    s: str | bytes | bytearray | memoryview,
+    s: str | bytes | bytearray,
     strict: bool = False,
     uts46: bool = False,
     std3_rules: bool = False,
@@ -835,18 +829,13 @@ def decode(
     :raises IDNAError: If the input is not valid ASCII, contains an
         invalid label, or is empty.
     """
-    if isinstance(s, str):
-        pass
-    elif isinstance(s, (bytes, bytearray, memoryview)):
+    if not isinstance(s, str):
         try:
-            s = str(bytes(s), "ascii")
+            s = str(s, "ascii")
         except UnicodeDecodeError as err:
             raise IDNAError("Invalid ASCII in A-label", code="invalid_ascii") from err
-    else:
-        raise IDNAError(
-            f"should pass a unicode string or ASCII bytes to the function, not {type(s).__name__}.",
-            code="invalid_ascii",
-        )
+        except TypeError as err:
+            raise IDNAError(f"Expected str or bytes, not {type(s).__name__}", code="invalid_ascii") from err
     if len(s) > _max_input_length:
         raise IDNAError("Domain too long", code="input_too_long")
     if uts46:

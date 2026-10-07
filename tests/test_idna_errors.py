@@ -160,16 +160,20 @@ class ErrorAttributeTests(unittest.TestCase):
             with self.assertRaises(idna.IDNAError) as ctx:
                 idna.encode(bad)
             self.assertEqual(ctx.exception.code, "invalid_ascii")
-            self.assertNotIn("byte string", str(ctx.exception))
-            self.assertIn(type(bad).__name__, str(ctx.exception))
+            self.assertEqual(str(ctx.exception), f"Expected str or bytes, not {type(bad).__name__}")
 
     def test_decode_rejects_non_text_types(self):
         for bad in (None, 123, ["example.com"]):
             with self.assertRaises(idna.IDNAError) as ctx:
                 idna.decode(bad)
             self.assertEqual(ctx.exception.code, "invalid_ascii")
-            self.assertIn(type(bad).__name__, str(ctx.exception))
+            self.assertEqual(str(ctx.exception), f"Expected str or bytes, not {type(bad).__name__}")
 
+    def test_bytes_like_input_still_works(self):
+        raw = b"example.com"
+        for value in (raw, bytearray(raw), memoryview(raw)):
+            self.assertEqual(idna.decode(value), "example.com")
+            self.assertEqual(idna.encode(value), raw)
 
 
 if __name__ == "__main__":
