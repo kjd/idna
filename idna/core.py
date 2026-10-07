@@ -762,10 +762,12 @@ def encode(
     if not isinstance(s, str):
         try:
             s = str(s, "ascii")
-        except (UnicodeDecodeError, TypeError) as err:
+        except UnicodeDecodeError as err:
             raise IDNAError(
                 "should pass a unicode string to the function rather than a byte string.", code="invalid_ascii"
             ) from err
+        except TypeError as err:
+            raise IDNAError(f"Expected str or bytes, not {type(s).__name__}", code="invalid_ascii") from err
     if len(s) > _max_input_length:
         raise IDNAError("Domain too long", code="input_too_long")
     if uts46:
@@ -830,8 +832,10 @@ def decode(
     if not isinstance(s, str):
         try:
             s = str(s, "ascii")
-        except (UnicodeDecodeError, TypeError) as err:
+        except UnicodeDecodeError as err:
             raise IDNAError("Invalid ASCII in A-label", code="invalid_ascii") from err
+        except TypeError as err:
+            raise IDNAError(f"Expected str or bytes, not {type(s).__name__}", code="invalid_ascii") from err
     if len(s) > _max_input_length:
         raise IDNAError("Domain too long", code="input_too_long")
     if uts46:
