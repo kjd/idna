@@ -17,7 +17,8 @@ import os
 import unicodedata
 import unittest
 import warnings
-from typing import Any, Callable
+from itertools import pairwise
+from typing import TYPE_CHECKING, Any
 
 from hypothesis import HealthCheck, example, given, settings
 from hypothesis import strategies as st
@@ -25,6 +26,9 @@ from hypothesis import strategies as st
 import idna
 import idna.codec  # registers the "idna2008" codec
 from idna.intranges import intranges_contain, intranges_from_list
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 settings.register_profile("idna", deadline=None, print_blob=True)
 settings.register_profile(
@@ -260,7 +264,7 @@ class DifferentialTests(unittest.TestCase):
 def _split(data: Any, cuts: list[int]) -> list[Any]:
     """Split ``data`` at the given (unordered, possibly repeated) offsets."""
     points = [0, *sorted(min(c, len(data)) for c in cuts), len(data)]
-    return [data[i:j] for i, j in zip(points, points[1:])]
+    return [data[i:j] for i, j in pairwise(points)]
 
 
 class IntrangesTests(unittest.TestCase):
