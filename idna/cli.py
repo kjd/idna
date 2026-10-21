@@ -124,8 +124,11 @@ def main(argv: list[str] | None = None) -> int:
 
     mode = args.mode or ("decode" if _looks_like_alabel(first) else "encode")
 
-    results = [_convert_one(domain, mode, uts46) for domain in chain([first], iterator)]
-    return 0 if all(results) else 1
+    succeeded = True
+    for domain in chain([first], iterator):
+        if not _convert_one(domain, mode, uts46):
+            succeeded = False
+    return 0 if succeeded else 1
 
 
 if __name__ == "__main__":

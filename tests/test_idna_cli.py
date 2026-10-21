@@ -227,6 +227,28 @@ class CLIModeLockTests(unittest.TestCase):
 
 
 class CLIStdinTests(unittest.TestCase):
+    def test_conversion_status_is_consumed_before_next_stdin_line(self):
+        checked = False
+
+        class Status:
+            def __bool__(self):
+                nonlocal checked
+                checked = True
+                return False
+
+        def domains():
+            yield "example.com"
+            self.assertTrue(checked)
+            yield "other.example"
+
+        with (
+            _patched_stdin(""),
+            mock.patch.object(cli, "_iter_stdin", return_value=domains()),
+            mock.patch.object(cli, "_convert_one", side_effect=[Status(), True]) as convert,
+        ):
+            self.assertEqual(cli.main([]), 1)
+        self.assertEqual(convert.call_count, 2)
+
     def test_reads_one_domain_per_line_from_piped_stdin(self):
         rc, out, _ = run_cli(stdin="пример.рф\nπαράδειγμα\n한국\n")
         self.assertEqual(rc, 0)
