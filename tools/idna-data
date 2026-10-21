@@ -868,7 +868,7 @@ def arg_error(message, parser):
 def main():
     parser = argparse.ArgumentParser(description="Determine IDNA code-point validity data")
     parser.add_argument(
-        "action", type=str, default="preferred", help="Task to perform (make-libdata, make-tables, <codepoint>)"
+        "action", type=str, default="preferred", help="Task to perform (make-libdata, make-table, <codepoint>)"
     )
 
     parser.add_argument("--version", type=str, default="preferred", help="Unicode version to use (preferred, latest, <x.y.z>)")
