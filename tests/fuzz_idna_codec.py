@@ -21,6 +21,7 @@ smoke-tests this harness in the ordinary test suite without atheris.
 
 import codecs
 import sys
+from itertools import pairwise
 
 import atheris  # ty: ignore[unresolved-import]
 
@@ -42,7 +43,7 @@ def _outcome(fn, *args):
 def _chunks(fdp, data):
     cuts = sorted(fdp.ConsumeIntInRange(0, len(data)) for _ in range(fdp.ConsumeIntInRange(0, MAX_CHUNKS)))
     points = [0, *cuts, len(data)]
-    return [data[i:j] for i, j in zip(points, points[1:])]
+    return [data[i:j] for i, j in pairwise(points)]
 
 
 def fuzz_encoder(fdp):

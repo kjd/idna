@@ -112,7 +112,7 @@ the tool exits with a non-zero status if any conversion failed.
 
 ## Additional Notes
 
-* **Python version support**. This library supports Python 3.9 and higher.
+* **Python version support**. This library supports Python 3.10 and higher.
   As this library serves as a low-level toolkit for a variety of
   applications, we strive to support all versions of Python that are
   not beyond end-of-life. Free-threaded Python is also supported,
