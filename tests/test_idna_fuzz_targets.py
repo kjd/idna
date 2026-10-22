@@ -16,8 +16,11 @@ import sys
 import types
 import unittest
 from pathlib import Path
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any
 from unittest import mock
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 TARGETS = sorted(Path(__file__).resolve().parent.glob("fuzz_*.py"))
 ITERATIONS = 2000

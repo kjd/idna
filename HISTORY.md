@@ -1,5 +1,9 @@
 # History
 
+## 3.21 (2026-XX-XX)
+
+- Raise the minimum supported Python version to 3.10
+
 ## 3.20 (2026-09-17)
 
 - Update to Unicode 18.0.0.
