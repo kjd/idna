@@ -75,9 +75,8 @@ class IDNAError(UnicodeError):
     need to parse the message:
 
     * ``code`` -- a short, stable identifier for the rule that failed, such
-      as ``"disallowed_codepoint"`` or ``"bidi_rule_2"``; the full list is
-      documented in the README. Message wording, by contrast, may change
-      between releases.
+      as ``"disallowed_codepoint"`` or ``"bidi_rule_2"``. Message wording,
+      by contrast, may change between releases.
     * ``text`` -- the label (or, for UTS #46 processing, the domain) that
       was being validated;
     * ``codepoint`` -- the offending codepoint, as an ``int``;
