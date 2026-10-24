@@ -4,7 +4,7 @@ import codecs
 import pickle
 import re
 import unittest
-from typing import get_args
+from typing import Any, cast, get_args
 from unittest import mock
 
 import idna
@@ -158,22 +158,22 @@ class ErrorAttributeTests(unittest.TestCase):
     def test_encode_rejects_non_text_types(self):
         for bad in (None, 123, ["example.com"]):
             with self.assertRaises(idna.IDNAError) as ctx:
-                idna.encode(bad)
+                idna.encode(cast(Any, bad))
             self.assertEqual(ctx.exception.code, "invalid_ascii")
             self.assertEqual(str(ctx.exception), f"Expected str or bytes, not {type(bad).__name__}")
 
     def test_decode_rejects_non_text_types(self):
         for bad in (None, 123, ["example.com"]):
             with self.assertRaises(idna.IDNAError) as ctx:
-                idna.decode(bad)
+                idna.decode(cast(Any, bad))
             self.assertEqual(ctx.exception.code, "invalid_ascii")
             self.assertEqual(str(ctx.exception), f"Expected str or bytes, not {type(bad).__name__}")
 
     def test_bytes_like_input_still_works(self):
         raw = b"example.com"
         for value in (raw, bytearray(raw), memoryview(raw)):
-            self.assertEqual(idna.decode(value), "example.com")
-            self.assertEqual(idna.encode(value), raw)
+            self.assertEqual(idna.decode(cast(Any, value)), "example.com")
+            self.assertEqual(idna.encode(cast(Any, value)), raw)
 
 
 if __name__ == "__main__":
