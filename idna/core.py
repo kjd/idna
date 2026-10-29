@@ -16,6 +16,7 @@ _max_domain_length = 253  # RFC 1035 octets, excluding any trailing dot
 _STATUS_VALID, _STATUS_MAPPED, _STATUS_DEVIATION, _STATUS_IGNORED = b"VMDI"
 _unicode_dots_re = re.compile("[\u002e\u3002\uff0e\uff61]")
 _std3_disallowed_re = re.compile("[\x00-\x2c\x2f\x3a-\x40A-Z\x5b-\x60\x7b-\x7f]")
+_ldh_label_re = re.compile(r"(?!..--)[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\Z")
 _bidi_rtl_first = frozenset({"R", "AL"})
 _bidi_rtl_categories = frozenset({"R", "AL", "AN"})
 _bidi_rtl_allowed = frozenset({"R", "AL", "AN", "EN", "ES", "CS", "ET", "ON", "BN", "NSM"})
@@ -465,6 +466,8 @@ def check_label(label: str | bytes | bytearray) -> None:
             raise IDNAError("Invalid UTF-8 in label", code="invalid_utf8") from err
     if len(label) == 0:
         raise IDNAError("Empty Label", code="empty_label")
+    if _ldh_label_re.match(label):
+        return
 
     # Check against the domain length rather than the label length to
     # support some UTS #46 use cases, while still bounding the work done
