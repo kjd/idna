@@ -8,6 +8,7 @@ from typing import Literal
 
 from . import idnadata
 from .intranges import intranges_contain
+from .uts46data import uts46_replacements, uts46_starts, uts46_statuses
 
 _virama_combining_class = 9
 _alabel_prefix = b"xn--"
@@ -16,6 +17,11 @@ _max_domain_length = 253  # RFC 1035 octets, excluding any trailing dot
 _STATUS_VALID, _STATUS_MAPPED, _STATUS_DEVIATION, _STATUS_IGNORED = b"VMDI"
 _unicode_dots_re = re.compile("[\u002e\u3002\uff0e\uff61]")
 _std3_disallowed_re = re.compile("[\x00-\x2c\x2f\x3a-\x40A-Z\x5b-\x60\x7b-\x7f]")
+# Lowercase LDH labels of 1-63 characters with no hyphen at either end or
+# in positions 3-4. These pass every check in check_label() (ASCII is
+# NFC-stable, a-z/0-9/hyphen are PVALID, none are RTL or combining), and the
+# positions 3-4 rule keeps every "xn--" label on the full path.
+_ascii_label_ok_re = re.compile(r"(?!..--)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\Z")
 _bidi_rtl_first = frozenset({"R", "AL"})
 _bidi_rtl_categories = frozenset({"R", "AL", "AN"})
 _bidi_rtl_allowed = frozenset({"R", "AL", "AN", "EN", "ES", "CS", "ET", "ON", "BN", "NSM"})
@@ -466,6 +472,9 @@ def check_label(label: str | bytes | bytearray) -> None:
     if len(label) == 0:
         raise IDNAError("Empty Label", code="empty_label")
 
+    if _ascii_label_ok_re.match(label):
+        return
+
     # Check against the domain length rather than the label length to
     # support some UTS #46 use cases, while still bounding the work done
     # by the label contextual rules below.
@@ -571,6 +580,8 @@ def ulabel(label: str | bytes | bytearray) -> str:
     if len(label) > _max_input_length:
         raise IDNAError("Label too long", code="input_too_long")
     if not isinstance(label, (bytes, bytearray)):
+        if _ascii_label_ok_re.match(label):
+            return label
         try:
             label_bytes = label.encode("ascii")
         except UnicodeEncodeError:
@@ -669,8 +680,6 @@ def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False
         if std3_rules:
             _check_std3(result, domain, 0)
         return result
-
-    from .uts46data import uts46_replacements, uts46_starts, uts46_statuses
 
     # ``start`` marks the run of unchanged input not yet copied; a run is
     # only sliced out when a character must be replaced or dropped, so the
