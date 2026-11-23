@@ -591,6 +591,20 @@ def ulabel(label: str | bytes | bytearray) -> str:
             raise IDNAError("Malformed A-label, no Punycode eligible content found", code="invalid_alabel")
         if label_bytes.endswith(b"-"):
             raise IDNAError("A-label must not end with a hyphen", code="invalid_alabel")
+        if label_bytes.rfind(b"-") == 0:
+            # The Punycode delimiter (the last hyphen) sits at the start, so the
+            # basic code point section is empty. The encoder never emits a
+            # delimiter in that case, so such a label (e.g. ``xn---bbk``) is
+            # always a non-canonical "fake A-label" (RFC 5890 §2.3.2.1). On
+            # Python < 3.16 it would Punycode-decode and be rejected by the
+            # re-encoding check below; Python 3.16 makes the decoder reject a
+            # leading delimiter outright
+            # (https://github.com/python/cpython/issues/161090), which would
+            # otherwise misclassify it as an invalid rather than non-canonical
+            # A-label. Classify it consistently across versions here.
+            raise IDNAError(
+                "A-label is not the canonical Punycode encoding of its U-label", code="non_canonical_alabel"
+            )
     else:
         check_label(label_bytes)
         return label_bytes.decode("ascii")
