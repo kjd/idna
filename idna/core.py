@@ -856,8 +856,8 @@ def decode(
         try:
             u = ulabel(label)
         except IDNAError:
-            if display and label[:4].lower() == "xn--":
-                u = label.lower()
+            if display and label.isascii() and (u := label.lower()).startswith("xn--") and not _std3_disallowed_re.search(u):
+                pass
             else:
                 raise
         if u:

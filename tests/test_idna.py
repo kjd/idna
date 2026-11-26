@@ -570,6 +570,26 @@ class IDNATests(unittest.TestCase):
             display=True,
         )
 
+        # display must not swallow errors for labels that merely start with
+        # "xn--" followed by non-ASCII or non-LDH ASCII characters.
+        for bad_domain in (
+            "xn--ä.example",
+            "xn--\u202e.example",
+            "xn--\ud800.example",
+            "xn--İ.example",
+            "xn--a_b-cma.example",
+            "xn--a/b.example",
+            "xn--\x00.example",
+            "xn--a b.example",
+        ):
+            with self.subTest(bad_domain=bad_domain):
+                self.assertRaises(
+                    idna.IDNAError,
+                    idna.decode,
+                    bad_domain,
+                    display=True,
+                )
+
         # display should be a no-op for fully valid input.
         self.assertEqual(
             idna.decode("xn--zckzah.xn--zckzah", display=True),

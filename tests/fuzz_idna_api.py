@@ -58,7 +58,12 @@ def fuzz_decode(fdp):
     strict, uts46, std3, display = fdp.ConsumeBool(), fdp.ConsumeBool(), fdp.ConsumeBool(), fdp.ConsumeBool()
     data = fdp.ConsumeUnicode(MAX_INPUT) if fdp.ConsumeBool() else fdp.ConsumeBytes(MAX_INPUT)
     decoded = _only_idnaerror(idna.decode, data, strict=strict, uts46=uts46, std3_rules=std3, display=display)
-    if decoded is None or not strict or uts46 or display:
+    if decoded is None:
+        return
+    decoded.encode("utf-8")
+    assert unicodedata.is_normalized("NFC", decoded), decoded
+    assert all(c in STD3_ASCII for c in decoded if c.isascii()), decoded
+    if not strict or uts46 or display:
         return
     # RFC 5891 §5.3: an A-label that decodes must re-encode to itself, so
     # under strict non-UTS46 processing any ASCII input that decodes is (up

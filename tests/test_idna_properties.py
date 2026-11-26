@@ -136,6 +136,18 @@ class OutputShapeTests(unittest.TestCase):
         for label in result.rstrip(b".").split(b"."):
             self.assertTrue(0 < len(label) <= 63)
 
+    @given(st.one_of(domains, binary), flags, flags, flags, flags)
+    def test_decode_output_is_well_formed(
+        self, s: str | bytes, strict: bool, uts46: bool, std3_rules: bool, display: bool
+    ) -> None:
+        result, err = _run(idna.decode, s, strict=strict, uts46=uts46, std3_rules=std3_rules, display=display)
+        if err is not None:
+            return
+        self.assertIsInstance(result, str)
+        result.encode("utf-8")
+        self.assertTrue(unicodedata.is_normalized("NFC", result), result)
+        self.assertTrue(all(c in _STD3_ASCII for c in result if c.isascii()), result)
+
     @given(domains, flags, flags)
     def test_uts46_remap_output_is_nfc_and_idempotent(self, s: str, std3_rules: bool, transitional: bool) -> None:
         out, err = _run(idna.uts46_remap, s, std3_rules=std3_rules, transitional=transitional)
