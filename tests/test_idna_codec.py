@@ -139,6 +139,33 @@ class IDNACodecTests(unittest.TestCase):
         self.assertEqual(encoder.encode("a." * 126 + "a"), b"a." * 126)
         self.assertEqual(encoder.encode(".", True), b"a.")
 
+    def testIncrementalEncoderDomainLengthUpfront(self):
+        # The length ceiling is checked before any label is split or
+        # encoded, mirroring IncrementalDecoder: a single oversized chunk
+        # must not be buffered without bound or cost O(N) alabel() work.
+        encoder = codecs.getincrementalencoder(CODEC_NAME)()
+        with self.assertRaises(idna.IDNAError):
+            encoder.encode("a" * 10_000, final=False)
+        # The failed call leaves the encoder untouched and usable.
+        self.assertEqual(encoder.getstate(), 0)
+        self.assertEqual(encoder.encode("example.org", True), b"example.org")
+
+        encoder = codecs.getincrementalencoder(CODEC_NAME)()
+        with self.assertRaises(idna.IDNAError):
+            encoder.encode("a." * 100_000, final=False)
+        self.assertEqual(encoder.getstate(), 0)
+
+    def testIncrementalEncoderFailedEncodeKeepsState(self):
+        # A failed encode() must not mutate _emitted/_trailing_dot: the
+        # buffered valid input stays flushable after the error is caught.
+        encoder = codecs.getincrementalencoder(CODEC_NAME)()
+        self.assertEqual(encoder.encode("a." * 126 + "a"), b"a." * 126)
+        state = encoder.getstate()
+        with self.assertRaises(idna.IDNAError):
+            encoder.encode("b", True)
+        self.assertEqual(encoder.getstate(), state)
+        self.assertEqual(encoder.encode("", True), b"a")
+
     def testIncrementalDecoderDomainLength(self):
         for domain in (b"a." * 126 + b"a", b"a." * 127):
             self.assertEqual("".join(codecs.iterdecode((bytes([c]) for c in domain), CODEC_NAME)), idna.decode(domain))

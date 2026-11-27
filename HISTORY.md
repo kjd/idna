@@ -3,6 +3,8 @@
 ## 3.21 (2026-XX-XX)
 
 - Raise the minimum supported Python version to 3.10
+- Fix `IncrementalEncoder` to reject oversized input up front and to leave
+  its state untouched when encoding fails with `IDNAError`
 
 ## 3.20 (2026-09-17)
 
