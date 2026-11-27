@@ -78,6 +78,16 @@ class IncrementalEncoder(codecs.BufferedIncrementalEncoder):
         if errors != "strict":
             raise IDNAError(f'Unsupported error handling "{errors}"', code="unsupported_errors")
 
+        # Mirror IncrementalDecoder._buffer_decode, which rejects input
+        # longer than 254 characters (253 plus a possible trailing dot)
+        # before looking at any label. The encoded output never shrinks
+        # valid input (ASCII labels and dot separators are 1:1, and
+        # Punycode A-labels only expand NFC Unicode labels), so once the
+        # accumulated output plus the pending input exceeds the ceiling the
+        # result cannot fit however it is split into labels.
+        if self._emitted + len(data) > _max_domain_length + 1:
+            raise IDNAError("Domain too long", code="domain_too_long")
+
         result_bytes = b""
         size = 0
         if data:
@@ -106,12 +116,16 @@ class IncrementalEncoder(codecs.BufferedIncrementalEncoder):
         # Mirror encode(): the whole name may not exceed 253 octets, or 254
         # when it ends with a dot. Until the input is final a trailing dot
         # may still arrive, so only the 254-octet ceiling applies before then.
-        self._emitted += len(result_bytes)
-        if result_bytes:
-            self._trailing_dot = result_bytes.endswith(b".")
-        may_end_with_dot = self._trailing_dot or not final
-        if self._emitted > _max_domain_length + may_end_with_dot:
+        # Validate the candidate state before updating it, so that a failed
+        # call leaves the encoder usable: codecs.BufferedIncrementalEncoder
+        # does not roll back self.buffer when _buffer_encode() raises.
+        next_emitted = self._emitted + len(result_bytes)
+        next_trailing_dot = result_bytes.endswith(b".") if result_bytes else self._trailing_dot
+        may_end_with_dot = next_trailing_dot or not final
+        if next_emitted > _max_domain_length + may_end_with_dot:
             raise IDNAError("Domain too long", code="domain_too_long")
+        self._emitted = next_emitted
+        self._trailing_dot = next_trailing_dot
         return result_bytes, size
 
 
